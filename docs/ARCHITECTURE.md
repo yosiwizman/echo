@@ -154,7 +154,7 @@ CI runs on every push to `main` and on pull requests.
 - Will be tightened as we clean up the code
 
 **mobile-build**: Validates Flutter app structure
-- Uses Flutter 3.24.0 (pinned for reproducibility)
+- Uses Flutter 3.27.0 (pinned for reproducibility, includes Dart 3.6.0+)
 - Checks that required directories exist
 - Runs `flutter pub get`
 - Runs `flutter analyze` (permissive mode)
@@ -172,13 +172,24 @@ The Omi codebase has existing lint/type issues that we haven't fixed yet. CI use
 
 ### Flutter SDK Dependencies
 
-CI uses Flutter 3.24.0 which pins certain core packages (e.g., `collection: 1.18.0`). The `pubspec.yaml` aligns direct dependencies with these constraints to avoid version conflicts.
+**Required Flutter Version: 3.27.0+**
+
+The Echo mobile app requires Flutter 3.27.0 (includes Dart 3.6.0+) due to dependency requirements:
+- `webview_flutter: 4.13.0` requires Dart SDK `^3.6.0`
+- Other packages have similar Dart 3.6.0 requirements
+
+**Version Pinning:**
+- CI uses Flutter 3.27.0 explicitly
+- Local development: use FVM (`.fvmrc` specifies 3.27.0)
+- The `pubspec.yaml` aligns dependencies with Flutter 3.27.0's SDK packages
 
 **When upgrading Flutter:**
-1. Check Flutter SDK's pinned package versions
-2. Update `pubspec.yaml` constraints if needed
-3. Test with `flutter pub get` and `flutter analyze`
-4. Review any deprecation warnings
+1. Update `.fvmrc` with new version
+2. Update `.github/workflows/ci.yml` Flutter version
+3. Check Flutter SDK's pinned package versions
+4. Update `pubspec.yaml` constraints if needed
+5. Test with `flutter pub get` and `flutter analyze`
+6. Review deprecation warnings and update code
 
 ## Security Considerations
 

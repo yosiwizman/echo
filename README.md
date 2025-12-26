@@ -33,9 +33,46 @@ echo/
 
 ### Prerequisites
 
-- **Mobile**: Flutter 3.24+, Dart SDK
+- **Mobile**: Flutter 3.27.0+ (includes Dart 3.6.0+), required for `webview_flutter` 4.13.0
 - **Backend**: Python 3.11+, Firebase project
 - **Optional**: Modal account (for cloud deployment)
+
+#### Flutter Version Management (Recommended)
+
+This project pins Flutter 3.27.0 for deterministic builds. Use [FVM](https://fvm.app/) to manage versions:
+
+**Windows (PowerShell):**
+```powershell
+# Install FVM
+choco install fvm
+# Or via pub:
+dart pub global activate fvm
+
+# Install and use pinned Flutter version
+fvm install
+fvm use
+```
+
+**macOS/Linux:**
+```bash
+# Install FVM
+brew tap leoafarias/fvm
+brew install fvm
+# Or via pub:
+dart pub global activate fvm
+
+# Install and use pinned Flutter version
+fvm install
+fvm use
+```
+
+Once FVM is set up, prefix Flutter commands with `fvm`:
+```bash
+fvm flutter pub get
+fvm flutter run
+```
+
+**Note**: iOS builds require macOS + Xcode 15+
 
 ### Running the Mobile App
 
