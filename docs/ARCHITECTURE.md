@@ -4,65 +4,80 @@
 
 Echo is an AI-powered wearable companion designed for real-time voice interaction, intelligent note-taking, and automated action execution. This document outlines the system architecture and strategic decisions.
 
-## Strategy: B2 (Best Practice)
+## Strategy: B1 (Ship Fast)
 
-Echo follows the **B2 strategy**, which means:
+Echo follows the **B1 strategy**, which means:
 
-1. **Build on Omi's patterns** — We leverage the [Omi](https://github.com/BasedHardware/omi) open-source ecosystem for proven architecture, BLE protocols, and device assumptions.
+1. **Vendor Omi as-is** — We import the [Omi](https://github.com/BasedHardware/omi) codebase directly and white-label it as Echo.
 
-2. **Own the backend** — We control our backend infrastructure from day 1. No dependency on Omi's hosted services.
+2. **Rebrand, don't rewrite** — Minimal changes: app name, bundle IDs, assets. Keep Omi's proven architecture intact.
 
-3. **Reference, don't fork** — We study Omi's architecture and adapt patterns to our needs rather than maintaining a fork.
+3. **Ship fast, iterate later** — Get to market quickly, then customize based on user feedback.
 
-### Why B2?
+### Why B1?
 
-- **Velocity**: Omi has solved many problems (BLE streaming, VAD, transcription pipelines). Learning from their solutions accelerates development.
-- **Control**: Owning the backend ensures we can customize, scale, and pivot without external dependencies.
-- **Compatibility**: Following Omi's device assumptions enables future hardware compatibility.
+- **Speed**: Omi is production-tested. Reusing it directly gets us to market fastest.
+- **Risk reduction**: Proven codebase with existing features (BLE, transcription, memory) means fewer bugs.
+- **Upgrade path**: Keeping close to upstream makes pulling future Omi improvements easier.
+
+## Repository Structure
+
+```
+echo/
+├── apps/
+│   ├── echo_mobile/           # Omi-based Flutter app (rebranded)
+│   └── echo_mobile_scaffold/  # Original scaffold (fallback)
+├── services/
+│   ├── echo_backend/          # Omi-based backend
+│   └── echo_backend_scaffold/ # Original scaffold (fallback)
+├── vendor/
+│   └── omi_upstream/          # Read-only Omi snapshot
+├── infra/                     # Docker, deployment configs
+└── docs/                      # Documentation
+```
+
+### Vendor Directory
+
+The `vendor/omi_upstream/` directory contains a read-only snapshot of the Omi codebase at a specific commit. This serves as:
+- Reference for upstream changes
+- Source of truth for what we imported
+- Easy diffing when pulling upstream updates
+
+See `vendor/omi_upstream/PROVENANCE.md` for the exact commit and import date.
+
+### Scaffold Directories
+
+The `*_scaffold` directories contain our original Phase 0 implementation:
+- `apps/echo_mobile_scaffold/` — Custom Flutter app scaffold
+- `services/echo_backend_scaffold/` — Custom FastAPI backend scaffold
+
+These are preserved as fallback if we need to pivot away from the Omi baseline.
 
 ## System Components
 
 ### 1. Echo Mobile (Flutter)
 
-The mobile application serves as the primary user interface and device coordinator.
+The mobile app is based on Omi's Flutter application, rebranded as Echo.
 
-```
-apps/echo_mobile/
-├── lib/
-│   ├── config/          # App configuration
-│   ├── models/          # Data models
-│   ├── screens/         # UI screens
-│   ├── services/        # API & device services
-│   └── widgets/         # Reusable components
-└── test/                # Widget & unit tests
-```
+**Key directories:**
+- `lib/` — Dart source code
+- `android/` — Android platform code (applicationId: `com.yosiwizman.echo`)
+- `ios/` — iOS platform code (bundleId: `com.yosiwizman.echo`)
 
-**Responsibilities:**
-- User interface and navigation
-- Backend API communication
-- BLE device management (Phase 3)
-- Audio capture and streaming (Phase 1)
-- Local state management
+**Branding changes applied:**
+- App name: "Echo" (was "Omi")
+- Package name: `echo_mobile`
+- Bundle/Application IDs: `com.yosiwizman.echo`
+- UI strings: "Omi" → "Echo" throughout
 
-### 2. Echo Backend (FastAPI)
+### 2. Echo Backend (Python)
 
-The backend provides API services, AI orchestration, and data persistence.
+The backend is based on Omi's Python backend with Firebase, Pinecone, and various AI integrations.
 
-```
-services/echo_backend/
-├── app/
-│   ├── main.py          # Application entry
-│   ├── routers/         # API endpoints
-│   ├── models/          # Pydantic schemas
-│   └── services/        # Business logic
-└── tests/               # API tests
-```
-
-**Responsibilities:**
-- REST API for mobile app
-- Chat/conversation processing
-- Notes CRUD operations
-- Future: LLM integration, action execution, memory management
+**Key directories:**
+- `routers/` — API endpoints
+- `models/` — Data models
+- `utils/` — Utility functions
 
 ### 3. Infrastructure
 
@@ -72,67 +87,26 @@ infra/
 └── (future)             # Kubernetes, Terraform
 ```
 
-## API Design
+## Omi Features (Inherited)
 
-### Current Endpoints (Phase 0)
+By adopting Omi as our baseline, Echo inherits:
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/healthz` | GET | Service health check |
-| `/chat` | POST | Process chat messages |
-| `/notes` | GET, POST | List/create notes |
-| `/notes/{id}` | GET, DELETE | Get/delete note |
+- **Real-time transcription** via WebSocket with multiple STT providers
+- **LangGraph chat processing** with tool routing
+- **Memory system** with vector search (Pinecone)
+- **BLE device support** for Omi-compatible wearables
+- **Firebase integration** for auth and data storage
+- **Plugin system** for extensibility
 
-### Future Endpoints
+### Configuration Required
 
-- `/v1/transcribe` — WebSocket for real-time transcription
-- `/v1/sessions` — Conversation session management
-- `/v1/actions` — Action execution and status
-- `/v1/memories` — Long-term memory retrieval
+The Omi backend requires environment variables for:
+- Firebase credentials
+- OpenAI/Deepgram API keys
+- Pinecone vector database
+- Various third-party integrations
 
-## Data Flow
-
-### Chat Flow (Phase 0 - Stub)
-
-```
-Mobile App → POST /chat → Backend → Stub Response → Mobile App
-```
-
-### Chat Flow (Phase 1 - LLM)
-
-```
-Mobile App → POST /chat → Backend → LLM → Response + Actions → Mobile App
-                                      ↓
-                              Tool Execution
-                              (notes, email, etc.)
-```
-
-### Audio Flow (Phase 1+)
-
-```
-Device/Mic → Mobile App → WebSocket → Backend → STT → LLM → Response
-                                                 ↓
-                                            Transcription
-```
-
-## Omi Reference Points
-
-Key Omi components we study and adapt:
-
-| Omi Component | Echo Adaptation |
-|---------------|-----------------|
-| `/backend/routers/transcribe.py` | WebSocket transcription endpoint |
-| `/backend/routers/chat.py` | Chat with LangGraph orchestration |
-| `/app/lib/services/` | Mobile service patterns |
-| `/omi/firmware/` | BLE protocol understanding |
-
-### Omi Architecture Insights
-
-From [Omi's system architecture](https://deepwiki.com/basedhardware/omi/1.1-system-architecture):
-
-- **Real-time transcription** via WebSocket with multiple STT service support
-- **LangGraph** for chat processing and tool routing
-- **Memory system** with vector search for context retrieval
+See `services/echo_backend/.env.template` for the full list.
 
 ## Phase Roadmap
 
@@ -143,51 +117,57 @@ From [Omi's system architecture](https://deepwiki.com/basedhardware/omi/1.1-syst
 - CI/CD pipeline
 - Documentation
 
-### Phase 1 — Session Mode
-**Goal**: Real-time voice interaction
+### Phase 1 — Omi Import + White-Label 🚧
+**Goal**: Ship Echo using Omi baseline
 
-- Audio capture in Flutter
-- WebSocket streaming to backend
-- STT integration (Whisper/Deepgram)
-- Live transcription display
-- Basic LLM chat integration
+- Import Omi codebase to vendor/
+- Move scaffolds to fallback directories
+- Rebrand Omi → Echo (names, IDs, strings)
+- Update CI for Omi structure
+- Document the import
 
-### Phase 2 — Sleep Phrase & VAD
-**Goal**: Ambient listening with wake word
+### Phase 2 — Configuration & Deploy
+**Goal**: Make Echo runnable
 
-- Wake word detection ("Hey Echo")
-- Voice Activity Detection (VAD)
-- Background listening mode
-- Battery-optimized audio processing
+- Set up Firebase project
+- Configure API keys (OpenAI, Deepgram, etc.)
+- Deploy backend to cloud
+- Build and test mobile app
+- First end-to-end test
 
-### Phase 3 — BLE & Wearable
-**Goal**: Hardware device support
+### Phase 3 — Customization
+**Goal**: Differentiate from Omi
 
-- BLE service implementation
-- Omi-compatible device pairing
-- Hardware button handling
-- Firmware communication protocol
+- Custom branding/UI polish
+- Echo-specific features
+- Remove unused Omi features
+- Optimize for our use case
 
 ## CI Configuration
 
-CI runs on every push to `main` and on pull requests. All checks must pass.
+CI runs on every push to `main` and on pull requests.
 
-### Backend Checks
-- **Ruff**: Linting with pycodestyle, pyflakes, isort, bugbear rules
-- **Mypy**: Strict type checking with Pydantic v2 plugin
-- **Pytest**: Async test suite with per-test state isolation
+### Primary Jobs (Omi-based)
 
-### Mobile Checks
-- **Flutter Analyze**: Dart static analysis
-- **Flutter Test**: Widget tests with proper async handling
+**backend-lint**: Runs ruff on `services/echo_backend/`
+- Currently permissive (`|| true`) as Omi codebase has existing lint issues
+- Will be tightened as we clean up the code
 
-### Smoke Test
-- Starts backend and validates `/healthz`, `/chat`, `/notes` endpoints
+**mobile-build**: Validates Flutter app structure
+- Checks that required directories exist
+- Runs `flutter pub get`
+- Runs `flutter analyze` (permissive mode)
 
-### Configuration Notes
-- `pyproject.toml` contains mypy overrides for FastAPI/Starlette typing compatibility
-- Test fixtures reset `NotesStore` between tests for isolation
-- Widget tests use `TestWidgetsFlutterBinding.ensureInitialized()` and `pump()` for async handling
+### Scaffold Jobs (Fallback)
+
+**scaffold-tests**: Tests our original scaffold code
+- Runs ruff, mypy, pytest on `services/echo_backend_scaffold/`
+- Runs flutter analyze/test on `apps/echo_mobile_scaffold/`
+- Ensures fallback code remains healthy
+
+### Permissive Mode
+
+The Omi codebase has existing lint/type issues that we haven't fixed yet. CI uses `|| true` to prevent these from blocking PRs. As we clean up the code, we'll remove these workarounds.
 
 ## Security Considerations
 
@@ -197,12 +177,18 @@ CI runs on every push to `main` and on pull requests. All checks must pass.
 - API authentication (future: OAuth2/JWT)
 - Encrypted data at rest (future)
 
-## Scalability Path
+## Upstream Sync Strategy
 
-1. **Phase 0-1**: Single instance, in-memory/SQLite
-2. **Phase 2**: PostgreSQL, Redis caching
-3. **Phase 3**: Kubernetes, horizontal scaling, CDN
+To pull updates from Omi upstream:
+
+1. Clone fresh Omi repo
+2. Copy to `vendor/omi_upstream/` (replace existing)
+3. Update `vendor/omi_upstream/PROVENANCE.md` with new commit
+4. Diff against `apps/echo_mobile/` and `services/echo_backend/`
+5. Apply relevant changes, preserving Echo branding
+
+Keep changes minimal to make upstream syncs easier.
 
 ---
 
-*This document evolves with the project. Last updated: Phase 0.*
+*This document evolves with the project. Last updated: Phase 1 (B1 import).*
