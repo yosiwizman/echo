@@ -1,6 +1,7 @@
 """Notes CRUD endpoints."""
 
 import logging
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
 
@@ -13,7 +14,8 @@ logger = logging.getLogger(__name__)
 
 def get_notes_store(request: Request) -> NotesStore:
     """Get notes store from app state."""
-    return request.app.state.notes_store
+    store: Any = request.app.state.notes_store
+    return store  # type: ignore[no-any-return]
 
 
 @router.post("", response_model=Note, status_code=201)

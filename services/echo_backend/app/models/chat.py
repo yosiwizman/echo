@@ -1,5 +1,7 @@
 """Chat models."""
 
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -14,7 +16,7 @@ class Action(BaseModel):
     """Action to be executed by the client."""
 
     type: str = Field(..., description="Action type (e.g., 'create_note', 'send_email')")
-    payload: dict = Field(default_factory=dict, description="Action-specific data")
+    payload: dict[str, Any] = Field(default_factory=dict, description="Action-specific data")
 
 
 class ChatResponse(BaseModel):

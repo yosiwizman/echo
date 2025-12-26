@@ -90,7 +90,10 @@ async def send_email(to: str, subject: str, body: str) -> dict[str, Any]:
 
     Will be integrated with an email service in future phases.
     """
-    logger.info("Send email placeholder called", extra={"to": to, "subject": subject})
+    logger.info(
+        "Send email placeholder called",
+        extra={"to": to, "subject": subject, "body_length": len(body)},
+    )
     return {
         "status": "placeholder",
         "message": "Email sending not yet implemented",
