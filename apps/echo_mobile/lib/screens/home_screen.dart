@@ -81,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 48),
               FilledButton.icon(
+                key: const Key('start_session_button'),
                 onPressed: () {
                   // TODO: Implement session mode in Phase 1
                   ScaffoldMessenger.of(context).showSnackBar(

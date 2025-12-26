@@ -38,7 +38,8 @@ void main() {
     // Pump a frame to allow initial build
     await tester.pump();
 
-    final button = find.widgetWithText(FilledButton, 'Start Session');
+    // Use key-based lookup for stability across UI refactors
+    final button = find.byKey(const Key('start_session_button'));
     expect(button, findsOneWidget);
   });
 }
