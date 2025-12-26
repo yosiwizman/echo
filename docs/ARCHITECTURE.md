@@ -168,6 +168,27 @@ From [Omi's system architecture](https://deepwiki.com/basedhardware/omi/1.1-syst
 - Hardware button handling
 - Firmware communication protocol
 
+## CI Configuration
+
+CI runs on every push to `main` and on pull requests. All checks must pass.
+
+### Backend Checks
+- **Ruff**: Linting with pycodestyle, pyflakes, isort, bugbear rules
+- **Mypy**: Strict type checking with Pydantic v2 plugin
+- **Pytest**: Async test suite with per-test state isolation
+
+### Mobile Checks
+- **Flutter Analyze**: Dart static analysis
+- **Flutter Test**: Widget tests with proper async handling
+
+### Smoke Test
+- Starts backend and validates `/healthz`, `/chat`, `/notes` endpoints
+
+### Configuration Notes
+- `pyproject.toml` contains mypy overrides for FastAPI/Starlette typing compatibility
+- Test fixtures reset `NotesStore` between tests for isolation
+- Widget tests use `TestWidgetsFlutterBinding.ensureInitialized()` and `pump()` for async handling
+
 ## Security Considerations
 
 - No secrets in code or logs
