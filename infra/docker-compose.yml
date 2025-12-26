@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  echo-backend:
+    build:
+      context: ../services/echo_backend
+      dockerfile: Dockerfile
+    container_name: echo-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - ECHO_ENV=development
+      - ECHO_LOG_LEVEL=INFO
+    volumes:
+      - ../services/echo_backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  default:
+    name: echo-network
