@@ -1,5 +1,7 @@
 # Echo
 
+[![CI](https://github.com/yosiwizman/echo/actions/workflows/ci.yml/badge.svg)](https://github.com/yosiwizman/echo/actions/workflows/ci.yml)
+
 **Echo** is an AI-powered wearable companion that listens, understands, and acts on your behalf. Built with a Flutter mobile app and a FastAPI backend, Echo is designed for real-time voice interaction with intelligent note-taking and action execution.
 
 ## Strategy
