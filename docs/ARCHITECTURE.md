@@ -2,7 +2,10 @@
 
 ## Overview
 
-Echo is an AI-powered wearable companion designed for real-time voice interaction, intelligent note-taking, and automated action execution. This document outlines the system architecture and strategic decisions.
+Echo is a **white-label AI companion platform** built on the [Omi](https://github.com/BasedHardware/omi) open-source ecosystem. This document outlines the system architecture, white-label strategy, and strategic decisions.
+
+**Current Status:** Phase 2 (White-Label Productization)  
+**Baseline:** `v0.1.0-white-label-base`
 
 ## Strategy: B2 (Best Practice)
 
@@ -134,6 +137,82 @@ From [Omi's system architecture](https://deepwiki.com/basedhardware/omi/1.1-syst
 - **LangGraph** for chat processing and tool routing
 - **Memory system** with vector search for context retrieval
 
+## White-Label Architecture (Phase 2)
+
+Echo is explicitly designed as a **white-label platform** to enable easy rebranding for multiple deployments.
+
+### Branding Configuration Layer
+
+**Mobile:** `apps/echo_mobile/lib/branding/branding_config.dart`
+```dart
+class BrandingConfig {
+  static const String appName = 'Echo';
+  static const int primaryColorValue = 0xFF000000;
+  static const String logoAssetPath = 'assets/images/herologo.png';
+  // ...
+}
+```
+
+**Backend:** `services/echo_backend/app/config/branding.py`
+```python
+class BrandingConfig:
+    PRODUCT_NAME = "Echo"
+    API_TITLE = "Echo API"
+    SUPPORT_EMAIL = "support@echo.example.com"
+    # ...
+```
+
+### White-Label Customization Guide
+
+To rebrand Echo for a new deployment:
+
+1. **Update Configuration Files**
+   - Modify `BrandingConfig` in both mobile and backend
+   - Set product name, colors, support URLs
+
+2. **Replace Assets**
+   - Logo: `apps/echo_mobile/assets/images/herologo.png`
+   - App icon: `apps/echo_mobile/assets/images/app_launcher_icon.png`
+   - Other branded images as needed
+
+3. **Update Platform Identifiers** (for app stores)
+   - Android: `android/app/build.gradle`
+     - `applicationId "com.yourcompany.yourapp"`
+     - `resValue "string", "app_name", "Your App Name"`
+   - iOS: `ios/Runner/Info.plist`
+     - Bundle identifier
+     - Display name
+
+4. **Build and Test**
+   ```bash
+   # Mobile
+   cd apps/echo_mobile
+   flutter pub get
+   flutter build apk  # or ios
+   
+   # Backend
+   cd services/echo_backend
+   # Verify branding in API docs at /docs
+   ```
+
+### Multi-Brand Deployment Strategy
+
+For managing multiple brands:
+
+1. **Option A: Flutter Flavors** (recommended for mobile)
+   - Define flavors in `pubspec.yaml`
+   - Create brand-specific config files
+   - Build: `flutter build apk --flavor brand_a`
+
+2. **Option B: Git Branches**
+   - `main` branch: vanilla Echo
+   - `brand-a`, `brand-b` branches: customized configs
+   - Cherry-pick platform updates from main
+
+3. **Option C: Configuration Service**
+   - Load branding at runtime from API/Firebase
+   - Suitable for multi-tenant SaaS deployments
+
 ## Phase Roadmap
 
 ### Phase 0 — Foundation ✅
@@ -143,30 +222,43 @@ From [Omi's system architecture](https://deepwiki.com/basedhardware/omi/1.1-syst
 - CI/CD pipeline
 - Documentation
 
-### Phase 1 — Session Mode
-**Goal**: Real-time voice interaction
+### Phase 1 — Omi Import ✅
+**Goal**: Ship fast by adopting Omi baseline
 
-- Audio capture in Flutter
-- WebSocket streaming to backend
-- STT integration (Whisper/Deepgram)
-- Live transcription display
-- Basic LLM chat integration
+- Import Omi codebase to `vendor/`
+- Rebrand Omi → Echo (names, IDs, strings)
+- Configure CI for Flutter 3.27.0 stable
+- Align dependencies for Dart 3.6.0
+- FVM configuration for deterministic builds
+- **Baseline tag:** `v0.1.0-white-label-base`
 
-### Phase 2 — Sleep Phrase & VAD
-**Goal**: Ambient listening with wake word
+### Phase 2 — White-Label Productization 🚧 (Current)
+**Goal**: Enable easy rebranding and customization
 
-- Wake word detection ("Hey Echo")
-- Voice Activity Detection (VAD)
-- Background listening mode
-- Battery-optimized audio processing
+- Centralized branding configuration (mobile + backend)
+- White-label documentation and guidelines
+- Multi-brand deployment strategy
+- Asset management system
+- Theme abstraction layer
 
-### Phase 3 — BLE & Wearable
-**Goal**: Hardware device support
+### Phase 3 — Production Hardening
+**Goal**: Make Echo production-ready
 
-- BLE service implementation
-- Omi-compatible device pairing
-- Hardware button handling
-- Firmware communication protocol
+- Firebase project setup
+- API key configuration (OpenAI, Deepgram, etc.)
+- Cloud deployment (Modal/GCP/AWS)
+- End-to-end testing
+- Performance optimization
+- Monitoring and analytics
+
+### Phase 4 — Feature Development
+**Goal**: Enhance beyond Omi baseline
+
+- Custom UI/UX improvements
+- Additional integrations
+- Enhanced privacy controls
+- Custom analytics
+- Platform-specific optimizations
 
 ## CI Configuration
 
@@ -205,4 +297,4 @@ CI runs on every push to `main` and on pull requests. All checks must pass.
 
 ---
 
-*This document evolves with the project. Last updated: Phase 0.*
+*This document evolves with the project. Last updated: Phase 2 (White-Label Productization).*
