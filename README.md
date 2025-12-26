@@ -122,7 +122,9 @@ For complete setup instructions including:
 - Expected first-run behavior
 - Build for distribution
 
-**→ See [docs/PREVIEW.md](docs/PREVIEW.md)** for the full local preview guide.
+**Platform-specific guides:**
+- **Windows + Android:** [docs/ANDROID_PREVIEW_WINDOWS.md](docs/ANDROID_PREVIEW_WINDOWS.md) — Detailed Windows setup with Android emulator
+- **General:** [docs/PREVIEW.md](docs/PREVIEW.md) — Cross-platform preview guide
 
 ### Backend (Optional for Preview)
 
