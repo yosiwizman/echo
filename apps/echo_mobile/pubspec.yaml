@@ -95,7 +95,7 @@ dependencies:
   json_annotation: ^4.9.0
   json_serializable: ^6.9.5
   package_info_plus: ^8.0.1
-  device_info_plus: ^11.5.0
+  device_info_plus: ^10.1.2
   path_provider: 2.1.5
   flutter_foreground_task: 9.1.0
   upgrader: 11.4.0
@@ -114,7 +114,7 @@ dependencies:
   cached_network_image: 3.4.1
   map_launcher: ^3.5.0
   internet_connection_checker_plus: ^2.7.2
-  geolocator: 14.0.1
+  geolocator: 13.0.1
   version: ^3.0.2
   webview_flutter: 4.13.0
   flutter_sound: ^9.10.0
