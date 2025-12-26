@@ -80,6 +80,54 @@ class BrandingConfig:
 
 See `docs/ARCHITECTURE.md` for detailed white-label guidance.
 
+## Run Echo Locally
+
+### First-Time Setup
+
+**Quick preview in 3 steps:**
+
+1. **Clone and navigate:**
+   ```bash
+   git clone https://github.com/yosiwizman/echo.git
+   cd echo/apps/echo_mobile
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   # With FVM (recommended)
+   fvm install && fvm use
+   fvm flutter pub get
+   
+   # Without FVM
+   flutter pub get
+   ```
+
+3. **Run on emulator:**
+   ```bash
+   # Android
+   flutter run
+   
+   # iOS (macOS only)
+   open -a Simulator && flutter run
+   ```
+
+**That's it!** Echo will launch on your emulator with a functional UI.
+
+### Detailed Instructions
+
+For complete setup instructions including:
+- Platform-specific requirements (Android Studio, Xcode)
+- Physical device setup
+- Troubleshooting common issues
+- Expected first-run behavior
+- Build for distribution
+
+**→ See [docs/PREVIEW.md](docs/PREVIEW.md)** for the full local preview guide.
+
+### Backend (Optional for Preview)
+
+The mobile app runs standalone. To test full backend integration, see "Quick Start" below.
+
 ## Quick Start
 
 ### Prerequisites
