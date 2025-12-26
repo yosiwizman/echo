@@ -1,7 +1,7 @@
 """Notes storage service."""
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.models.notes import Note, NoteCreate
 
@@ -23,7 +23,7 @@ class NotesStore:
 
     async def create(self, note_create: NoteCreate) -> Note:
         """Create a new note."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         note = Note(
             id=str(uuid.uuid4()),
             title=note_create.title,
