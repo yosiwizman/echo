@@ -5,7 +5,7 @@ These modules provide timeout-safe patterns for future external API calls
 """
 
 import logging
-from typing import Any
+from typing import Any, cast
 
 import httpx
 
@@ -53,7 +53,7 @@ async def call_external_api(
                 json=json_body,
             )
             response.raise_for_status()
-            return response.json()
+            return cast(dict[str, Any], response.json())
     except httpx.TimeoutException as e:
         logger.error("External API timeout", extra={"url": url, "timeout": timeout})
         raise ExternalServiceError(f"Request timed out after {timeout}s") from e
