@@ -56,7 +56,7 @@ jobs:
         with:
           flutter-version: "3.24.0"
           channel: "stable"
-          cache: true
+          cache: false
 
       - name: Get dependencies
         run: flutter pub get
@@ -68,6 +68,7 @@ jobs:
           test -d lib && echo "✓ lib/ exists"
           test -f lib/main.dart && echo "✓ main.dart exists"
           grep -q "name: echo_mobile" pubspec.yaml && echo "✓ Package name is echo_mobile"
+          grep -q "collection: \^1.18.0" pubspec.yaml && echo "✓ collection version is 1.18.0"
 
       - name: Analyze code (permissive)
         run: flutter analyze --no-fatal-infos --no-fatal-warnings || true
