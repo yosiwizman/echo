@@ -154,6 +154,7 @@ CI runs on every push to `main` and on pull requests.
 - Will be tightened as we clean up the code
 
 **mobile-build**: Validates Flutter app structure
+- Uses Flutter 3.24.0 (pinned for reproducibility)
 - Checks that required directories exist
 - Runs `flutter pub get`
 - Runs `flutter analyze` (permissive mode)
@@ -168,6 +169,16 @@ CI runs on every push to `main` and on pull requests.
 ### Permissive Mode
 
 The Omi codebase has existing lint/type issues that we haven't fixed yet. CI uses `|| true` to prevent these from blocking PRs. As we clean up the code, we'll remove these workarounds.
+
+### Flutter SDK Dependencies
+
+CI uses Flutter 3.24.0 which pins certain core packages (e.g., `collection: 1.18.0`). The `pubspec.yaml` aligns direct dependencies with these constraints to avoid version conflicts.
+
+**When upgrading Flutter:**
+1. Check Flutter SDK's pinned package versions
+2. Update `pubspec.yaml` constraints if needed
+3. Test with `flutter pub get` and `flutter analyze`
+4. Review any deprecation warnings
 
 ## Security Considerations
 
