@@ -192,7 +192,7 @@ void main() {
           size: Size(1440, 900),
           minimumSize: Size(1000, 650),
           center: true,
-          title: "Omi",
+          title: "Echo",
           titleBarStyle: TitleBarStyle.hidden,
         );
         windowManager.waitUntilReadyToShow(windowOptions, () async {

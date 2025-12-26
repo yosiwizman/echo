@@ -526,7 +526,7 @@ class _TranscriptWidgetState extends State<TranscriptWidget> {
                                     },
                               child: Text(
                                 data.speakerId == omiSpeakerId
-                                    ? 'omi'
+                                    ? 'Echo'
                                     : (suggestion != null && person == null
                                         ? '${suggestion.personName}?'
                                         : (person != null ? person.name : 'Speaker ${data.speakerId}')),

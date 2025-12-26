@@ -180,7 +180,7 @@ class PersonaProvider extends ChangeNotifier {
     makePersonaPublic = !app.private;
     selectedImageUrl = app.image;
     _userPersona = app;
-    hasOmiConnection = app.connectedAccounts.contains('omi');
+    hasOmiConnection = app.connectedAccounts.contains('Echo');
     hasTwitterConnection = app.connectedAccounts.contains('twitter');
     if (hasTwitterConnection && app.twitter != null) {
       _twitterProfile = app.twitter!;
@@ -311,11 +311,11 @@ class PersonaProvider extends ChangeNotifier {
         hasOmiConnection = true;
       }
 
-      if (hasOmiConnection && !_userPersona!.connectedAccounts.contains('omi')) {
-        personaData['connected_accounts'] = [..._userPersona!.connectedAccounts, 'omi'];
-      } else if (!hasOmiConnection && _userPersona!.connectedAccounts.contains('omi')) {
+      if (hasOmiConnection && !_userPersona!.connectedAccounts.contains('Echo')) {
+        personaData['connected_accounts'] = [..._userPersona!.connectedAccounts, 'Echo'];
+      } else if (!hasOmiConnection && _userPersona!.connectedAccounts.contains('Echo')) {
         personaData['connected_accounts'] =
-            _userPersona!.connectedAccounts.where((element) => element != 'omi').toList();
+            _userPersona!.connectedAccounts.where((element) => element != 'Echo').toList();
       }
 
       if (hasTwitterConnection && !_userPersona!.connectedAccounts.contains('twitter')) {
@@ -345,7 +345,7 @@ class PersonaProvider extends ChangeNotifier {
             isPublic: !(personaData['private'] as bool? ?? true),
             updatedFields: updatedFields,
             connectedAccounts: personaData['connected_accounts'] as List<String>?,
-            hasOmiConnection: (personaData['connected_accounts'] as List<String>?)?.contains('omi'),
+            hasOmiConnection: (personaData['connected_accounts'] as List<String>?)?.contains('Echo'),
             hasTwitterConnection: (personaData['connected_accounts'] as List<String>?)?.contains('twitter'));
         await getVerifiedUserPersona();
         notifyListeners();
@@ -388,7 +388,7 @@ class PersonaProvider extends ChangeNotifier {
       };
 
       if (hasOmiConnection) {
-        (personaData['connected_accounts'] as List<String>).add('omi');
+        (personaData['connected_accounts'] as List<String>).add('Echo');
       }
 
       if (_twitterProfile.isNotEmpty) {
@@ -408,7 +408,7 @@ class PersonaProvider extends ChangeNotifier {
             personaId: res['id'],
             isPublic: !(personaData['private'] as bool? ?? true),
             connectedAccounts: personaData['connected_accounts'] as List<String>?,
-            hasOmiConnection: (personaData['connected_accounts'] as List<String>?)?.contains('omi'),
+            hasOmiConnection: (personaData['connected_accounts'] as List<String>?)?.contains('Echo'),
             hasTwitterConnection: (personaData['connected_accounts'] as List<String>?)?.contains('twitter'));
         if (onShowSuccessDialog != null) {
           onShowSuccessDialog!(personaUrl);

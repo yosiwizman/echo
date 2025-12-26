@@ -149,7 +149,7 @@ class CustomSttConfig {
     }
 
     return CustomSttConfig(
-      provider: SttProvider.fromString(json['provider'] ?? 'omi'),
+      provider: SttProvider.fromString(json['provider'] ?? 'Echo'),
       apiKey: json['api_key'],
       language: json['language'],
       model: json['model'],

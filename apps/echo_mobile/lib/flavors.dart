@@ -22,7 +22,7 @@ class F {
   static String get title {
     switch (env) {
       case Environment.prod:
-        return 'Omi';
+        return 'Echo';
       case Environment.dev:
         return 'Omi Dev';
       default:

@@ -1,5 +1,5 @@
-name: omi
-description: A new Flutter project.
+name: echo_mobile
+description: Echo - AI-powered wearable companion.
 
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 

@@ -408,7 +408,7 @@ class MessageProvider extends ChangeNotifier {
     if (currentAppId == 'no_selected') {
       currentAppId = null;
     }
-    String chatTargetId = currentAppId ?? 'omi';
+    String chatTargetId = currentAppId ?? 'Echo';
     App? targetApp = currentAppId != null ? appProvider?.apps.firstWhereOrNull((app) => app.id == currentAppId) : null;
     bool isPersonaChat = targetApp != null ? !targetApp.isNotPersona() : false;
 
@@ -478,7 +478,7 @@ class MessageProvider extends ChangeNotifier {
       currentAppId = null;
     }
 
-    String chatTargetId = currentAppId ?? 'omi';
+    String chatTargetId = currentAppId ?? 'Echo';
     App? targetApp = currentAppId != null ? appProvider?.apps.firstWhereOrNull((app) => app.id == currentAppId) : null;
     bool isPersonaChat = targetApp != null ? !targetApp.isNotPersona() : false;
 

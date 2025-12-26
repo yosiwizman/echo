@@ -219,7 +219,7 @@ class AuthService {
       linkSubscription = appLinks.uriLinkStream.listen(
         (Uri uri) {
           debugPrint('Received callback URI: $uri');
-          if (uri.scheme == 'omi' && uri.host == 'auth' && uri.path == '/callback') {
+          if (uri.scheme == 'Echo' && uri.host == 'auth' && uri.path == '/callback') {
             linkSubscription.cancel();
             completer.complete(uri.toString());
           }
@@ -514,7 +514,7 @@ class AuthService {
       linkSubscription = appLinks.uriLinkStream.listen(
         (Uri uri) {
           debugPrint('Received callback URI: $uri');
-          if (uri.scheme == 'omi' && uri.host == 'auth' && uri.path == '/callback') {
+          if (uri.scheme == 'Echo' && uri.host == 'auth' && uri.path == '/callback') {
             linkSubscription.cancel();
             completer.complete(uri.toString());
           }

@@ -1037,7 +1037,7 @@ class MixpanelManager {
   // ============================================================================
 
   void transcriptionSourceSelected({
-    required String source, // 'omi' or 'custom'
+    required String source, // 'Echo' or 'custom'
   }) {
     track('Transcription Source Selected', properties: {
       'source': source,

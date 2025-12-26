@@ -257,7 +257,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
         case "chat":
           print('inside chat alias $detailPageId');
           if (detailPageId != null && detailPageId.isNotEmpty) {
-            var appId = detailPageId != "omi" ? detailPageId : ''; // omi ~ no select
+            var appId = detailPageId != "Echo" ? detailPageId : ''; // omi ~ no select
             if (mounted) {
               var appProvider = Provider.of<AppProvider>(context, listen: false);
               var messageProvider = Provider.of<MessageProvider>(context, listen: false);

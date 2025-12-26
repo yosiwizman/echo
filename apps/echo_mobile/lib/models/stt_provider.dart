@@ -138,7 +138,7 @@ class SttProviderConfig {
   static final _configs = <SttProvider, SttProviderConfig>{
     SttProvider.omi: SttProviderConfig(
       provider: SttProvider.omi,
-      displayName: 'Omi',
+      displayName: 'Echo',
       description: 'Omi\'s optimized transcription service',
       icon: FontAwesomeIcons.robot,
       requestType: SttRequestType.streaming,

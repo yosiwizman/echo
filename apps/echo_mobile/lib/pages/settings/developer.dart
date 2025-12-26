@@ -94,7 +94,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
   Widget _buildSttChip() {
     final useCustom = SharedPreferencesUtil().useCustomStt;
     final config = SharedPreferencesUtil().customSttConfig;
-    final label = useCustom ? SttProviderConfig.get(config.provider).displayName : 'Omi';
+    final label = useCustom ? SttProviderConfig.get(config.provider).displayName : 'Echo';
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -1268,7 +1268,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                                 TextSpan(text: '"mcpServers"', style: TextStyle(color: Colors.cyan.shade300)),
                                 const TextSpan(text: ': {\n', style: TextStyle(color: Colors.white)),
                                 const TextSpan(text: '    ', style: TextStyle(color: Colors.white)),
-                                TextSpan(text: '"omi"', style: TextStyle(color: Colors.cyan.shade300)),
+                                TextSpan(text: '"Echo"', style: TextStyle(color: Colors.cyan.shade300)),
                                 const TextSpan(text: ': {\n', style: TextStyle(color: Colors.white)),
                                 const TextSpan(text: '      ', style: TextStyle(color: Colors.white)),
                                 TextSpan(text: '"command"', style: TextStyle(color: Colors.cyan.shade300)),
@@ -1304,7 +1304,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                           onTap: () {
                             const config = '''{
   "mcpServers": {
-    "omi": {
+    "Echo": {
       "command": "docker",
       "args": ["run", "--rm", "-i", "-e", "OMI_API_KEY=your_api_key_here", "omiai/mcp-server:latest"]
     }
@@ -1482,7 +1482,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                         const SizedBox(height: 12),
 
                         // Client ID
-                        _buildMcpConfigRow('Client ID', 'omi'),
+                        _buildMcpConfigRow('Client ID', 'Echo'),
                         const SizedBox(height: 8),
 
                         // Client Secret hint

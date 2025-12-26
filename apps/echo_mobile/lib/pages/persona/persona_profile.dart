@@ -360,7 +360,7 @@ class _PersonaProfilePageState extends State<PersonaProfilePage> {
                                     },
                                     child: _buildSocialLink(
                                       icon: Assets.images.logoTransparent.path,
-                                      text: provider.hasOmiConnection ? (persona.username ?? 'username') : 'omi',
+                                      text: provider.hasOmiConnection ? (persona.username ?? 'username') : 'Echo',
                                       isConnected: provider.hasOmiConnection,
                                       showConnect: !provider.hasOmiConnection,
                                     ),

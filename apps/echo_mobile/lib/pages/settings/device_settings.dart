@@ -811,7 +811,7 @@ class _DeviceSettingsState extends State<DeviceSettings> {
                 String url;
                 if (deviceName == 'Omi DevKit 2') {
                   url = 'https://www.omi.me/pages/charging-devkit2';
-                } else if (deviceName == 'Omi') {
+                } else if (deviceName == 'Echo') {
                   url = 'https://www.omi.me/pages/charging-omi';
                 } else {
                   url = 'https://www.omi.me/pages/charging';

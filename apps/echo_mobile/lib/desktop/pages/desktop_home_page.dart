@@ -259,7 +259,7 @@ class _DesktopHomePageState extends State<DesktopHomePage> with WidgetsBindingOb
       switch (pageAlias) {
         case "chat":
           if (detailPageId != null && detailPageId.isNotEmpty) {
-            var appId = detailPageId != "omi" ? detailPageId : '';
+            var appId = detailPageId != "Echo" ? detailPageId : '';
             if (mounted) {
               var appProvider = Provider.of<AppProvider>(context, listen: false);
               var messageProvider = Provider.of<MessageProvider>(context, listen: false);

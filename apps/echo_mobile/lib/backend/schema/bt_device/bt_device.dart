@@ -371,7 +371,7 @@ class BtDevice {
   }
 
   Future _getDeviceInfoFromOmi(DeviceConnection conn) async {
-    var modelNumber = 'Omi';
+    var modelNumber = 'Echo';
     var firmwareRevision = '1.0.2';
     var hardwareRevision = 'Seeed Xiao BLE Sense';
     var manufacturerName = 'Based Hardware';

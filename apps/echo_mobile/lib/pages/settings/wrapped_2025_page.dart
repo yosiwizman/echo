@@ -4820,7 +4820,7 @@ class _SummaryCollageAnimatedState extends State<_SummaryCollageAnimated> with T
                 Opacity(
                   opacity: tilesProgress.clamp(0.0, 1.0),
                   child: const Text(
-                    'omi',
+                    'Echo',
                     style: TextStyle(
                       color: Colors.white54,
                       fontSize: 18,

@@ -52,7 +52,7 @@ class ChatAppsDropdownWidget extends StatelessWidget {
                       maxWidth: 100,
                     ),
                     child: Text(
-                      selectedApp != null ? selectedApp.getName() : "Omi",
+                      selectedApp != null ? selectedApp.getName() : "Echo",
                       style: const TextStyle(color: Colors.white, fontSize: 16),
                       overflow: TextOverflow.fade,
                     ),
@@ -220,7 +220,7 @@ class ChatAppsDropdownWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      "Omi",
+                      "Echo",
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
                     ),
                     selectedApp == null
@@ -348,7 +348,7 @@ class ChatAppsDropdownWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      "Omi",
+                      "Echo",
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
                     ),
                     selectedApp == null

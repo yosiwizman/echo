@@ -180,7 +180,7 @@ class CaptureProvider extends ChangeNotifier
       case DeviceType.friendPendant:
         return 'friend_com';
       case DeviceType.omi:
-        return 'omi';
+        return 'Echo';
       case DeviceType.openglass:
         return 'openglass';
       case DeviceType.fieldy:
@@ -678,7 +678,7 @@ class CaptureProvider extends ChangeNotifier
 
     // Set device info for WAL creation
     final pd = await device.getDeviceInfo(connection);
-    final deviceModel = pd.modelNumber.isNotEmpty ? pd.modelNumber : "Omi";
+    final deviceModel = pd.modelNumber.isNotEmpty ? pd.modelNumber : "Echo";
     _wal.getSyncs().phone.setDeviceInfo(deviceId, deviceModel);
 
     await streamButton(deviceId);

@@ -355,7 +355,7 @@ class DesktopChatPageState extends State<DesktopChatPage> with AutomaticKeepAliv
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              selectedApp?.name ?? 'Omi',
+                              selectedApp?.name ?? 'Echo',
                               style: const TextStyle(
                                 color: ResponsiveHelper.textPrimary,
                                 fontSize: 14,
@@ -1689,7 +1689,7 @@ class DesktopChatPageState extends State<DesktopChatPage> with AutomaticKeepAliv
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        app?.name ?? 'Omi',
+                        app?.name ?? 'Echo',
                         style: const TextStyle(
                           color: ResponsiveHelper.textPrimary,
                           fontSize: 16,

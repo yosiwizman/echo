@@ -678,7 +678,7 @@ class _TranscriptionSettingsPageState extends State<TranscriptionSettingsPage> {
         const SizedBox(height: 10),
         Row(
           children: [
-            Expanded(child: _buildSourceOption(false, 'Omi')),
+            Expanded(child: _buildSourceOption(false, 'Echo')),
             const SizedBox(width: 10),
             Expanded(child: _buildSourceOption(true, 'Bring your own')),
           ],
@@ -729,9 +729,9 @@ class _TranscriptionSettingsPageState extends State<TranscriptionSettingsPage> {
 
         setState(() => _useCustomStt = isCustom);
 
-        // Track source selection: 'omi' vs 'custom'
+        // Track source selection: 'Echo' vs 'custom'
         MixpanelManager().transcriptionSourceSelected(
-          source: isCustom ? 'custom' : 'omi',
+          source: isCustom ? 'custom' : 'Echo',
         );
       },
       child: Container(
