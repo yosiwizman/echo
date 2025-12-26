@@ -124,7 +124,7 @@ class _NotesScreenState extends State<NotesScreen> {
           children: [
             const Icon(Icons.error_outline, size: 48, color: Colors.red),
             const SizedBox(height: 16),
-            Text('Failed to load notes'),
+            const Text('Failed to load notes'),
             const SizedBox(height: 8),
             FilledButton(
               onPressed: _loadNotes,
@@ -187,9 +187,6 @@ class _NotesScreenState extends State<NotesScreen> {
                 icon: const Icon(Icons.delete_outline),
                 onPressed: () => _deleteNote(note),
               ),
-              onTap: () {
-                // TODO: Navigate to note detail in future
-              },
             ),
           );
         },

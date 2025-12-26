@@ -5,6 +5,9 @@ import 'package:echo_mobile/services/api_service.dart';
 import 'package:echo_mobile/screens/home_screen.dart';
 
 void main() {
+  // Ensure Flutter test bindings are initialized
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   testWidgets('Home screen shows Echo title', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -14,6 +17,9 @@ void main() {
         ),
       ),
     );
+
+    // Pump a frame to allow initial build
+    await tester.pump();
 
     expect(find.text('Echo'), findsWidgets);
     expect(find.text('Start Session'), findsOneWidget);
@@ -28,6 +34,9 @@ void main() {
         ),
       ),
     );
+
+    // Pump a frame to allow initial build
+    await tester.pump();
 
     final button = find.widgetWithText(FilledButton, 'Start Session');
     expect(button, findsOneWidget);
