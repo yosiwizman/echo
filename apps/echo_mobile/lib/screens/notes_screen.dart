@@ -65,6 +65,7 @@ class _NotesScreenState extends State<NotesScreen> {
       ),
     );
 
+    if (!mounted) return;
     if (confirmed == true) {
       try {
         final api = context.read<ApiService>();

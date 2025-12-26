@@ -13,7 +13,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _isConnected = false;
   bool _isChecking = false;
-  String? _error;
 
   @override
   void initState() {
@@ -24,24 +23,26 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _checkConnection() async {
     setState(() {
       _isChecking = true;
-      _error = null;
     });
 
     try {
       final api = context.read<ApiService>();
       await api.healthCheck();
+      if (!mounted) return;
       setState(() {
         _isConnected = true;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isConnected = false;
-        _error = e.toString();
       });
     } finally {
-      setState(() {
-        _isChecking = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isChecking = false;
+        });
+      }
     }
   }
 

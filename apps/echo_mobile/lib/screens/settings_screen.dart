@@ -34,16 +34,16 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           const _SectionHeader('Coming Soon'),
-          const ListTile(
-            leading: Icon(Icons.mic),
-            title: Text('Voice Settings'),
-            subtitle: Text('Phase 1'),
+          ListTile(
+            leading: const Icon(Icons.mic),
+            title: const Text('Voice Settings'),
+            subtitle: const Text('Phase 1'),
             enabled: false,
           ),
-          const ListTile(
-            leading: Icon(Icons.bluetooth),
-            title: Text('Device Connection'),
-            subtitle: Text('Phase 3'),
+          ListTile(
+            leading: const Icon(Icons.bluetooth),
+            title: const Text('Device Connection'),
+            subtitle: const Text('Phase 3'),
             enabled: false,
           ),
         ],
