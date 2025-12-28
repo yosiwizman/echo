@@ -54,6 +54,7 @@ import 'package:omi/services/notifications.dart';
 import 'package:omi/services/notifications/action_item_notification_handler.dart';
 import 'package:omi/services/notifications/merge_notification_handler.dart';
 import 'package:omi/services/services.dart';
+import 'package:omi/services/siri_shortcuts_service.dart';
 import 'package:omi/utils/analytics/growthbook.dart';
 import 'package:omi/utils/debug_log_manager.dart';
 import 'package:omi/utils/debugging/crashlytics_manager.dart';
@@ -126,12 +127,15 @@ Future _init() async {
   // Firebase
   if (PlatformService.isWindows) {
     // Windows does not support flavors
-    await Firebase.initializeApp(options: prod.DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+        options: prod.DefaultFirebaseOptions.currentPlatform);
   } else {
     if (F.env == Environment.prod) {
-      await Firebase.initializeApp(options: prod.DefaultFirebaseOptions.currentPlatform);
+      await Firebase.initializeApp(
+          options: prod.DefaultFirebaseOptions.currentPlatform);
     } else {
-      await Firebase.initializeApp(options: dev.DefaultFirebaseOptions.currentPlatform);
+      await Firebase.initializeApp(
+          options: dev.DefaultFirebaseOptions.currentPlatform);
     }
   }
 
@@ -219,10 +223,12 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 
-  static _MyAppState of(BuildContext context) => context.findAncestorStateOfType<_MyAppState>()!;
+  static _MyAppState of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>()!;
 
   // The navigator key is necessary to navigate using static methods
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
@@ -235,6 +241,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       DebugLogManager.setEnabled(true);
     }
 
+    // Initialize Siri Shortcuts Service (iOS only)
+    if (PlatformService.isIOS) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _initializeSiriShortcuts();
+      });
+    }
+
     // Auto-start macOS recording if enabled
     if (PlatformService.isDesktop) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -243,6 +256,20 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     }
 
     super.initState();
+  }
+
+  Future<void> _initializeSiriShortcuts() async {
+    try {
+      final context = MyApp.navigatorKey.currentContext;
+      if (context == null) return;
+
+      final captureProvider =
+          Provider.of<CaptureProvider>(context, listen: false);
+      final siriShortcutsService = SiriShortcutsService(captureProvider);
+      await siriShortcutsService.initialize();
+    } catch (e) {
+      debugPrint('[SiriShortcuts] Initialization error: $e');
+    }
   }
 
   Future<void> _autoStartMacOSRecording() async {
@@ -254,7 +281,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       final context = MyApp.navigatorKey.currentContext;
       if (context == null) return;
 
-      final captureProvider = Provider.of<CaptureProvider>(context, listen: false);
+      final captureProvider =
+          Provider.of<CaptureProvider>(context, listen: false);
       if (captureProvider.recordingState == RecordingState.stop) {
         await captureProvider.streamSystemAudioRecording();
       }
@@ -300,32 +328,42 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             update: (BuildContext context, value, MessageProvider? previous) =>
                 (previous?..updateAppProvider(value)) ?? MessageProvider(),
           ),
-          ChangeNotifierProxyProvider4<ConversationProvider, MessageProvider, PeopleProvider, UsageProvider,
-              CaptureProvider>(
+          ChangeNotifierProxyProvider4<ConversationProvider, MessageProvider,
+              PeopleProvider, UsageProvider, CaptureProvider>(
             create: (context) => CaptureProvider(),
-            update: (BuildContext context, conversation, message, people, usage, CaptureProvider? previous) =>
-                (previous?..updateProviderInstances(conversation, message, people, usage)) ?? CaptureProvider(),
+            update: (BuildContext context, conversation, message, people, usage,
+                    CaptureProvider? previous) =>
+                (previous
+                  ?..updateProviderInstances(
+                      conversation, message, people, usage)) ??
+                CaptureProvider(),
           ),
           ChangeNotifierProxyProvider<CaptureProvider, DeviceProvider>(
             create: (context) => DeviceProvider(),
-            update: (BuildContext context, captureProvider, DeviceProvider? previous) =>
+            update: (BuildContext context, captureProvider,
+                    DeviceProvider? previous) =>
                 (previous?..setProviders(captureProvider)) ?? DeviceProvider(),
           ),
           ChangeNotifierProxyProvider<DeviceProvider, OnboardingProvider>(
             create: (context) => OnboardingProvider(),
-            update: (BuildContext context, value, OnboardingProvider? previous) =>
+            update: (BuildContext context, value,
+                    OnboardingProvider? previous) =>
                 (previous?..setDeviceProvider(value)) ?? OnboardingProvider(),
           ),
           ListenableProvider(create: (context) => HomeProvider()),
           ChangeNotifierProxyProvider<DeviceProvider, SpeechProfileProvider>(
             create: (context) => SpeechProfileProvider(),
-            update: (BuildContext context, device, SpeechProfileProvider? previous) =>
+            update: (BuildContext context, device,
+                    SpeechProfileProvider? previous) =>
                 (previous?..setProviders(device)) ?? SpeechProfileProvider(),
           ),
-          ChangeNotifierProxyProvider2<AppProvider, ConversationProvider, ConversationDetailProvider>(
+          ChangeNotifierProxyProvider2<AppProvider, ConversationProvider,
+              ConversationDetailProvider>(
             create: (context) => ConversationDetailProvider(),
-            update: (BuildContext context, app, conversation, ConversationDetailProvider? previous) =>
-                (previous?..setProviders(app, conversation)) ?? ConversationDetailProvider(),
+            update: (BuildContext context, app, conversation,
+                    ConversationDetailProvider? previous) =>
+                (previous?..setProviders(app, conversation)) ??
+                ConversationDetailProvider(),
           ),
           ChangeNotifierProvider(create: (context) => DeveloperModeProvider()),
           ChangeNotifierProvider(create: (context) => McpProvider()),
@@ -336,7 +374,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ),
           ChangeNotifierProxyProvider<AppProvider, AiAppGeneratorProvider>(
             create: (context) => AiAppGeneratorProvider(),
-            update: (BuildContext context, value, AiAppGeneratorProvider? previous) =>
+            update: (BuildContext context, value,
+                    AiAppGeneratorProvider? previous) =>
                 (previous?..setAppProvider(value)) ?? AiAppGeneratorProvider(),
           ),
           ChangeNotifierProvider(create: (context) => PaymentMethodProvider()),
@@ -344,14 +383,17 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ChangeNotifierProxyProvider<ConnectivityProvider, MemoriesProvider>(
             create: (context) => MemoriesProvider(),
             update: (context, connectivity, previous) =>
-                (previous?..setConnectivityProvider(connectivity)) ?? MemoriesProvider(),
+                (previous?..setConnectivityProvider(connectivity)) ??
+                MemoriesProvider(),
           ),
           ChangeNotifierProvider(create: (context) => UserProvider()),
           ChangeNotifierProvider(create: (context) => ActionItemsProvider()),
           ChangeNotifierProvider(create: (context) => SyncProvider()),
-          ChangeNotifierProvider(create: (context) => TaskIntegrationProvider()),
+          ChangeNotifierProvider(
+              create: (context) => TaskIntegrationProvider()),
           ChangeNotifierProvider(create: (context) => IntegrationProvider()),
-          ChangeNotifierProvider(create: (context) => CalendarProvider(), lazy: false),
+          ChangeNotifierProvider(
+              create: (context) => CalendarProvider(), lazy: false),
           ChangeNotifierProvider(create: (context) => FolderProvider()),
         ],
         builder: (context, child) {
@@ -375,13 +417,20 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   ),
                   snackBarTheme: const SnackBarThemeData(
                     backgroundColor: Color(0xFF1F1F25),
-                    contentTextStyle: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500),
+                    contentTextStyle: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500),
                   ),
                   textTheme: TextTheme(
-                    titleLarge: const TextStyle(fontSize: 18, color: Colors.white),
-                    titleMedium: const TextStyle(fontSize: 16, color: Colors.white),
-                    bodyMedium: const TextStyle(fontSize: 14, color: Colors.white),
-                    labelMedium: TextStyle(fontSize: 12, color: Colors.grey.shade200),
+                    titleLarge:
+                        const TextStyle(fontSize: 18, color: Colors.white),
+                    titleMedium:
+                        const TextStyle(fontSize: 16, color: Colors.white),
+                    bodyMedium:
+                        const TextStyle(fontSize: 14, color: Colors.white),
+                    labelMedium:
+                        TextStyle(fontSize: 12, color: Colors.grey.shade200),
                   ),
                   textSelectionTheme: const TextSelectionThemeData(
                     cursorColor: Colors.white,
@@ -389,18 +438,22 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                     selectionHandleColor: Colors.white,
                   ),
                   cupertinoOverrideTheme: const CupertinoThemeData(
-                    primaryColor: Colors.white, // Controls the selection handles on iOS
+                    primaryColor:
+                        Colors.white, // Controls the selection handles on iOS
                   )),
               themeMode: ThemeMode.dark,
               builder: (context, child) {
                 FlutterError.onError = (FlutterErrorDetails details) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    Logger.instance.talker.handle(details.exception, details.stack);
-                    DebugLogManager.logError(details.exception, details.stack, 'FlutterError');
+                    Logger.instance.talker
+                        .handle(details.exception, details.stack);
+                    DebugLogManager.logError(
+                        details.exception, details.stack, 'FlutterError');
                   });
                 };
                 ErrorWidget.builder = (errorDetails) {
-                  return CustomErrorWidget(errorMessage: errorDetails.exceptionAsString());
+                  return CustomErrorWidget(
+                      errorMessage: errorDetails.exceptionAsString());
                 };
                 return child!;
               },

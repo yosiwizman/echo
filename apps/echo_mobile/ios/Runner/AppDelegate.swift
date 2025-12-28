@@ -14,6 +14,9 @@ extension FlutterError: Error {}
   private var methodChannel: FlutterMethodChannel?
   private var appleRemindersChannel: FlutterMethodChannel?
   private let appleRemindersService = AppleRemindersService()
+  
+  // Siri Shortcuts MethodChannel
+  private var siriShortcutsChannel: FlutterMethodChannel?
 
   private var notificationTitleOnKill: String?
   private var notificationBodyOnKill: String?
@@ -61,6 +64,29 @@ extension FlutterError: Error {}
     appleRemindersChannel?.setMethodCallHandler { [weak self] (call, result) in
       self?.handleAppleRemindersCall(call, result: result)
     }
+    
+    // Setup Siri Shortcuts MethodChannel
+    siriShortcutsChannel = FlutterMethodChannel(
+      name: "com.echo/siri",
+      binaryMessenger: controller!.binaryMessenger
+    )
+    
+    // Register NotificationCenter observers for Siri Shortcuts
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleStartRecordingShortcut),
+      name: NSNotification.Name("EchoStartRecording"),
+      object: nil
+    )
+    
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleStopRecordingShortcut),
+      name: NSNotification.Name("EchoStopRecording"),
+      object: nil
+    )
+    
+    NSLog("[SiriShortcuts] AppDelegate: NotificationCenter observers registered")
 
     // here, Without this code the task will not work.
     SwiftFlutterForegroundTaskPlugin.setPluginRegistrantCallback { registry in
@@ -94,6 +120,50 @@ extension FlutterError: Error {}
   
   private func handleAppleRemindersCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     appleRemindersService.handleMethodCall(call, result: result)
+  }
+  
+  // MARK: - Siri Shortcuts Handlers
+  
+  /// Handle "Start Echo" Siri Shortcut
+  /// Bridges iOS Intent -> Flutter MethodChannel
+  @objc private func handleStartRecordingShortcut(notification: Notification) {
+    NSLog("[SiriShortcuts] AppDelegate: Start recording notification received")
+    
+    guard let userInfo = notification.userInfo,
+          let source = userInfo["source"] as? String else {
+      NSLog("[SiriShortcuts] AppDelegate: Missing source in notification")
+      return
+    }
+    
+    // Invoke Flutter method via MethodChannel
+    siriShortcutsChannel?.invokeMethod(
+      "startSession",
+      arguments: ["source": source]
+    ) { result in
+      if let error = result as? FlutterError {
+        NSLog("[SiriShortcuts] AppDelegate: startSession error: \(error.message ?? "unknown")")
+      } else {
+        NSLog("[SiriShortcuts] AppDelegate: startSession invoked successfully")
+      }
+    }
+  }
+  
+  /// Handle "Stop Echo" Siri Shortcut
+  /// Bridges iOS Intent -> Flutter MethodChannel
+  @objc private func handleStopRecordingShortcut(notification: Notification) {
+    NSLog("[SiriShortcuts] AppDelegate: Stop recording notification received")
+    
+    // Invoke Flutter method via MethodChannel
+    siriShortcutsChannel?.invokeMethod(
+      "stopSession",
+      arguments: nil
+    ) { result in
+      if let error = result as? FlutterError {
+        NSLog("[SiriShortcuts] AppDelegate: stopSession error: \(error.message ?? "unknown")")
+      } else {
+        NSLog("[SiriShortcuts] AppDelegate: stopSession invoked successfully")
+      }
+    }
   }
     
 
