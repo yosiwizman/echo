@@ -21,6 +21,15 @@ If virtualization is disabled:
 2. Enable Intel VT-x or AMD-V
 3. Save and reboot
 
+## Required Windows Setting: Developer Mode (Flutter plugin symlinks)
+
+Flutter uses **symlinks** for some plugins on Windows. If Windows Developer Mode is disabled, you may see:
+- `Building with plugins requires symlink support`
+
+Fix (recommended to do before anything else):
+1. Settings → Privacy & security → For developers → **Developer Mode** → **On**
+2. Re-run your Flutter command (`flutter pub get`, `flutter run`, etc.)
+
 ## Step 1: Install Flutter
 
 ### Option A: Direct Download (Recommended)
@@ -215,9 +224,6 @@ Get-Content pubspec.yaml | Select-String "name:"
 emulator -list-avds
 
 # Launch Echo_Android_Emu
-emulator -avd Echo_Android_Emu &
-
-# Or use start to run in background
 Start-Process emulator -ArgumentList "-avd", "Echo_Android_Emu"
 ```
 
@@ -392,35 +398,15 @@ $env:GRADLE_OPTS="-Dorg.gradle.daemon=true"
 # org.gradle.caching=true
 ```
 
-## Tomorrow: iOS Simulator Checklist (macOS Required)
+## iOS Preview (macOS Required)
 
-This is a **checklist only** - iOS development requires macOS.
+See:
+- `docs/IOS_PREVIEW_MAC.md`
 
-### Prerequisites
-- [ ] macOS 13 (Ventura) or later
-- [ ] Xcode 15+ installed from App Store (~15GB)
-- [ ] Xcode Command Line Tools: `xcode-select --install`
-- [ ] CocoaPods: `sudo gem install cocoapods`
-- [ ] Accept Xcode license: `sudo xcodebuild -license accept`
+## Siri Shortcuts (iOS)
 
-### Steps
-- [ ] Open Xcode → Preferences → Locations → Set Command Line Tools
-- [ ] Launch iOS Simulator: `open -a Simulator`
-- [ ] Select device: iPhone 15 Pro (or latest)
-- [ ] Navigate to: `cd echo/apps/echo_mobile`
-- [ ] Install pods: `cd ios && pod install && cd ..`
-- [ ] Run app: `flutter run`
-- [ ] Verify: App launches on iOS Simulator
-- [ ] Test: Hot reload works (`r` in terminal)
-
-### iOS-Specific Issues
-- [ ] If build fails: `cd ios && rm -rf Pods Podfile.lock && pod install`
-- [ ] If signing issue: Open `ios/Runner.xcworkspace` in Xcode → Signing & Capabilities → Select team
-- [ ] If simulator not found: `flutter devices` → Check Xcode path
-
-### Resources
-- Xcode download: https://developer.apple.com/xcode/
-- Flutter iOS setup: https://docs.flutter.dev/get-started/install/macos
+See:
+- `docs/SIRI_SHORTCUTS_INTEGRATION.md`
 
 ---
 
@@ -453,4 +439,4 @@ This is a **checklist only** - iOS development requires macOS.
 
 ---
 
-*Last updated: Phase 4 (Android Windows Preview)*
+*Last updated: Phase 6 (Windows Android + macOS iOS runbooks)*
