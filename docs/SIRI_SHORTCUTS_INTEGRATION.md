@@ -142,22 +142,22 @@ NotificationCenter.default.addObserver(
     guard let controller = window?.rootViewController as? FlutterViewController else { return }
     
     let methodChannel = FlutterMethodChannel(
-        name: "com.echo/siri_shortcuts",
+        name: "com.echo/siri",
         binaryMessenger: controller.binaryMessenger
     )
     
-    methodChannel.invokeMethod("startRecording", arguments: ["source": "siri"])
+    methodChannel.invokeMethod("startSession", arguments: ["source": "siri_shortcut"])
 }
 
 @objc private func handleStopRecordingShortcut(notification: Notification) {
     guard let controller = window?.rootViewController as? FlutterViewController else { return }
     
     let methodChannel = FlutterMethodChannel(
-        name: "com.echo/siri_shortcuts",
+        name: "com.echo/siri",
         binaryMessenger: controller.binaryMessenger
     )
     
-    methodChannel.invokeMethod("stopRecording", arguments: nil)
+    methodChannel.invokeMethod("stopSession", arguments: nil)
 }
 ```
 
@@ -173,7 +173,7 @@ import 'package:omi/providers/capture_provider.dart';
 import 'package:omi/utils/logger.dart';
 
 class SiriShortcutsService {
-  static const MethodChannel _channel = MethodChannel('com.echo/siri_shortcuts');
+  static const MethodChannel _channel = MethodChannel('com.echo/siri');
   final CaptureProvider _captureProvider;
   
   SiriShortcutsService(this._captureProvider) {
@@ -183,10 +183,10 @@ class SiriShortcutsService {
   Future<void> _handleMethod(MethodCall call) async {
     try {
       switch (call.method) {
-        case 'startRecording':
+        case 'startSession':
           await _handleStartRecording(call.arguments);
           break;
-        case 'stopRecording':
+        case 'stopSession':
           await _handleStopRecording();
           break;
         default:
@@ -556,10 +556,13 @@ Since the Omni white-label code is on `phase-1-omi-white-label`, you need to:
 
 ```bash
 cd ~/echo/apps/echo_mobile
+cd ios && pod install && cd ..
 open ios/Runner.xcworkspace
 ```
 
-**⚠️ Important:** Open `.xcworkspace`, NOT `.xcodeproj`
+**⚠️ Important:** Open `.xcworkspace`, NOT `.xcodeproj` (CocoaPods uses the workspace).
+
+If `Runner.xcworkspace` is missing, re-run `pod install` (above).
 
 ### Step 2: Create Intents.intentdefinition File
 
@@ -597,7 +600,12 @@ open ios/Runner.xcworkspace
 
 ### Step 3: Update IntentHandler.swift
 
-Replace placeholder code in `ios/Runner/IntentHandler.swift`:
+1. Ensure `IntentHandler.swift` is in the Xcode project and included in the target:
+   - Xcode menu: **File → Add Files to "Runner"…**
+   - Select: `apps/echo_mobile/ios/Runner/IntentHandler.swift`
+   - In the dialog, ensure **Add to targets:** ✅ Runner
+
+2. Replace placeholder code in `ios/Runner/IntentHandler.swift`:
 
 ```swift
 // Replace this section:

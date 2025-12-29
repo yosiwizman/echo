@@ -38,10 +38,15 @@ This command validates your Flutter installation and shows missing dependencies.
 
 ## Quick Start
 
+### Platform Runbooks (Recommended)
+- **Windows + Android:** `docs/ANDROID_PREVIEW_WINDOWS.md`
+- **macOS + iOS:** `docs/IOS_PREVIEW_MAC.md`
+- **iOS Siri Shortcuts:** `docs/SIRI_SHORTCUTS_INTEGRATION.md`
+
 ### 1. Clone the Repository
 
 ```bash
-git checkout https://github.com/yosiwizman/echo.git
+git clone https://github.com/yosiwizman/echo.git
 cd echo
 ```
 
@@ -313,4 +318,4 @@ flutter build ios --release
 
 ---
 
-*Last updated: Phase 3 (Local Preview Build)*
+*Last updated: Phase 6 (Platform Runbooks + iOS Preview)*
