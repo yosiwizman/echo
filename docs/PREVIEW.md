@@ -166,6 +166,11 @@ Update backend URL in `lib/config/app_config.dart` if needed.
 ### Issue: `flutter: command not found`
 **Fix:** Flutter is not in your PATH. Reinstall Flutter or update PATH manually.
 
+### Issue: `Building with plugins requires symlink support` (Windows)
+**Fix:** Enable **Developer Mode** on Windows (required for Flutter plugin symlinks):
+- Settings → Privacy & security → For developers → Developer Mode
+- Then rerun: `flutter pub get` / `flutter run`
+
 ### Issue: `No devices found`
 **Fix:**
 - Android: Start an emulator via Android Studio AVD Manager
