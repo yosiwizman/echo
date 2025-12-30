@@ -98,6 +98,15 @@ def test_brain_api_matches_snapshot(client, contract_snapshot_path):
         path_diff = current_paths.symmetric_difference(committed_paths)
         schema_diff = current_schemas.symmetric_difference(committed_schemas)
         
+        # Save full contracts for debugging
+        debug_dir = Path("/tmp") if Path("/tmp").exists() else BACKEND_ROOT
+        committed_debug = debug_dir / "contract_committed.json"
+        current_debug = debug_dir / "contract_current.json"
+        with open(committed_debug, "w") as f:
+            json.dump(normalized_committed, f, indent=2, sort_keys=True)
+        with open(current_debug, "w") as f:
+            json.dump(normalized_current, f, indent=2, sort_keys=True)
+        
         if path_diff or schema_diff:
             diagnostic = f"\nDifferences detected:\n"
             if path_diff:
@@ -106,6 +115,10 @@ def test_brain_api_matches_snapshot(client, contract_snapshot_path):
                 diagnostic += f"  Schema changes: {schema_diff}\n"
         else:
             diagnostic = f"\n  (Paths and schemas match, but structure/values differ)\n"
+        
+        diagnostic += f"\nDebug files saved:\n"
+        diagnostic += f"  Committed: {committed_debug}\n"
+        diagnostic += f"  Current:   {current_debug}\n"
     
     # Compare
     assert current_hash == committed_hash, (
