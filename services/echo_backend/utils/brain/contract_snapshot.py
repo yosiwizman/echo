@@ -267,7 +267,7 @@ def canonicalize_schema_variants(schemas: Dict[str, Any]) -> None:
         
         if not has_input:
             # Create -Input from canonical content
-            schemas[input_name] = canonical_content
+            schemas[input_name] = copy.deepcopy(canonical_content)
         
         if not has_output:
             # Create -Output from canonical content
