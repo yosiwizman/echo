@@ -1,17 +1,76 @@
 import base64
 import os
 import struct
+from typing import Optional
 
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
-# Load the master secret from environment variables. This must be a securely managed 32-byte key.
-ENCRYPTION_SECRET = os.getenv('ENCRYPTION_SECRET', '').encode('utf-8')
-if not ENCRYPTION_SECRET or len(ENCRYPTION_SECRET) < 32:
-    raise ValueError(
-        "ENCRYPTION_SECRET environment variable not set or is too short. " "It must be a securely managed 32-byte key."
-    )
+# ---------------------------------------------------------------------------
+# Strict-mode flags: when set, missing encryption secret raises at init time.
+# Default (CI/dev): secret is optional; errors only when encrypt/decrypt is used.
+# ---------------------------------------------------------------------------
+_REQUIRE_SECRETS = os.environ.get('ECHO_REQUIRE_SECRETS', '').lower() in ('1', 'true')
+_REQUIRE_ENCRYPTION = os.environ.get('ECHO_REQUIRE_ENCRYPTION', '').lower() in ('1', 'true') or _REQUIRE_SECRETS
+
+# Lazy-loaded encryption secret (validated on first use)
+_encryption_secret: Optional[bytes] = None
+_encryption_secret_loaded: bool = False
+
+
+def _get_encryption_secret() -> bytes:
+    """Return the encryption secret, validating and caching on first call.
+
+    Raises:
+        ValueError: If secret is missing/too short and strict mode is enabled,
+                    or when actually called without a valid secret.
+    """
+    global _encryption_secret, _encryption_secret_loaded
+
+    if not _encryption_secret_loaded:
+        secret = os.getenv('ENCRYPTION_SECRET', '').encode('utf-8')
+        if not secret or len(secret) < 32:
+            if _REQUIRE_ENCRYPTION:
+                raise ValueError(
+                    "ENCRYPTION_SECRET environment variable not set or is too short. "
+                    "It must be a securely managed 32-byte key."
+                )
+            # In non-strict mode, leave _encryption_secret as None
+            _encryption_secret = None
+        else:
+            _encryption_secret = secret
+        _encryption_secret_loaded = True
+
+    if _encryption_secret is None:
+        raise ValueError(
+            "ENCRYPTION_SECRET environment variable not set or is too short. "
+            "It must be a securely managed 32-byte key. "
+            "Encryption functions cannot be used without a valid secret."
+        )
+
+    return _encryption_secret
+
+
+# Backward-compat: ENCRYPTION_SECRET is now accessed via getter.
+# Code that reads ENCRYPTION_SECRET directly will get this lazy property.
+class _LazySecret:
+    """Proxy that defers secret loading until accessed."""
+
+    def __bytes__(self) -> bytes:
+        return _get_encryption_secret()
+
+    def __len__(self) -> int:
+        return len(_get_encryption_secret())
+
+    def __bool__(self) -> bool:
+        try:
+            return bool(_get_encryption_secret())
+        except ValueError:
+            return False
+
+
+ENCRYPTION_SECRET = _LazySecret()  # type: ignore[assignment]
 
 
 def derive_key(uid: str) -> bytes:
@@ -24,7 +83,7 @@ def derive_key(uid: str) -> bytes:
         salt=uid.encode('utf-8'),
         info=b'user-data-encryption',
     )
-    return hkdf.derive(ENCRYPTION_SECRET)
+    return hkdf.derive(_get_encryption_secret())
 
 
 def encrypt(data: str, uid: str) -> str:

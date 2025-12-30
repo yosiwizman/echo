@@ -115,6 +115,18 @@ This README provides a quick setup guide for the Omi backend. For a comprehensiv
     deactivate
     ```
 
+## CI / Development: Optional Secrets
+
+For CI pipelines and local onboarding, API secrets (OpenAI, encryption) are **optional by default**. The backend can be imported and health tests can run without setting these secrets.
+
+- LLM clients and encryption functions are **lazy-initialized** — they only require secrets when actually invoked.
+- To enforce production-like strict validation at startup, set one or more of:
+  - `ECHO_REQUIRE_SECRETS=1` — require all secrets (OpenAI, encryption)
+  - `ECHO_REQUIRE_OPENAI=1` — require `OPENAI_API_KEY`
+  - `ECHO_REQUIRE_ENCRYPTION=1` — require `ENCRYPTION_SECRET`
+
+This pattern allows deterministic CI without secrets while preserving fail-fast behavior in production.
+
 ## Additional Resources
 
 - [Full Backend Setup Documentation](https://docs.omi.me/developer/backend/Backend_Setup)
