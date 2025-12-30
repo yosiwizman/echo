@@ -4,7 +4,6 @@ This test ensures no breaking changes are introduced to Brain API v1 without
 creating a new version. The contract is frozen and must remain backward compatible.
 """
 import json
-import hashlib
 import sys
 from pathlib import Path
 
@@ -15,6 +14,12 @@ from fastapi.testclient import TestClient
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
+
+from utils.brain.contract_snapshot import (
+    build_brain_v1_contract,
+    normalize_contract,
+    compute_contract_hash,
+)
 
 
 # Force stub provider for deterministic testing
@@ -39,31 +44,6 @@ def client():
 def contract_snapshot_path():
     """Path to committed contract snapshot."""
     return BACKEND_ROOT / "models" / "brain_contract_v1.json"
-
-
-def normalize_openapi_schema(schema: dict) -> dict:
-    """Normalize OpenAPI schema for comparison.
-    
-    Removes fields that can vary between runs (timestamps, server URLs, etc.)
-    but preserves the contract-critical fields.
-    """
-    normalized = {
-        "openapi": schema.get("openapi", "3.1.0"),
-        "info": {
-            "title": schema.get("info", {}).get("title", ""),
-            "version": schema.get("info", {}).get("version", ""),
-            "description": schema.get("info", {}).get("description", ""),
-        },
-        "paths": schema.get("paths", {}),
-        "components": schema.get("components", {}),
-    }
-    return normalized
-
-
-def compute_schema_hash(schema: dict) -> str:
-    """Compute deterministic hash of normalized schema."""
-    schema_json = json.dumps(schema, sort_keys=True, indent=2)
-    return hashlib.sha256(schema_json.encode()).hexdigest()
 
 
 def test_contract_snapshot_exists(contract_snapshot_path):
@@ -93,96 +73,18 @@ def test_brain_api_matches_snapshot(client, contract_snapshot_path):
     # Get current OpenAPI schema from running app
     response = client.get("/openapi.json")
     assert response.status_code == 200
-    current_schema = response.json()
+    openapi_schema = response.json()
     
-    # Extract only Brain API v1 paths
-    brain_v1_paths = {
-        path: spec
-        for path, spec in current_schema.get("paths", {}).items()
-        if path.startswith("/v1/brain/")
-    }
+    # Build current Brain API v1 contract using shared helper
+    current_contract = build_brain_v1_contract(openapi_schema)
     
-    # Extract Brain API schemas (referenced components)
-    brain_schemas = {}
-    for path_spec in brain_v1_paths.values():
-        for method_spec in path_spec.values():
-            # Collect schema refs from responses
-            for response in method_spec.get("responses", {}).values():
-                for content_spec in response.get("content", {}).values():
-                    schema_ref = content_spec.get("schema", {}).get("$ref", "")
-                    if schema_ref:
-                        schema_name = schema_ref.split("/")[-1]
-                        if schema_name in current_schema.get("components", {}).get("schemas", {}):
-                            brain_schemas[schema_name] = current_schema["components"]["schemas"][schema_name]
-            
-            # Collect schema refs from request bodies
-            request_body = method_spec.get("requestBody", {})
-            for content_spec in request_body.get("content", {}).values():
-                schema_ref = content_spec.get("schema", {}).get("$ref", "")
-                if schema_ref:
-                    schema_name = schema_ref.split("/")[-1]
-                    if schema_name in current_schema.get("components", {}).get("schemas", {}):
-                        brain_schemas[schema_name] = current_schema["components"]["schemas"][schema_name]
+    # Normalize both contracts using shared helper
+    normalized_committed = normalize_contract(committed_snapshot)
+    normalized_current = normalize_contract(current_contract)
     
-    # Recursively collect nested schema refs
-    def collect_nested_schemas(schema_name):
-        """Recursively collect schemas referenced by this schema."""
-        if schema_name not in current_schema.get("components", {}).get("schemas", {}):
-            return
-        
-        schema_obj = current_schema["components"]["schemas"][schema_name]
-        
-        # Check properties for refs
-        for prop_spec in schema_obj.get("properties", {}).values():
-            ref = prop_spec.get("$ref", "")
-            if ref:
-                nested_name = ref.split("/")[-1]
-                if nested_name not in brain_schemas:
-                    brain_schemas[nested_name] = current_schema["components"]["schemas"][nested_name]
-                    collect_nested_schemas(nested_name)
-            
-            # Check anyOf refs
-            for any_of_spec in prop_spec.get("anyOf", []):
-                ref = any_of_spec.get("$ref", "")
-                if ref:
-                    nested_name = ref.split("/")[-1]
-                    if nested_name not in brain_schemas:
-                        brain_schemas[nested_name] = current_schema["components"]["schemas"][nested_name]
-                        collect_nested_schemas(nested_name)
-            
-            # Check array items refs
-            items = prop_spec.get("items", {})
-            ref = items.get("$ref", "")
-            if ref:
-                nested_name = ref.split("/")[-1]
-                if nested_name not in brain_schemas:
-                    brain_schemas[nested_name] = current_schema["components"]["schemas"][nested_name]
-                    collect_nested_schemas(nested_name)
-    
-    for schema_name in list(brain_schemas.keys()):
-        collect_nested_schemas(schema_name)
-    
-    # Build current Brain API v1 contract
-    current_contract = {
-        "openapi": current_schema.get("openapi", "3.1.0"),
-        "info": {
-            "title": "Brain API v1 Contract",
-            "version": "1.0.0",
-            "description": "Immutable contract for Brain API v1. Breaking changes require /v2/brain/*",
-        },
-        "paths": brain_v1_paths,
-        "components": {
-            "schemas": brain_schemas
-        }
-    }
-    
-    # Normalize both schemas
-    normalized_committed = normalize_openapi_schema(committed_snapshot)
-    normalized_current = normalize_openapi_schema(current_contract)
-    
-    # Compute hashes
-    committed_hash = compute_schema_hash(normalized_committed)
-    current_hash = compute_schema_hash(normalized_current)
+    # Compute hashes using shared helper
+    committed_hash = compute_contract_hash(normalized_committed)
+    current_hash = compute_contract_hash(normalized_current)
     
     # Compare
     assert current_hash == committed_hash, (
@@ -203,7 +105,7 @@ def test_brain_api_matches_snapshot(client, contract_snapshot_path):
         f"\n"
         f"If you believe this is a non-breaking change (new optional field, bug fix):\n"
         f"- Verify the change is truly non-breaking\n"
-        f"- Update the snapshot: services/echo_backend/models/brain_contract_v1.json\n"
+        f"- Regenerate snapshot: python scripts/generate_brain_contract_v1_snapshot.py\n"
         f"- Document the change in PR description\n"
     )
 
