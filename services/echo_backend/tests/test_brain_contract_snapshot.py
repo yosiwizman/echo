@@ -5,10 +5,16 @@ creating a new version. The contract is frozen and must remain backward compatib
 """
 import json
 import hashlib
+import sys
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+
+# Ensure backend root is in sys.path for main import (import-safe from any CWD)
+BACKEND_ROOT = Path(__file__).resolve().parents[1]
+if str(BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(BACKEND_ROOT))
 
 from main import app
 
@@ -29,7 +35,7 @@ def client():
 @pytest.fixture
 def contract_snapshot_path():
     """Path to committed contract snapshot."""
-    return Path(__file__).parent.parent / "models" / "brain_contract_v1.json"
+    return BACKEND_ROOT / "models" / "brain_contract_v1.json"
 
 
 def normalize_openapi_schema(schema: dict) -> dict:
