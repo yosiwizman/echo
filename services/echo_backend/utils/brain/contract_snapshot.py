@@ -108,8 +108,10 @@ def normalize_contract(contract: Dict[str, Any]) -> Dict[str, Any]:
     """Normalize contract for deterministic comparison.
     
     Removes fields that can vary between runs but don't affect the contract:
-    - operationId (implementation detail, not part of API contract)
-    - examples (documentation, not contract-critical)
+    - operationId, summary, description (documentation)
+    - examples, example (sample data)
+    - title (human-readable labels)
+    - tags (organizational metadata)
     - x-* extension fields
     
     Preserves contract-critical fields:
@@ -118,7 +120,8 @@ def normalize_contract(contract: Dict[str, Any]) -> Dict[str, Any]:
     - Status codes
     - Content types
     - Required fields
-    - Types and formats
+    - Types, formats, enums
+    - Property names and structure
     
     Args:
         contract: Raw contract dictionary.
@@ -126,13 +129,19 @@ def normalize_contract(contract: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         Normalized contract with only contract-critical fields.
     """
+    # Fields to remove at any level
+    NON_CONTRACT_FIELDS = {
+        "operationId", "summary", "description", 
+        "title", "examples", "example", "tags"
+    }
+    
     def remove_non_contract_fields(obj: Any) -> Any:
         """Recursively remove non-contract-critical fields."""
         if isinstance(obj, dict):
             filtered = {}
             for key, value in obj.items():
                 # Skip non-contract-critical fields
-                if key in ("operationId", "examples") or key.startswith("x-"):
+                if key in NON_CONTRACT_FIELDS or key.startswith("x-"):
                     continue
                 filtered[key] = remove_non_contract_fields(value)
             return filtered
@@ -144,9 +153,7 @@ def normalize_contract(contract: Dict[str, Any]) -> Dict[str, Any]:
     normalized = {
         "openapi": contract.get("openapi", "3.1.0"),
         "info": {
-            "title": contract.get("info", {}).get("title", ""),
             "version": contract.get("info", {}).get("version", ""),
-            "description": contract.get("info", {}).get("description", ""),
         },
         "paths": remove_non_contract_fields(contract.get("paths", {})),
         "components": remove_non_contract_fields(contract.get("components", {})),

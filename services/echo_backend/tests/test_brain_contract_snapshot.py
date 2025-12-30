@@ -86,6 +86,27 @@ def test_brain_api_matches_snapshot(client, contract_snapshot_path):
     committed_hash = compute_contract_hash(normalized_committed)
     current_hash = compute_contract_hash(normalized_current)
     
+    # Build diagnostic info if hashes differ
+    diagnostic = ""
+    if current_hash != committed_hash:
+        committed_paths = set(normalized_committed.get("paths", {}).keys())
+        current_paths = set(normalized_current.get("paths", {}).keys())
+        
+        committed_schemas = set(normalized_committed.get("components", {}).get("schemas", {}).keys())
+        current_schemas = set(normalized_current.get("components", {}).get("schemas", {}).keys())
+        
+        path_diff = current_paths.symmetric_difference(committed_paths)
+        schema_diff = current_schemas.symmetric_difference(committed_schemas)
+        
+        if path_diff or schema_diff:
+            diagnostic = f"\nDifferences detected:\n"
+            if path_diff:
+                diagnostic += f"  Path changes: {path_diff}\n"
+            if schema_diff:
+                diagnostic += f"  Schema changes: {schema_diff}\n"
+        else:
+            diagnostic = f"\n  (Paths and schemas match, but structure/values differ)\n"
+    
     # Compare
     assert current_hash == committed_hash, (
         f"\n"
@@ -95,6 +116,7 @@ def test_brain_api_matches_snapshot(client, contract_snapshot_path):
         f"\n"
         f"Committed snapshot hash: {committed_hash}\n"
         f"Current schema hash:     {current_hash}\n"
+        f"{diagnostic}"
         f"\n"
         f"Brain API v1 is IMMUTABLE. Breaking changes require:\n"
         f"1. Create /v2/brain/* with new router and models\n"

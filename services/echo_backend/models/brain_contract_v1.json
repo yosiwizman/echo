@@ -5,21 +5,17 @@
         "properties": {
           "ok": {
             "default": true,
-            "title": "Ok",
             "type": "boolean"
           },
           "provider": {
-            "title": "Provider",
             "type": "string"
           },
           "timestamp": {
             "format": "date-time",
-            "title": "Timestamp",
             "type": "string"
           },
           "version": {
             "default": "1.0.0",
-            "title": "Version",
             "type": "string"
           }
         },
@@ -29,7 +25,6 @@
           "version",
           "provider"
         ],
-        "title": "BrainHealthResponse",
         "type": "object"
       },
       "ChatRequest": {
@@ -38,7 +33,6 @@
             "items": {
               "$ref": "#/components/schemas/Message"
             },
-            "title": "Messages",
             "type": "array"
           },
           "metadata": {
@@ -50,8 +44,7 @@
                 "type": "null"
               }
             ],
-            "default": null,
-            "title": "Metadata"
+            "default": null
           },
           "session_id": {
             "anyOf": [
@@ -62,14 +55,12 @@
                 "type": "null"
               }
             ],
-            "default": null,
-            "title": "Session Id"
+            "default": null
           }
         },
         "required": [
           "messages"
         ],
-        "title": "ChatRequest",
         "type": "object"
       },
       "ChatResponse": {
@@ -86,11 +77,9 @@
                 "type": "null"
               }
             ],
-            "default": null,
-            "title": "Metadata"
+            "default": null
           },
           "session_id": {
-            "title": "Session Id",
             "type": "string"
           },
           "usage": {
@@ -109,13 +98,11 @@
           "session_id",
           "message"
         ],
-        "title": "ChatResponse",
         "type": "object"
       },
       "Message": {
         "properties": {
           "content": {
-            "title": "Content",
             "type": "string"
           },
           "role": {
@@ -124,7 +111,6 @@
               "user",
               "assistant"
             ],
-            "title": "Role",
             "type": "string"
           }
         },
@@ -132,21 +118,17 @@
           "role",
           "content"
         ],
-        "title": "Message",
         "type": "object"
       },
       "UsageInfo": {
         "properties": {
           "completion_tokens": {
-            "title": "Completion Tokens",
             "type": "integer"
           },
           "prompt_tokens": {
-            "title": "Prompt Tokens",
             "type": "integer"
           },
           "total_tokens": {
-            "title": "Total Tokens",
             "type": "integer"
           }
         },
@@ -155,14 +137,11 @@
           "completion_tokens",
           "total_tokens"
         ],
-        "title": "UsageInfo",
         "type": "object"
       }
     }
   },
   "info": {
-    "description": "Immutable contract for Brain API v1. Breaking changes require /v2/brain/*",
-    "title": "Brain API v1 Contract",
     "version": "1.0.0"
   },
   "openapi": "3.1.0",
@@ -187,14 +166,9 @@
                   "$ref": "#/components/schemas/ChatResponse"
                 }
               }
-            },
-            "description": "Successful Response"
+            }
           }
-        },
-        "summary": "Brain Chat",
-        "tags": [
-          "brain"
-        ]
+        }
       }
     },
     "/v1/brain/chat/stream": {
@@ -214,18 +188,12 @@
             "content": {
               "text/event-stream": {
                 "schema": {
-                  "description": "SSE stream with events: token, final, error",
                   "type": "string"
                 }
               }
-            },
-            "description": "Successful Response"
+            }
           }
-        },
-        "summary": "Brain Chat Stream",
-        "tags": [
-          "brain"
-        ]
+        }
       }
     },
     "/v1/brain/health": {
@@ -238,14 +206,9 @@
                   "$ref": "#/components/schemas/BrainHealthResponse"
                 }
               }
-            },
-            "description": "Successful Response"
+            }
           }
-        },
-        "summary": "Brain Health",
-        "tags": [
-          "brain"
-        ]
+        }
       }
     }
   }
