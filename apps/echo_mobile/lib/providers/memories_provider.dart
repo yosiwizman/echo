@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:omi/widgets/extensions/string.dart';
-import 'package:omi/backend/http/api/memories.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/schema/memory.dart';
-import 'package:omi/providers/connectivity_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/widgets/extensions/string.dart';
+import 'package:echo_mobile/backend/http/api/memories.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/memory.dart';
+import 'package:echo_mobile/providers/connectivity_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/foundation.dart';
@@ -259,6 +259,30 @@ class MemoriesProvider extends ChangeNotifier {
       MixpanelManager().memoriesAllDeleted(countBeforeDeletion);
     }
     _setCategories();
+  }
+
+  /// Mark a memory as reviewed (approved or discarded).
+  ///
+  /// This powers the memory review UIs (mobile + desktop). It updates local state
+  /// optimistically and then attempts to persist the review decision to the server.
+  Future<void> reviewMemory(Memory memory, bool approved, String source) async {
+    // Optimistic local update
+    final idx = _memories.indexWhere((m) => m.id == memory.id);
+    if (idx != -1) {
+      _memories[idx].reviewed = true;
+      _memories[idx].userReview = approved;
+      _memories[idx].updatedAt = DateTime.now();
+    }
+
+    MixpanelManager().memoryReviewed(memory, approved, source);
+    notifyListeners();
+
+    try {
+      await reviewMemoryServer(memory.id, approved);
+    } catch (e) {
+      // Best-effort: review is not critical-path for UI responsiveness.
+      debugPrint('MemoriesProvider: Failed to review memory ${memory.id}: $e');
+    }
   }
 
   /// Create a memory - works offline by saving locally first, then syncing

@@ -2,21 +2,21 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/core/app_shell.dart';
-import 'package:omi/pages/persona/persona_provider.dart';
-import 'package:omi/services/auth_service.dart';
-import 'package:omi/pages/settings/developer.dart';
-import 'package:omi/pages/settings/profile.dart';
-import 'package:omi/pages/settings/integrations_page.dart';
-import 'package:omi/pages/settings/usage_page.dart';
-import 'package:omi/pages/referral/referral_page.dart';
-import 'package:omi/providers/device_provider.dart';
-import 'package:omi/providers/usage_provider.dart';
-import 'package:omi/models/subscription.dart';
-import 'package:omi/utils/other/temp.dart';
-import 'package:omi/utils/platform/platform_service.dart';
-import 'package:omi/widgets/dialog.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/core/app_shell.dart';
+import 'package:echo_mobile/pages/persona/persona_provider.dart';
+import 'package:echo_mobile/services/auth_service.dart';
+import 'package:echo_mobile/pages/settings/developer.dart';
+import 'package:echo_mobile/pages/settings/profile.dart';
+import 'package:echo_mobile/pages/settings/integrations_page.dart';
+import 'package:echo_mobile/pages/settings/usage_page.dart';
+import 'package:echo_mobile/pages/referral/referral_page.dart';
+import 'package:echo_mobile/providers/device_provider.dart';
+import 'package:echo_mobile/providers/usage_provider.dart';
+import 'package:echo_mobile/models/subscription.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
+import 'package:echo_mobile/widgets/dialog.dart';
 import 'package:intercom_flutter/intercom_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -376,7 +376,7 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
               const Divider(height: 1, color: Color(0xFF3C3C43)),
               _buildSettingsItem(
                 title: 'Offline Sync',
-                icon: const FaIcon(FontAwesomeIcons.solidCloud, color: Color(0xFF8E8E93), size: 20),
+                icon: const FaIcon(FontAwesomeIcons.cloud, color: Color(0xFF8E8E93), size: 20),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.of(context).push(

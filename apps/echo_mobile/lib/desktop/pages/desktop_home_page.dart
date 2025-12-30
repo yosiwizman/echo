@@ -3,46 +3,46 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/desktop/pages/onboarding/desktop_onboarding_wrapper.dart';
-import 'package:omi/desktop/pages/settings/desktop_about_page.dart';
-import 'package:omi/desktop/pages/settings/desktop_developer_page.dart';
-import 'package:omi/gen/assets.gen.dart';
-import 'package:omi/pages/settings/calendar_settings_page.dart';
-import 'package:omi/desktop/pages/settings/desktop_profile_page.dart';
-import 'package:omi/desktop/pages/settings/desktop_shortcuts_page.dart';
-import 'package:omi/services/shortcut_service.dart';
-import 'package:omi/services/auth_service.dart';
-import 'package:omi/providers/sync_provider.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/desktop/pages/onboarding/desktop_onboarding_wrapper.dart';
+import 'package:echo_mobile/desktop/pages/settings/desktop_about_page.dart';
+import 'package:echo_mobile/desktop/pages/settings/desktop_developer_page.dart';
+import 'package:echo_mobile/gen/assets.gen.dart';
+import 'package:echo_mobile/pages/settings/calendar_settings_page.dart';
+import 'package:echo_mobile/desktop/pages/settings/desktop_profile_page.dart';
+import 'package:echo_mobile/desktop/pages/settings/desktop_shortcuts_page.dart';
+import 'package:echo_mobile/services/shortcut_service.dart';
+import 'package:echo_mobile/services/auth_service.dart';
+import 'package:echo_mobile/providers/sync_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:omi/pages/settings/usage_page.dart';
-import 'package:omi/models/subscription.dart';
-import 'package:omi/providers/usage_provider.dart';
+import 'package:echo_mobile/pages/settings/usage_page.dart';
+import 'package:echo_mobile/models/subscription.dart';
+import 'package:echo_mobile/providers/usage_provider.dart';
 import 'apps/desktop_apps_page.dart';
 import 'apps/desktop_add_app_page.dart';
 import 'conversations/desktop_conversations_page.dart';
 import 'chat/desktop_chat_page.dart';
 import 'memories/desktop_memories_page.dart';
 import 'actions/desktop_actions_page.dart';
-import 'package:omi/providers/app_provider.dart';
-import 'package:omi/providers/capture_provider.dart';
-import 'package:omi/providers/connectivity_provider.dart';
-import 'package:omi/providers/conversation_provider.dart';
-import 'package:omi/providers/device_provider.dart';
-import 'package:omi/providers/home_provider.dart';
-import 'package:omi/providers/message_provider.dart';
-import 'package:omi/services/notifications.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/audio/foreground.dart';
-import 'package:omi/utils/other/temp.dart';
-import 'package:omi/utils/platform/platform_service.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
-import 'package:omi/utils/enums.dart';
-import 'package:omi/widgets/upgrade_alert.dart';
+import 'package:echo_mobile/providers/app_provider.dart';
+import 'package:echo_mobile/providers/capture_provider.dart';
+import 'package:echo_mobile/providers/connectivity_provider.dart';
+import 'package:echo_mobile/providers/conversation_provider.dart';
+import 'package:echo_mobile/providers/device_provider.dart';
+import 'package:echo_mobile/providers/home_provider.dart';
+import 'package:echo_mobile/providers/message_provider.dart';
+import 'package:echo_mobile/services/notifications.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/audio/foreground.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/utils/enums.dart';
+import 'package:echo_mobile/widgets/upgrade_alert.dart';
 import 'package:provider/provider.dart';
 import 'package:upgrader/upgrader.dart';
-import 'package:omi/utils/platform/platform_manager.dart';
+import 'package:echo_mobile/utils/platform/platform_manager.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:intercom_flutter/intercom_flutter.dart';
 import '../../pages/conversations/sync_page.dart';
@@ -1057,8 +1057,8 @@ class _DesktopHomePageState extends State<DesktopHomePage> with WidgetsBindingOb
         ),
       ),
       // Add custom animation for bottom-up slide
-      popUpAnimationStyle: const AnimationStyle(
-        duration: Duration(milliseconds: 200),
+      popUpAnimationStyle: AnimationStyle(
+        duration: const Duration(milliseconds: 200),
         curve: Curves.easeOutCubic,
       ),
       items: [
