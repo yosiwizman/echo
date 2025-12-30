@@ -134,8 +134,13 @@ Examples:
 
 3. **Create v2 Contract Snapshot**
    ```bash
-   # Generate OpenAPI subset for v2
-   services/echo_backend/models/brain_contract_v2.json
+   cd services/echo_backend
+   
+   # Generate v2 snapshot using official generator
+   python scripts/generate_brain_contract_v2_snapshot.py
+   
+   # This creates: models/brain_contract_v2.json
+   # Commit the generated snapshot with your v2 implementation
    ```
 
 4. **Add v2 Contract Tests**
@@ -218,9 +223,47 @@ For questions about versioning or contract changes:
 3. Review `docs/ops/brain_contract_smoke.md` for validation details
 4. Open a GitHub Discussion for new questions
 
+## Snapshot Management
+
+### Regenerating Snapshots
+
+To regenerate a contract snapshot (e.g., for non-breaking additions):
+
+```bash
+cd services/echo_backend
+
+# For v1 (only for non-breaking changes)
+python scripts/generate_brain_contract_v1_snapshot.py
+
+# For v2 (when v2 exists)
+python scripts/generate_brain_contract_v2_snapshot.py
+```
+
+**Important**: Only regenerate v1 snapshot for:
+- Non-breaking additions (new optional fields)
+- Bug fixes in schema documentation
+- Corrections to existing non-breaking behavior
+
+Breaking changes require creating v2 with a new snapshot.
+
+### Snapshot Generator Details
+
+The generator script (`scripts/generate_brain_contract_v1_snapshot.py`):
+- Runs the FastAPI app in stub mode (no secrets required)
+- Extracts only `/v1/brain/*` endpoints from OpenAPI schema
+- Collects all referenced component schemas (recursive)
+- Normalizes the contract (removes operationId, examples, x-* fields)
+- Writes deterministic JSON to `models/brain_contract_v1.json`
+- Outputs SHA256 hash of normalized contract
+
+The test uses identical extraction and normalization logic via shared
+utilities in `utils/brain/contract_snapshot.py`.
+
 ## Related Documentation
 
 - `docs/brain_api.md` - Brain API reference
 - `docs/ops/brain_contract_smoke.md` - Contract validation guide
 - `docs/ops/branch_protection.md` - Branch protection setup
 - `services/echo_backend/models/brain_contract_v1.json` - v1 OpenAPI snapshot
+- `services/echo_backend/scripts/generate_brain_contract_v1_snapshot.py` - Snapshot generator
+- `services/echo_backend/utils/brain/contract_snapshot.py` - Shared snapshot utilities
