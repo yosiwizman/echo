@@ -1,4 +1,4 @@
-import 'package:omi/services/base_integration_service.dart';
+import 'package:echo_mobile/services/base_integration_service.dart';
 
 class GitHubService extends BaseIntegrationService {
   static const String _appKey = 'github';

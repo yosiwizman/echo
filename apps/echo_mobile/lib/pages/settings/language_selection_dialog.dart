@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:omi/providers/capture_provider.dart';
-import 'package:omi/providers/home_provider.dart';
-import 'package:omi/utils/alerts/app_snackbar.dart';
+import 'package:echo_mobile/providers/capture_provider.dart';
+import 'package:echo_mobile/providers/home_provider.dart';
+import 'package:echo_mobile/utils/alerts/app_snackbar.dart';
 import 'package:provider/provider.dart';
 
 class LanguageSelectionDialog {

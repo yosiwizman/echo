@@ -7,7 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:omi/backend/http/api/imports.dart';
+import 'package:echo_mobile/backend/http/api/imports.dart';
 
 class ImportHistoryPage extends StatefulWidget {
   const ImportHistoryPage({super.key});

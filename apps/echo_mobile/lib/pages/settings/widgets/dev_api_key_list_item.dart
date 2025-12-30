@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:omi/backend/schema/dev_api_key.dart';
-import 'package:omi/providers/dev_api_key_provider.dart';
+import 'package:echo_mobile/backend/schema/dev_api_key.dart';
+import 'package:echo_mobile/providers/dev_api_key_provider.dart';
 import 'package:provider/provider.dart';
 
 class DevApiKeyListItem extends StatelessWidget {

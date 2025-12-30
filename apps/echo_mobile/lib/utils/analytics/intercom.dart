@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/env/env.dart';
-import 'package:omi/utils/platform/platform_service.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/env/env.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
 import 'package:intercom_flutter/intercom_flutter.dart';
 
 class IntercomManager {

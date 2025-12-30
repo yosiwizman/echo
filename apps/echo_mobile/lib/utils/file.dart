@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
-import 'package:omi/utils/audio/wav_bytes.dart';
+import 'package:echo_mobile/utils/audio/wav_bytes.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileUtils {

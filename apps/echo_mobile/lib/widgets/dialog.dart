@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:omi/utils/platform/platform_service.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
 
 getDialog(
   BuildContext context,

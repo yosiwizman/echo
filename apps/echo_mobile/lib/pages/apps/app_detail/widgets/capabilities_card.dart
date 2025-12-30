@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/backend/schema/app.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
 
 class CapabilitiesCard extends StatelessWidget {
   final List<AppCapability> capabilities;

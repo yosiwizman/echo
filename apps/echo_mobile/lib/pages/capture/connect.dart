@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:omi/pages/settings/device_settings.dart';
-import 'package:omi/pages/home/page.dart';
-import 'package:omi/pages/onboarding/find_device/page.dart';
-import 'package:omi/utils/other/temp.dart';
-import 'package:omi/widgets/device_widget.dart';
-import 'package:omi/providers/onboarding_provider.dart';
+import 'package:echo_mobile/pages/settings/device_settings.dart';
+import 'package:echo_mobile/pages/home/page.dart';
+import 'package:echo_mobile/pages/onboarding/find_device/page.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
+import 'package:echo_mobile/widgets/device_widget.dart';
+import 'package:echo_mobile/providers/onboarding_provider.dart';
 import 'package:provider/provider.dart';
 
 class ConnectDevicePage extends StatefulWidget {

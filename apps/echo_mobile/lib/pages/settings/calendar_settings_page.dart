@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/providers/calendar_provider.dart';
-import 'package:omi/services/calendar_service.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/providers/calendar_provider.dart';
+import 'package:echo_mobile/services/calendar_service.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 

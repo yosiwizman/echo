@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/http/api/calendar_meetings.dart' as calendar_api;
-import 'package:omi/backend/schema/calendar_meeting_context.dart';
-import 'package:omi/services/calendar_service.dart';
-import 'package:omi/utils/platform/platform_service.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/http/api/calendar_meetings.dart' as calendar_api;
+import 'package:echo_mobile/backend/schema/calendar_meeting_context.dart';
+import 'package:echo_mobile/services/calendar_service.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
 
 class CalendarProvider extends ChangeNotifier {
   final CalendarService _service = CalendarService();

@@ -3,11 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:omi/backend/schema/schema.dart';
-import 'package:omi/providers/action_items_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
-import 'package:omi/widgets/calendar_date_picker_sheet.dart';
+import 'package:echo_mobile/backend/schema/schema.dart';
+import 'package:echo_mobile/providers/action_items_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/widgets/calendar_date_picker_sheet.dart';
 import 'package:provider/provider.dart';
 
 class ActionItemFormSheet extends StatefulWidget {

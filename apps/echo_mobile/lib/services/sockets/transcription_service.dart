@@ -2,25 +2,25 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/schema/bt_device/bt_device.dart';
-import 'package:omi/backend/schema/message_event.dart';
-import 'package:omi/backend/schema/transcript_segment.dart';
-import 'package:omi/env/env.dart';
-import 'package:omi/models/custom_stt_config.dart';
-import 'package:omi/models/stt_provider.dart';
-import 'package:omi/services/notifications.dart';
-import 'package:omi/services/sockets/pure_socket.dart';
-import 'package:omi/services/sockets/transcription_service.dart';
-import 'package:omi/utils/debug_log_manager.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/bt_device/bt_device.dart';
+import 'package:echo_mobile/backend/schema/message_event.dart';
+import 'package:echo_mobile/backend/schema/transcript_segment.dart';
+import 'package:echo_mobile/env/env.dart';
+import 'package:echo_mobile/models/custom_stt_config.dart';
+import 'package:echo_mobile/models/stt_provider.dart';
+import 'package:echo_mobile/services/notifications.dart';
+import 'package:echo_mobile/services/sockets/pure_socket.dart';
+import 'package:echo_mobile/services/sockets/transcription_service.dart';
+import 'package:echo_mobile/utils/debug_log_manager.dart';
 
-export 'package:omi/utils/audio/audio_transcoder.dart';
-export 'package:omi/services/sockets/composite_transcription_socket.dart';
-export 'package:omi/services/sockets/pure_polling.dart';
-export 'package:omi/services/sockets/pure_streaming_stt.dart';
-export 'package:omi/models/stt_response_schema.dart';
-export 'package:omi/models/stt_result.dart';
-export 'package:omi/services/sockets/transcription_polling_service.dart';
+export 'package:echo_mobile/utils/audio/audio_transcoder.dart';
+export 'package:echo_mobile/services/sockets/composite_transcription_socket.dart';
+export 'package:echo_mobile/services/sockets/pure_polling.dart';
+export 'package:echo_mobile/services/sockets/pure_streaming_stt.dart';
+export 'package:echo_mobile/models/stt_response_schema.dart';
+export 'package:echo_mobile/models/stt_result.dart';
+export 'package:echo_mobile/services/sockets/transcription_polling_service.dart';
 
 abstract interface class ITransctiptSegmentSocketServiceListener {
   void onMessageEventReceived(MessageEvent event);

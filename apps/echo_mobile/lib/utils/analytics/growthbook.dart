@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/env/env.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/env/env.dart';
 import 'package:growthbook_sdk_flutter/growthbook_sdk_flutter.dart';
 
 class GrowthbookUtil {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/api/dev_api.dart';
-import 'package:omi/backend/schema/dev_api_key.dart';
+import 'package:echo_mobile/backend/http/api/dev_api.dart';
+import 'package:echo_mobile/backend/schema/dev_api_key.dart';
 
 class DevApiKeyProvider with ChangeNotifier {
   List<DevApiKey> _keys = [];

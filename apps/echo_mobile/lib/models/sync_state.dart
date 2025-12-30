@@ -1,5 +1,5 @@
-import 'package:omi/services/wals.dart';
-import 'package:omi/backend/schema/conversation.dart';
+import 'package:echo_mobile/services/wals.dart';
+import 'package:echo_mobile/backend/schema/conversation.dart';
 
 enum SyncStatus {
   idle,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:omi/ui/adaptive_widget.dart';
+import 'package:echo_mobile/ui/adaptive_widget.dart';
 
 class OmiTypingIndicator extends AdaptiveWidget {
   const OmiTypingIndicator({super.key});

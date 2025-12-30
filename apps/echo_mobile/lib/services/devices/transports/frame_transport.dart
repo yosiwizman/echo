@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:frame_sdk/bluetooth.dart';
 import 'package:frame_sdk/frame_sdk.dart';
-import 'package:omi/gen/assets.gen.dart';
+import 'package:echo_mobile/gen/assets.gen.dart';
 
 import 'device_transport.dart';
 

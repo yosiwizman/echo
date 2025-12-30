@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_provider_utilities/flutter_provider_utilities.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/pages/settings/language_selection_dialog.dart';
-import 'package:omi/pages/speech_profile/percentage_bar_progress.dart';
-import 'package:omi/providers/capture_provider.dart';
-import 'package:omi/providers/home_provider.dart';
-import 'package:omi/providers/speech_profile_provider.dart';
-import 'package:omi/widgets/dialog.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/pages/settings/language_selection_dialog.dart';
+import 'package:echo_mobile/pages/speech_profile/percentage_bar_progress.dart';
+import 'package:echo_mobile/providers/capture_provider.dart';
+import 'package:echo_mobile/providers/home_provider.dart';
+import 'package:echo_mobile/providers/speech_profile_provider.dart';
+import 'package:echo_mobile/widgets/dialog.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:provider/provider.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/api/integrations.dart';
-import 'package:omi/pages/settings/integration_settings_page.dart';
-import 'package:omi/services/github_service.dart';
+import 'package:echo_mobile/backend/http/api/integrations.dart';
+import 'package:echo_mobile/pages/settings/integration_settings_page.dart';
+import 'package:echo_mobile/services/github_service.dart';
 import 'package:shimmer/shimmer.dart';
 
 class GitHubSettingsPage extends StatefulWidget {

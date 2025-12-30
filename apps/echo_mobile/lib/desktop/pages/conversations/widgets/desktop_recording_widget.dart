@@ -3,16 +3,16 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:omi/backend/schema/transcript_segment.dart';
-import 'package:omi/providers/capture_provider.dart';
-import 'package:omi/providers/connectivity_provider.dart';
-import 'package:omi/providers/device_provider.dart';
-import 'package:omi/providers/onboarding_provider.dart';
-import 'package:omi/utils/enums.dart';
-import 'package:omi/utils/platform/platform_service.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/backend/schema/transcript_segment.dart';
+import 'package:echo_mobile/providers/capture_provider.dart';
+import 'package:echo_mobile/providers/connectivity_provider.dart';
+import 'package:echo_mobile/providers/device_provider.dart';
+import 'package:echo_mobile/providers/onboarding_provider.dart';
+import 'package:echo_mobile/utils/enums.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
 import 'package:provider/provider.dart';
-import 'package:omi/ui/atoms/omi_icon_button.dart';
+import 'package:echo_mobile/ui/atoms/omi_icon_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DesktopRecordingWidget extends StatefulWidget {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:omi/gen/assets.gen.dart';
-import 'package:omi/providers/onboarding_provider.dart';
-import 'package:omi/widgets/dialog.dart';
+import 'package:echo_mobile/gen/assets.gen.dart';
+import 'package:echo_mobile/providers/onboarding_provider.dart';
+import 'package:echo_mobile/widgets/dialog.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 

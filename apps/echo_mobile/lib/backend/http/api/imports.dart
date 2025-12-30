@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:omi/backend/http/shared.dart';
-import 'package:omi/env/env.dart';
+import 'package:echo_mobile/backend/http/shared.dart';
+import 'package:echo_mobile/env/env.dart';
 
 /// Import job status enum matching the backend
 enum ImportJobStatus {

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:omi/backend/schema/conversation.dart';
+import 'package:echo_mobile/backend/schema/conversation.dart';
 
 class MergeConfirmationDialog extends StatelessWidget {
   final int count;

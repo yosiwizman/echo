@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/shared.dart';
-import 'package:omi/backend/schema/memory.dart';
-import 'package:omi/env/env.dart';
+import 'package:echo_mobile/backend/http/shared.dart';
+import 'package:echo_mobile/backend/schema/memory.dart';
+import 'package:echo_mobile/env/env.dart';
 
 Future<bool> createMemoryServer(String content, String visibility, String category) async {
   var response = await makeApiCall(

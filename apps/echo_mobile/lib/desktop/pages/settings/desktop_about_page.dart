@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/pages/settings/webview.dart';
-import 'package:omi/ui/atoms/omi_icon_button.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/other/temp.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/pages/settings/webview.dart';
+import 'package:echo_mobile/ui/atoms/omi_icon_button.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DesktopAboutOmiPage extends StatefulWidget {

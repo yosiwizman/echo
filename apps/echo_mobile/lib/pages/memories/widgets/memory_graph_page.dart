@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:omi/backend/http/api/knowledge_graph_api.dart';
+import 'package:echo_mobile/backend/http/api/knowledge_graph_api.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:vector_math/vector_math_64.dart' as v;
 
-import 'package:omi/backend/preferences.dart';
+import 'package:echo_mobile/backend/preferences.dart';
 
 class GraphNode3D {
   final String id;

@@ -3,12 +3,12 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/shared.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/env/env.dart';
-import 'package:omi/utils/logger.dart';
-import 'package:omi/utils/platform/platform_manager.dart';
+import 'package:echo_mobile/backend/http/shared.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/env/env.dart';
+import 'package:echo_mobile/utils/logger.dart';
+import 'package:echo_mobile/utils/platform/platform_manager.dart';
 
 Future<List<Map<String, dynamic>>> retrieveAppsGrouped({
   int offset = 0,

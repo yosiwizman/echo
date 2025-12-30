@@ -2,8 +2,8 @@ library memory_review_sheet_organism;
 
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
-import 'package:omi/backend/schema/memory.dart';
-import 'package:omi/providers/memories_provider.dart';
+import 'package:echo_mobile/backend/schema/memory.dart';
+import 'package:echo_mobile/providers/memories_provider.dart';
 import 'desktop/memory_review_sheet_desktop.dart' as desktop;
 import 'mobile/memory_review_sheet_mobile.dart' as mobile;
 

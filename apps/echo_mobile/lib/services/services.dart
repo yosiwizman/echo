@@ -5,13 +5,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_sound/flutter_sound.dart';
-import 'package:omi/backend/http/shared.dart';
-import 'package:omi/services/connectivity_service.dart';
-import 'package:omi/services/devices.dart';
-import 'package:omi/services/sockets.dart';
-import 'package:omi/services/wals.dart';
+import 'package:echo_mobile/backend/http/shared.dart';
+import 'package:echo_mobile/services/connectivity_service.dart';
+import 'package:echo_mobile/services/devices.dart';
+import 'package:echo_mobile/services/sockets.dart';
+import 'package:echo_mobile/services/wals.dart';
 import 'package:flutter/services.dart';
-import 'package:omi/utils/platform/platform_service.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
 
 class ServiceManager {
   late IMicRecorderService _mic;

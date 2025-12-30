@@ -1,17 +1,74 @@
 import math
 import os
 from datetime import datetime
-from typing import Dict
+from typing import Dict, Optional
 
-import typesense
+# ---------------------------------------------------------------------------
+# Strict-mode flags: when set, missing Typesense config raises at init time.
+# Default (CI/dev): Typesense is optional; errors only when search is used.
+# ---------------------------------------------------------------------------
+_REQUIRE_SECRETS = os.environ.get('ECHO_REQUIRE_SECRETS', '').lower() in ('1', 'true')
+_REQUIRE_TYPESENSE = os.environ.get('ECHO_REQUIRE_TYPESENSE', '').lower() in ('1', 'true') or _REQUIRE_SECRETS
 
-client = typesense.Client(
-    {
-        'nodes': [{'host': os.getenv('TYPESENSE_HOST'), 'port': os.getenv('TYPESENSE_HOST_PORT'), 'protocol': 'https'}],
-        'api_key': os.getenv('TYPESENSE_API_KEY'),
-        'connection_timeout_seconds': 2,
-    }
-)
+# Lazy-initialized Typesense client
+_client: Optional[object] = None
+_client_loaded: bool = False
+
+
+def _get_typesense_client():
+    """Return the Typesense client, creating it lazily on first call.
+
+    Returns:
+        Typesense client instance, or None if not configured and not in strict mode.
+
+    Raises:
+        RuntimeError: If Typesense is not configured and strict mode is enabled.
+    """
+    global _client, _client_loaded
+
+    if not _client_loaded:
+        api_key = os.getenv('TYPESENSE_API_KEY')
+        host = os.getenv('TYPESENSE_HOST')
+        port = os.getenv('TYPESENSE_HOST_PORT')
+
+        if not api_key:
+            _client_loaded = True
+            if _REQUIRE_TYPESENSE:
+                raise RuntimeError(
+                    "TYPESENSE_API_KEY is required but not set. "
+                    "Set the env var or disable ECHO_REQUIRE_TYPESENSE / ECHO_REQUIRE_SECRETS."
+                )
+            _client = None
+        else:
+            # Import lazily to avoid import-time validation
+            import typesense
+            _client = typesense.Client(
+                {
+                    'nodes': [{'host': host, 'port': port, 'protocol': 'https'}],
+                    'api_key': api_key,
+                    'connection_timeout_seconds': 2,
+                }
+            )
+            _client_loaded = True
+
+    return _client
+
+
+# Backward-compat: `client` is now a lazy proxy
+class _LazyTypesenseClient:
+    """Proxy that defers Typesense client creation until first attribute access."""
+
+    def __getattr__(self, name):
+        c = _get_typesense_client()
+        if c is None:
+            raise RuntimeError(
+                "Typesense client not available. TYPESENSE_API_KEY is not configured. "
+                "Search functionality is disabled."
+            )
+        return getattr(c, name)
+
+
+client = _LazyTypesenseClient()
 
 
 def search_conversations(

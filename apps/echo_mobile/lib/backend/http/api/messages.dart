@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/shared.dart';
-import 'package:omi/backend/schema/message.dart';
-import 'package:omi/env/env.dart';
-import 'package:omi/utils/logger.dart';
-import 'package:omi/utils/other/string_utils.dart';
+import 'package:echo_mobile/backend/http/shared.dart';
+import 'package:echo_mobile/backend/schema/message.dart';
+import 'package:echo_mobile/env/env.dart';
+import 'package:echo_mobile/utils/logger.dart';
+import 'package:echo_mobile/utils/other/string_utils.dart';
 
 Future<List<ServerMessage>> getMessagesServer({
   String? appId,

@@ -9,13 +9,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
-import 'package:omi/backend/http/api/notifications.dart';
-import 'package:omi/backend/schema/message.dart';
-import 'package:omi/services/notifications/notification_interface.dart';
-import 'package:omi/services/notifications/action_item_notification_handler.dart';
-import 'package:omi/services/notifications/merge_notification_handler.dart';
-import 'package:omi/utils/analytics/intercom.dart';
-import 'package:omi/utils/platform/platform_service.dart';
+import 'package:echo_mobile/backend/http/api/notifications.dart';
+import 'package:echo_mobile/backend/schema/message.dart';
+import 'package:echo_mobile/services/notifications/notification_interface.dart';
+import 'package:echo_mobile/services/notifications/action_item_notification_handler.dart';
+import 'package:echo_mobile/services/notifications/merge_notification_handler.dart';
+import 'package:echo_mobile/utils/analytics/intercom.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
 
 /// Firebase Cloud Messaging enabled notification service
 /// Supports iOS, Android, macOS, web, and Linux with full FCM functionality

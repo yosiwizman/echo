@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:omi/services/wals.dart';
+import 'package:echo_mobile/services/wals.dart';
 import 'package:path_provider/path_provider.dart';
 
 class WalFileManager {

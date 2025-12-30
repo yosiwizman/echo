@@ -3,13 +3,13 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
-import 'package:omi/backend/http/api/conversations.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/schema/bt_device/bt_device.dart';
-import 'package:omi/backend/schema/conversation.dart';
-import 'package:omi/services/devices/limitless_connection.dart';
-import 'package:omi/services/services.dart';
-import 'package:omi/utils/wal_file_manager.dart';
+import 'package:echo_mobile/backend/http/api/conversations.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/bt_device/bt_device.dart';
+import 'package:echo_mobile/backend/schema/conversation.dart';
+import 'package:echo_mobile/services/devices/limitless_connection.dart';
+import 'package:echo_mobile/services/services.dart';
+import 'package:echo_mobile/utils/wal_file_manager.dart';
 import 'package:path_provider/path_provider.dart';
 
 const chunkSizeInSeconds = 60;

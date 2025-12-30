@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:omi/backend/schema/bt_device/bt_device.dart';
-import 'package:omi/gen/assets.gen.dart';
+import 'package:echo_mobile/backend/schema/bt_device/bt_device.dart';
+import 'package:echo_mobile/gen/assets.gen.dart';
 import 'package:version/version.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 

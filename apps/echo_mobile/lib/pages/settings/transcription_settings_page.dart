@@ -4,17 +4,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/pages/settings/usage_page.dart';
-import 'package:omi/backend/schema/bt_device/bt_device.dart';
-import 'package:omi/models/custom_stt_config.dart';
-import 'package:omi/models/stt_provider.dart';
-import 'package:omi/models/stt_response_schema.dart';
-import 'package:omi/providers/capture_provider.dart';
-import 'package:omi/services/services.dart';
-import 'package:omi/services/sockets/transcription_service.dart';
-import 'package:omi/services/custom_stt_log_service.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/pages/settings/usage_page.dart';
+import 'package:echo_mobile/backend/schema/bt_device/bt_device.dart';
+import 'package:echo_mobile/models/custom_stt_config.dart';
+import 'package:echo_mobile/models/stt_provider.dart';
+import 'package:echo_mobile/models/stt_response_schema.dart';
+import 'package:echo_mobile/providers/capture_provider.dart';
+import 'package:echo_mobile/services/services.dart';
+import 'package:echo_mobile/services/sockets/transcription_service.dart';
+import 'package:echo_mobile/services/custom_stt_log_service.dart';
 import 'package:provider/provider.dart';
 
 class TranscriptionSettingsPage extends StatefulWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:omi/backend/schema/message.dart';
+import 'package:echo_mobile/backend/schema/message.dart';
 
 import 'widgets/markdown_message_widget.dart';
 

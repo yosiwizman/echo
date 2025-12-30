@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/utils/alerts/app_snackbar.dart';
-import 'package:omi/services/auth_service.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/utils/alerts/app_snackbar.dart';
+import 'package:echo_mobile/services/auth_service.dart';
 
 class ChangeNameWidget extends StatefulWidget {
   const ChangeNameWidget({super.key});

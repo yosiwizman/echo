@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:omi/gen/assets.gen.dart';
-import 'package:omi/gen/flutter_communicator.g.dart';
-import 'package:omi/utils/alerts/app_snackbar.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/gen/assets.gen.dart';
+import 'package:echo_mobile/gen/flutter_communicator.g.dart';
+import 'package:echo_mobile/utils/alerts/app_snackbar.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppleWatchSetupBottomSheet extends StatefulWidget {

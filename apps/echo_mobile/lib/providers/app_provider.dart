@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
-import 'package:omi/backend/http/api/apps.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/providers/base_provider.dart';
-import 'package:omi/utils/alerts/app_dialog.dart';
-import 'package:omi/utils/alerts/app_snackbar.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/backend/http/api/apps.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/providers/base_provider.dart';
+import 'package:echo_mobile/utils/alerts/app_dialog.dart';
+import 'package:echo_mobile/utils/alerts/app_snackbar.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
 
 class AppProvider extends BaseProvider {
   List<App> apps = [];

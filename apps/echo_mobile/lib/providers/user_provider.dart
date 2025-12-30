@@ -1,13 +1,13 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:omi/backend/http/api/privacy.dart';
-import 'package:omi/backend/http/api/users.dart' as users_api;
-import 'package:omi/backend/http/api/users.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/schema/geolocation.dart';
-import 'package:omi/services/notifications.dart';
-import 'package:omi/utils/logger.dart';
+import 'package:echo_mobile/backend/http/api/privacy.dart';
+import 'package:echo_mobile/backend/http/api/users.dart' as users_api;
+import 'package:echo_mobile/backend/http/api/users.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/geolocation.dart';
+import 'package:echo_mobile/services/notifications.dart';
+import 'package:echo_mobile/utils/logger.dart';
 
 class UserProvider with ChangeNotifier {
   static const int _migrationNotificationId = 1337;

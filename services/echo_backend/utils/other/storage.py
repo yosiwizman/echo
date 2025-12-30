@@ -3,26 +3,90 @@ import io
 import json
 import os
 import wave
-from typing import List
+from typing import List, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
-
-from google.cloud import storage
-from google.oauth2 import service_account
-from google.cloud.storage import transfer_manager
-from google.cloud.exceptions import NotFound as BlobNotFound
-from google.cloud.exceptions import NotFound
 
 from database.redis_db import cache_signed_url, get_cached_signed_url
 from utils import encryption
 from database import users as users_db
 
-if os.environ.get('SERVICE_ACCOUNT_JSON'):
-    service_account_info = json.loads(os.environ["SERVICE_ACCOUNT_JSON"])
-    credentials = service_account.Credentials.from_service_account_info(service_account_info)
-    storage_client = storage.Client(credentials=credentials)
-else:
-    storage_client = storage.Client()
+# ---------------------------------------------------------------------------
+# Strict-mode flags: when set, missing GCP credentials raise at init time.
+# Default (CI/dev): GCP storage is optional; errors only when storage functions are used.
+# ---------------------------------------------------------------------------
+_REQUIRE_SECRETS = os.environ.get('ECHO_REQUIRE_SECRETS', '').lower() in ('1', 'true')
+_REQUIRE_GCP = os.environ.get('ECHO_REQUIRE_GCP', '').lower() in ('1', 'true') or _REQUIRE_SECRETS
+
+# Lazy-initialized storage client
+_storage_client: Optional[object] = None
+_storage_client_loaded: bool = False
+
+
+def _get_storage_client():
+    """Return the GCS storage client, creating it lazily on first call.
+
+    Raises:
+        RuntimeError: If GCP credentials are missing and strict mode is enabled,
+                      or when called without valid credentials.
+    """
+    global _storage_client, _storage_client_loaded
+
+    if not _storage_client_loaded:
+        try:
+            # Import lazily to avoid triggering google.auth.default() at module load
+            from google.cloud import storage
+            from google.oauth2 import service_account
+
+            if os.environ.get('SERVICE_ACCOUNT_JSON'):
+                service_account_info = json.loads(os.environ["SERVICE_ACCOUNT_JSON"])
+                credentials = service_account.Credentials.from_service_account_info(service_account_info)
+                _storage_client = storage.Client(credentials=credentials)
+            else:
+                _storage_client = storage.Client()
+            _storage_client_loaded = True
+        except Exception as e:
+            _storage_client_loaded = True  # Mark as loaded to avoid retry loops
+            if _REQUIRE_GCP:
+                raise RuntimeError(
+                    f"GCP credentials required but initialization failed: {e}. "
+                    "Set SERVICE_ACCOUNT_JSON or configure ADC, or disable ECHO_REQUIRE_GCP."
+                ) from e
+            # In non-strict mode, leave client as None
+            _storage_client = None
+
+    if _storage_client is None:
+        raise RuntimeError(
+            "GCP Storage client not available. GCP credentials are required for storage operations. "
+            "Set SERVICE_ACCOUNT_JSON or configure ADC."
+        )
+
+    return _storage_client
+
+
+# Backward-compat: storage_client is now a lazy proxy
+class _LazyStorageClient:
+    """Proxy that defers storage client creation until first attribute access."""
+
+    def __getattr__(self, name):
+        return getattr(_get_storage_client(), name)
+
+
+storage_client = _LazyStorageClient()
+
+# Lazy import for transfer_manager (also triggers GCP auth)
+def _get_transfer_manager():
+    from google.cloud.storage import transfer_manager
+    return transfer_manager
+
+# Lazy imports for exceptions
+def _get_blob_not_found():
+    from google.cloud.exceptions import NotFound
+    return NotFound
+
+def _get_not_found():
+    from google.cloud.exceptions import NotFound
+    return NotFound
 
 speech_profiles_bucket = os.getenv('BUCKET_SPEECH_PROFILES')
 postprocessing_audio_bucket = os.getenv('BUCKET_POSTPROCESSING')
@@ -247,11 +311,13 @@ def get_syncing_file_temporal_signed_url(file_path: str):
 
 
 def delete_syncing_temporal_file(file_path: str):
+    # Import NotFound lazily to avoid import-time GCP auth
+    from google.cloud.exceptions import NotFound
     bucket = storage_client.bucket(syncing_local_bucket)
     blob = bucket.blob(file_path)
     try:
         blob.delete()
-    except BlobNotFound:
+    except NotFound:
         pass
 
 
@@ -370,6 +436,8 @@ def download_audio_chunks_and_merge(uid: str, conversation_id: str, timestamps: 
     Returns:
         Merged audio bytes (PCM16)
     """
+    # Import NotFound lazily to avoid import-time GCP auth
+    from google.cloud.exceptions import NotFound
 
     bucket = storage_client.bucket(private_cloud_sync_bucket)
 
@@ -647,7 +715,7 @@ def upload_multi_chat_files(files_name: List[str], uid: str) -> dict:
         dict: A dictionary mapping original filenames to their Google Cloud Storage URLs
     """
     bucket = storage_client.bucket(chat_files_bucket)
-    result = transfer_manager.upload_many_from_filenames(
+    result = _get_transfer_manager().upload_many_from_filenames(
         bucket, files_name, source_directory="./", blob_name_prefix=f'{uid}/'
     )
     dictFiles = {}

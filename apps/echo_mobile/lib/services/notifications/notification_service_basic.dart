@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
-import 'package:omi/backend/schema/message.dart';
-import 'package:omi/services/notifications/notification_interface.dart';
+import 'package:echo_mobile/backend/schema/message.dart';
+import 'package:echo_mobile/services/notifications/notification_interface.dart';
 
 /// Basic notification service for platforms without Firebase Messaging support
 /// Currently used for Windows - provides local notifications only

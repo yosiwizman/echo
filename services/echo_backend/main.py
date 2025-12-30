@@ -42,12 +42,37 @@ from routers import (
 
 from utils.other.timeout import TimeoutMiddleware
 
-if os.environ.get('SERVICE_ACCOUNT_JSON'):
-    service_account_info = json.loads(os.environ["SERVICE_ACCOUNT_JSON"])
-    credentials = firebase_admin.credentials.Certificate(service_account_info)
-    firebase_admin.initialize_app(credentials)
-else:
-    firebase_admin.initialize_app()
+def _init_firebase_admin() -> None:
+    """Best-effort Firebase Admin init.
+
+    The upstream Omi backend assumes Firebase credentials are available via either:
+    - SERVICE_ACCOUNT_JSON (inline JSON), or
+    - Application Default Credentials (GOOGLE_APPLICATION_CREDENTIALS / gcloud)
+
+    For contributor onboarding and CI, we allow running without Firebase. Endpoints
+    that depend on Firebase will fail at runtime, but health/smoke routes should work.
+
+    Set ECHO_REQUIRE_FIREBASE=1 to make missing creds fatal.
+    """
+
+    try:
+        # Avoid double-init
+        if getattr(firebase_admin, "_apps", None):
+            return
+
+        if os.environ.get('SERVICE_ACCOUNT_JSON'):
+            service_account_info = json.loads(os.environ["SERVICE_ACCOUNT_JSON"])
+            cred = firebase_admin.credentials.Certificate(service_account_info)
+            firebase_admin.initialize_app(cred)
+        else:
+            firebase_admin.initialize_app()
+    except Exception as e:
+        if os.environ.get('ECHO_REQUIRE_FIREBASE') in {'1', 'true', 'True'}:
+            raise
+        print(f"⚠️ Firebase Admin not initialized (continuing without Firebase): {e}")
+
+
+_init_firebase_admin()
 
 app = FastAPI()
 

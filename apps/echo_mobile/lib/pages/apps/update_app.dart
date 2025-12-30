@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/pages/apps/widgets/full_screen_image_viewer.dart';
-import 'package:omi/pages/apps/providers/add_app_provider.dart';
-import 'package:omi/pages/apps/widgets/notification_scopes_chips_widget.dart';
-import 'package:omi/pages/apps/widgets/api_keys_widget.dart';
-import 'package:omi/widgets/dialog.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/pages/apps/widgets/full_screen_image_viewer.dart';
+import 'package:echo_mobile/pages/apps/providers/add_app_provider.dart';
+import 'package:echo_mobile/pages/apps/widgets/notification_scopes_chips_widget.dart';
+import 'package:echo_mobile/pages/apps/widgets/api_keys_widget.dart';
+import 'package:echo_mobile/widgets/dialog.dart';
 import 'package:provider/provider.dart';
 
 import 'widgets/app_metadata_widget.dart';

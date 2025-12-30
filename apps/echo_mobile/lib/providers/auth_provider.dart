@@ -1,16 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/env/env.dart';
-import 'package:omi/providers/base_provider.dart';
-import 'package:omi/services/notifications.dart';
-import 'package:omi/services/auth_service.dart';
-import 'package:omi/utils/alerts/app_snackbar.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/platform/platform_manager.dart';
-import 'package:omi/utils/platform/platform_service.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/env/env.dart';
+import 'package:echo_mobile/providers/base_provider.dart';
+import 'package:echo_mobile/services/notifications.dart';
+import 'package:echo_mobile/services/auth_service.dart';
+import 'package:echo_mobile/utils/alerts/app_snackbar.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/platform/platform_manager.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:omi/backend/http/api/apps.dart' as apps_api;
+import 'package:echo_mobile/backend/http/api/apps.dart' as apps_api;
 
 class AuthenticationProvider extends BaseProvider {
   FirebaseAuth get _auth => FirebaseAuth.instance;

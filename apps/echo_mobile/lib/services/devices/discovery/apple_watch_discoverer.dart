@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:omi/backend/schema/bt_device/bt_device.dart';
-import 'package:omi/gen/flutter_communicator.g.dart';
-import 'package:omi/services/devices/discovery/device_discoverer.dart';
-import 'package:omi/services/devices/discovery/device_locator.dart';
+import 'package:echo_mobile/backend/schema/bt_device/bt_device.dart';
+import 'package:echo_mobile/gen/flutter_communicator.g.dart';
+import 'package:echo_mobile/services/devices/discovery/device_discoverer.dart';
+import 'package:echo_mobile/services/devices/discovery/device_locator.dart';
 
 class AppleWatchDiscoverer extends DeviceDiscoverer {
   @override

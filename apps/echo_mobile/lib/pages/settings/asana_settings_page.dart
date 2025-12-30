@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:omi/pages/settings/integration_settings_page.dart';
-import 'package:omi/providers/task_integration_provider.dart';
-import 'package:omi/services/asana_service.dart';
+import 'package:echo_mobile/pages/settings/integration_settings_page.dart';
+import 'package:echo_mobile/providers/task_integration_provider.dart';
+import 'package:echo_mobile/services/asana_service.dart';
 import 'package:provider/provider.dart';
 
 class AsanaSettingsPage extends StatefulWidget {

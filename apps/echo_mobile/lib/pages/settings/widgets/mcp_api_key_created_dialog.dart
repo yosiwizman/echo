@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:omi/backend/schema/mcp_api_key.dart';
-import 'package:omi/utils/alerts/app_snackbar.dart';
+import 'package:echo_mobile/backend/schema/mcp_api_key.dart';
+import 'package:echo_mobile/utils/alerts/app_snackbar.dart';
 
 class McpApiKeyCreatedDialog extends StatelessWidget {
   final McpApiKeyCreated apiKey;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
 
 /// Reusable empty-state widget used across pages and drawers.
 ///

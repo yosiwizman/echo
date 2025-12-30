@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:omi/backend/http/api/apps.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/pages/apps/widgets/capability_category_section.dart';
-import 'package:omi/utils/ui_guidelines.dart';
+import 'package:echo_mobile/backend/http/api/apps.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/pages/apps/widgets/capability_category_section.dart';
+import 'package:echo_mobile/utils/ui_guidelines.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CapabilityAppsPage extends StatefulWidget {

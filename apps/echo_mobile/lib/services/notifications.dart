@@ -6,10 +6,10 @@ import 'dart:ui';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:omi/main.dart';
-import 'package:omi/pages/home/page.dart';
+import 'package:echo_mobile/main.dart';
+import 'package:echo_mobile/pages/home/page.dart';
 
-export 'package:omi/services/notifications/notification_service.dart';
+export 'package:echo_mobile/services/notifications/notification_service.dart';
 
 class NotificationUtil {
   static ReceivePort? receivePort;

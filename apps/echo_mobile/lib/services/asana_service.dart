@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:omi/backend/http/api/task_integrations.dart';
+import 'package:echo_mobile/backend/http/api/task_integrations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AsanaService {

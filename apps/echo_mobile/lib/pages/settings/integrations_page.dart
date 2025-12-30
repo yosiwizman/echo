@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/providers/integration_provider.dart';
-import 'package:omi/services/google_calendar_service.dart';
-import 'package:omi/services/notion_service.dart';
-import 'package:omi/services/twitter_service.dart';
-import 'package:omi/services/whoop_service.dart';
-import 'package:omi/services/github_service.dart';
-import 'package:omi/pages/settings/github_settings_page.dart';
-import 'package:omi/pages/apps/add_app.dart';
-import 'package:omi/utils/other/temp.dart';
+import 'package:echo_mobile/providers/integration_provider.dart';
+import 'package:echo_mobile/services/google_calendar_service.dart';
+import 'package:echo_mobile/services/notion_service.dart';
+import 'package:echo_mobile/services/twitter_service.dart';
+import 'package:echo_mobile/services/whoop_service.dart';
+import 'package:echo_mobile/services/github_service.dart';
+import 'package:echo_mobile/pages/settings/github_settings_page.dart';
+import 'package:echo_mobile/pages/apps/add_app.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 

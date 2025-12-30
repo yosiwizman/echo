@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:omi/pages/settings/task_integrations_page.dart';
-import 'package:omi/providers/task_integration_provider.dart';
-import 'package:omi/utils/platform/platform_service.dart';
+import 'package:echo_mobile/pages/settings/task_integrations_page.dart';
+import 'package:echo_mobile/providers/task_integration_provider.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
 import 'package:provider/provider.dart';
 
 class IntegrationSettingsPage extends StatefulWidget {

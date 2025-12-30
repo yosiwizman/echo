@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:omi/backend/schema/memory.dart';
-import 'package:omi/providers/memories_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/backend/schema/memory.dart';
+import 'package:echo_mobile/providers/memories_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
 import 'package:provider/provider.dart';
 
 import 'widgets/memory_edit_sheet.dart';

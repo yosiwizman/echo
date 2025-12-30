@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:omi/pages/chat/widgets/markdown_message_widget.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/pages/chat/widgets/markdown_message_widget.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
 
 class DesktopMessageActionMenu extends StatelessWidget {
   final Function()? onCopy;

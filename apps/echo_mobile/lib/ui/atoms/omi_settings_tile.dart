@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/ui/adaptive_widget.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/ui/adaptive_widget.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
 
 class OmiSettingsTile extends AdaptiveWidget {
   final String title;

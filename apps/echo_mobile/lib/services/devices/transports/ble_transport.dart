@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:omi/utils/bluetooth/bluetooth_adapter.dart';
+import 'package:echo_mobile/utils/bluetooth/bluetooth_adapter.dart';
 
 import 'device_transport.dart';
 

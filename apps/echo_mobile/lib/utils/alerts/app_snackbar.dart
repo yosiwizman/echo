@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:omi/main.dart';
+import 'package:echo_mobile/main.dart';
 
 class AppSnackbar {
   static void showSnackbar(String message, {Color? color, Duration? duration}) {

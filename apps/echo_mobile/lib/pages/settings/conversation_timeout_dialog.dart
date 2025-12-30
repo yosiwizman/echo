@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/utils/alerts/app_snackbar.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/utils/alerts/app_snackbar.dart';
 
 class ConversationTimeoutDialog {
   static Future<void> show(BuildContext context) async {

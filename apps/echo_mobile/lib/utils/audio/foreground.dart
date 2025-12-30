@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:omi/utils/platform/platform_service.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
 
 @pragma('vm:entry-point')
 void _startForegroundCallback() {
@@ -59,7 +59,7 @@ class _ForegroundFirstTaskHandler extends TaskHandler {
   }
 
   @override
-  Future<void> onDestroy(DateTime timestamp, bool isTimeout) async {
+  Future<void> onDestroy(DateTime timestamp) async {
     debugPrint("Destroying foreground task");
     FlutterForegroundTask.stopService();
   }
@@ -142,11 +142,11 @@ class ForegroundUtil {
   }
 
   static Future<ServiceRequestResult> startForegroundTask() async {
-    if (PlatformService.isDesktop) return const ServiceRequestSuccess();
+    if (PlatformService.isDesktop) return ServiceRequestResult.success();
 
     if (_isStarting) {
       debugPrint('ForegroundTask already starting, skipping');
-      return const ServiceRequestSuccess();
+      return ServiceRequestResult.success();
     }
 
     _isStarting = true;
@@ -167,7 +167,7 @@ class ForegroundUtil {
       return result;
     } catch (e) {
       debugPrint('ForegroundTask start failed: $e');
-      return ServiceRequestFailure(error: e.toString());
+      return ServiceRequestResult.error(e);
     } finally {
       _isStarting = false;
     }

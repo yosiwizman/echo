@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:omi/services/sockets/pure_socket.dart';
-import 'package:omi/services/custom_stt_log_service.dart';
-import 'package:omi/utils/debug_log_manager.dart';
+import 'package:echo_mobile/services/sockets/pure_socket.dart';
+import 'package:echo_mobile/services/custom_stt_log_service.dart';
+import 'package:echo_mobile/utils/debug_log_manager.dart';
 
 class CompositeTranscriptionSocket implements IPureSocket {
   final IPureSocket primarySocket;

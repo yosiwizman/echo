@@ -2,7 +2,7 @@ import os
 import hashlib
 import re
 from collections import OrderedDict
-from typing import List
+from typing import List, Optional
 
 from google.cloud import translate_v3
 from langdetect import detect as langdetect_detect, DetectorFactory
@@ -14,6 +14,10 @@ detection_cache = OrderedDict()
 MAX_DETECTION_CACHE_SIZE = 1000
 
 PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT")
+
+# Strict-mode flags for Google Cloud services
+_REQUIRE_SECRETS = os.environ.get('ECHO_REQUIRE_SECRETS', '').lower() in ('1', 'true')
+_REQUIRE_TRANSLATE = os.environ.get('ECHO_REQUIRE_TRANSLATE', '').lower() in ('1', 'true') or _REQUIRE_SECRETS
 
 # A set of common English non-lexical utterances that can confuse language detectors.
 # This list helps prevent misclassification of short, ambiguous sounds.
@@ -111,10 +115,40 @@ _non_lexical_utterances_pattern = re.compile(
     r'\b(' + '|'.join(re.escape(word) for word in _non_lexical_utterances) + r')\b', re.IGNORECASE
 )
 
-# Initialize the translation client globally
-_client = translate_v3.TranslationServiceClient()
+# Lazy-initialized translation client (no ADC required at import time)
+_client: Optional[translate_v3.TranslationServiceClient] = None
+_client_init_attempted = False
 _parent = f"projects/{PROJECT_ID}/locations/global"
 _mime_type = "text/plain"
+
+
+def _get_translate_client() -> Optional[translate_v3.TranslationServiceClient]:
+    """Lazy-init Google Translate client. Returns None if ADC not available (non-strict mode).
+    
+    Raises:
+        RuntimeError: If translation is required but credentials are unavailable (strict mode).
+    """
+    global _client, _client_init_attempted
+    
+    if _client is not None:
+        return _client
+    
+    if _client_init_attempted:
+        return None
+    
+    _client_init_attempted = True
+    
+    try:
+        _client = translate_v3.TranslationServiceClient()
+        return _client
+    except Exception as e:
+        if _REQUIRE_TRANSLATE:
+            raise RuntimeError(
+                f"Google Cloud Translation required but not available: {e}. "
+                "Configure Application Default Credentials or disable ECHO_REQUIRE_TRANSLATE / ECHO_REQUIRE_SECRETS."
+            ) from e
+        # Non-strict mode: allow import without ADC; translation will be unavailable
+        return None
 
 # Initialize langdetect for consistent results
 DetectorFactory.seed = 0
@@ -188,7 +222,11 @@ def _detect_with_langdetect(text: str, hint_language: str = None) -> str | None:
 
 def _detect_with_google_cloud(text: str) -> str | None:
     """Helper function to detect language using Google Cloud API."""
-    response = _client.detect_language(parent=_parent, content=text, mime_type=_mime_type)
+    client = _get_translate_client()
+    if client is None:
+        return None
+    
+    response = client.detect_language(parent=_parent, content=text, mime_type=_mime_type)
     if response.languages and len(response.languages) > 0:
         for language in response.languages:
             if language.confidence >= 1:
@@ -295,7 +333,12 @@ class TranslationService:
 
         try:
             # Not in cache, perform translation
-            response = _client.translate_text(
+            client = _get_translate_client()
+            if client is None:
+                # Translation unavailable (no ADC in non-strict mode)
+                return text
+            
+            response = client.translate_text(
                 contents=[text],
                 parent=_parent,
                 mime_type=_mime_type,

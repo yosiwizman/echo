@@ -1,18 +1,16 @@
 import datetime
+import os
 import uuid
 import asyncio
 from typing import List, Optional, Tuple, AsyncGenerator
 
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain_core.messages import SystemMessage, AIMessage, HumanMessage
-from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.constants import END
 from langgraph.graph import START, StateGraph
 from typing_extensions import TypedDict, Literal
 
-# import os
-# os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '../../' + os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
 import database.conversations as conversations_db
 import database.users as users_db
 from database.redis_db import get_filter_category_items
@@ -42,8 +40,73 @@ from utils.other.endpoints import timeit
 from utils.app_integrations import get_github_docs_content
 from utils.retrieval.agentic import execute_agentic_chat_stream
 
-model = ChatOpenAI(model="gpt-4.1-mini")
-llm_medium_stream = ChatOpenAI(model='gpt-4.1', streaming=True)
+# ---------------------------------------------------------------------------
+# Lazy LLM initialization (avoid import-time OpenAI key requirement)
+# ---------------------------------------------------------------------------
+_REQUIRE_SECRETS = os.environ.get('ECHO_REQUIRE_SECRETS', '').lower() in ('1', 'true')
+_REQUIRE_OPENAI = os.environ.get('ECHO_REQUIRE_OPENAI', '').lower() in ('1', 'true') or _REQUIRE_SECRETS
+
+_model = None
+_llm_medium_stream = None
+
+
+def _get_graph_model():
+    """Return the graph model, creating it lazily on first call."""
+    global _model
+    if _model is None:
+        api_key = os.environ.get('OPENAI_API_KEY')
+        if not api_key and _REQUIRE_OPENAI:
+            raise RuntimeError(
+                "OPENAI_API_KEY is required but not set. "
+                "Set the env var or disable ECHO_REQUIRE_OPENAI / ECHO_REQUIRE_SECRETS."
+            )
+        if not api_key:
+            raise RuntimeError(
+                "OPENAI_API_KEY not configured. Graph chat functionality is unavailable."
+            )
+        from langchain_openai import ChatOpenAI
+        _model = ChatOpenAI(model="gpt-4.1-mini")
+    return _model
+
+
+def _get_llm_medium_stream():
+    """Return the streaming LLM, creating it lazily on first call."""
+    global _llm_medium_stream
+    if _llm_medium_stream is None:
+        api_key = os.environ.get('OPENAI_API_KEY')
+        if not api_key and _REQUIRE_OPENAI:
+            raise RuntimeError(
+                "OPENAI_API_KEY is required but not set. "
+                "Set the env var or disable ECHO_REQUIRE_OPENAI / ECHO_REQUIRE_SECRETS."
+            )
+        if not api_key:
+            raise RuntimeError(
+                "OPENAI_API_KEY not configured. Graph chat functionality is unavailable."
+            )
+        from langchain_openai import ChatOpenAI
+        _llm_medium_stream = ChatOpenAI(model='gpt-4.1', streaming=True)
+    return _llm_medium_stream
+
+
+# Backward-compat: provide lazy proxies for existing code that references these globals
+class _LazyModel:
+    def __getattr__(self, name):
+        return getattr(_get_graph_model(), name)
+
+    def __call__(self, *args, **kwargs):
+        return _get_graph_model()(*args, **kwargs)
+
+
+class _LazyLLMStream:
+    def __getattr__(self, name):
+        return getattr(_get_llm_medium_stream(), name)
+
+    def __call__(self, *args, **kwargs):
+        return _get_llm_medium_stream()(*args, **kwargs)
+
+
+model = _LazyModel()
+llm_medium_stream = _LazyLLMStream()
 
 
 class StructuredFilters(TypedDict):

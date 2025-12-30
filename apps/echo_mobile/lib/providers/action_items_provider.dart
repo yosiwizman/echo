@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:omi/backend/http/api/action_items.dart' as api;
-import 'package:omi/backend/schema/schema.dart';
-import 'package:omi/services/notifications/action_item_notification_handler.dart';
+import 'package:echo_mobile/backend/http/api/action_items.dart' as api;
+import 'package:echo_mobile/backend/schema/schema.dart';
+import 'package:echo_mobile/services/notifications/action_item_notification_handler.dart';
 
 class ActionItemsProvider extends ChangeNotifier {
   List<ActionItemWithMetadata> _actionItems = [];

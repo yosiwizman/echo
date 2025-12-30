@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/api/users.dart';
-import 'package:omi/backend/http/api/payment.dart';
-import 'package:omi/models/subscription.dart';
-import 'package:omi/models/user_usage.dart';
+import 'package:echo_mobile/backend/http/api/users.dart';
+import 'package:echo_mobile/backend/http/api/payment.dart';
+import 'package:echo_mobile/models/subscription.dart';
+import 'package:echo_mobile/models/user_usage.dart';
 
 class UsageProvider with ChangeNotifier {
   UserSubscriptionResponse? _subscription;

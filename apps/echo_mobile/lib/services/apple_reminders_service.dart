@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:omi/utils/platform/platform_service.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
 
 class AppleRemindersService {
   static const _channel = MethodChannel('com.omi.apple_reminders');

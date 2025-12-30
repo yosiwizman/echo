@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/pages/settings/wrapped_2025_page.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/pages/settings/wrapped_2025_page.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
 
 class WrappedBanner extends StatefulWidget {
   const WrappedBanner({super.key});

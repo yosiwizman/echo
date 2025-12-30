@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/api/conversations.dart';
-import 'package:omi/backend/schema/conversation.dart';
-import 'package:omi/services/services.dart';
-import 'package:omi/services/wals.dart';
-import 'package:omi/utils/other/time_utils.dart';
+import 'package:echo_mobile/backend/http/api/conversations.dart';
+import 'package:echo_mobile/backend/schema/conversation.dart';
+import 'package:echo_mobile/services/services.dart';
+import 'package:echo_mobile/services/wals.dart';
+import 'package:echo_mobile/utils/other/time_utils.dart';
 
 import '../utils/audio_player_utils.dart';
 import '../utils/waveform_utils.dart';

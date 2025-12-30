@@ -4,13 +4,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:omi/backend/http/api/messages.dart';
-import 'package:omi/services/services.dart';
-import 'package:omi/utils/alerts/app_snackbar.dart';
-import 'package:omi/utils/file.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/backend/http/api/messages.dart';
+import 'package:echo_mobile/services/services.dart';
+import 'package:echo_mobile/utils/alerts/app_snackbar.dart';
+import 'package:echo_mobile/utils/file.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:omi/ui/atoms/omi_icon_button.dart';
+import 'package:echo_mobile/ui/atoms/omi_icon_button.dart';
 
 enum RecordingState {
   notRecording,

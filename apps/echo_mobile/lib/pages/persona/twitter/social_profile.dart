@@ -1,12 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/gen/assets.gen.dart';
-import 'package:omi/pages/onboarding/wrapper.dart';
-import 'package:omi/pages/persona/persona_provider.dart';
-import 'package:omi/pages/persona/twitter/verify_identity_screen.dart';
-import 'package:omi/services/auth_service.dart';
-import 'package:omi/utils/other/temp.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/gen/assets.gen.dart';
+import 'package:echo_mobile/pages/onboarding/wrapper.dart';
+import 'package:echo_mobile/pages/persona/persona_provider.dart';
+import 'package:echo_mobile/pages/persona/twitter/verify_identity_screen.dart';
+import 'package:echo_mobile/services/auth_service.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
 import 'package:provider/provider.dart';
 
 class SocialHandleScreen extends StatefulWidget {

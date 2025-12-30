@@ -2,23 +2,23 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:omi/backend/schema/bt_device/bt_device.dart';
-import 'package:omi/services/devices.dart';
-import 'package:omi/services/devices/frame_connection.dart';
-import 'package:omi/services/devices/apple_watch_connection.dart';
-import 'package:omi/services/devices/models.dart';
-import 'package:omi/services/devices/omi_connection.dart';
-import 'package:omi/services/devices/plaud_connection.dart';
-import 'package:omi/services/devices/bee_connection.dart';
-import 'package:omi/services/devices/fieldy_connection.dart';
-import 'package:omi/services/devices/friend_pendant_connection.dart';
-import 'package:omi/services/devices/limitless_connection.dart';
-import 'package:omi/services/notifications.dart';
-import 'package:omi/services/devices/transports/device_transport.dart';
-import 'package:omi/services/devices/transports/ble_transport.dart';
-import 'package:omi/services/devices/transports/watch_transport.dart';
-import 'package:omi/services/devices/transports/frame_transport.dart';
-import 'package:omi/services/devices/discovery/device_locator.dart';
+import 'package:echo_mobile/backend/schema/bt_device/bt_device.dart';
+import 'package:echo_mobile/services/devices.dart';
+import 'package:echo_mobile/services/devices/frame_connection.dart';
+import 'package:echo_mobile/services/devices/apple_watch_connection.dart';
+import 'package:echo_mobile/services/devices/models.dart';
+import 'package:echo_mobile/services/devices/omi_connection.dart';
+import 'package:echo_mobile/services/devices/plaud_connection.dart';
+import 'package:echo_mobile/services/devices/bee_connection.dart';
+import 'package:echo_mobile/services/devices/fieldy_connection.dart';
+import 'package:echo_mobile/services/devices/friend_pendant_connection.dart';
+import 'package:echo_mobile/services/devices/limitless_connection.dart';
+import 'package:echo_mobile/services/notifications.dart';
+import 'package:echo_mobile/services/devices/transports/device_transport.dart';
+import 'package:echo_mobile/services/devices/transports/ble_transport.dart';
+import 'package:echo_mobile/services/devices/transports/watch_transport.dart';
+import 'package:echo_mobile/services/devices/transports/frame_transport.dart';
+import 'package:echo_mobile/services/devices/discovery/device_locator.dart';
 
 class DeviceConnectionFactory {
   static DeviceConnection? create(BtDevice device) {

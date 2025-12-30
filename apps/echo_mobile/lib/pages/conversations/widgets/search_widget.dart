@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:omi/providers/conversation_provider.dart';
-import 'package:omi/providers/home_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/other/debouncer.dart';
+import 'package:echo_mobile/providers/conversation_provider.dart';
+import 'package:echo_mobile/providers/home_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/other/debouncer.dart';
 import 'package:provider/provider.dart';
 
 class SearchWidget extends StatefulWidget {

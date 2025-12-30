@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/shared.dart';
-import 'package:omi/backend/schema/geolocation.dart';
-import 'package:omi/backend/schema/person.dart';
-import 'package:omi/env/env.dart';
-import 'package:omi/models/subscription.dart';
-import 'package:omi/models/user_usage.dart';
+import 'package:echo_mobile/backend/http/shared.dart';
+import 'package:echo_mobile/backend/schema/geolocation.dart';
+import 'package:echo_mobile/backend/schema/person.dart';
+import 'package:echo_mobile/env/env.dart';
+import 'package:echo_mobile/models/subscription.dart';
+import 'package:echo_mobile/models/user_usage.dart';
 
 Future<bool> updateUserGeolocation({required Geolocation geolocation}) async {
   var response = await makeApiCall(
