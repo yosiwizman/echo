@@ -1,0 +1,212 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Brain API v1 Contract",
+    "version": "1.0.0",
+    "description": "Immutable contract for Brain API v1. Breaking changes require /v2/brain/*"
+  },
+  "paths": {
+    "/v1/brain/health": {
+      "get": {
+        "summary": "Brain Health",
+        "operationId": "brain_health_v1_brain_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrainHealthResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["brain"]
+      }
+    },
+    "/v1/brain/chat": {
+      "post": {
+        "summary": "Brain Chat",
+        "operationId": "brain_chat_v1_brain_chat_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["brain"]
+      }
+    },
+    "/v1/brain/chat/stream": {
+      "post": {
+        "summary": "Brain Chat Stream",
+        "operationId": "brain_chat_stream_v1_brain_chat_stream_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "SSE stream with events: token, final, error"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["brain"]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BrainHealthResponse": {
+        "type": "object",
+        "required": ["ok", "timestamp", "version", "provider"],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok",
+            "default": true
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "default": "1.0.0"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          }
+        },
+        "title": "BrainHealthResponse"
+      },
+      "ChatRequest": {
+        "type": "object",
+        "required": ["messages"],
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            },
+            "title": "Messages"
+          },
+          "session_id": {
+            "anyOf": [
+              {"type": "string"},
+              {"type": "null"}
+            ],
+            "title": "Session Id",
+            "default": null
+          },
+          "metadata": {
+            "anyOf": [
+              {"type": "object"},
+              {"type": "null"}
+            ],
+            "title": "Metadata",
+            "default": null
+          }
+        },
+        "title": "ChatRequest"
+      },
+      "ChatResponse": {
+        "type": "object",
+        "required": ["session_id", "message"],
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          },
+          "usage": {
+            "anyOf": [
+              {"$ref": "#/components/schemas/UsageInfo"},
+              {"type": "null"}
+            ],
+            "default": null
+          },
+          "metadata": {
+            "anyOf": [
+              {"type": "object"},
+              {"type": "null"}
+            ],
+            "title": "Metadata",
+            "default": null
+          }
+        },
+        "title": "ChatResponse"
+      },
+      "Message": {
+        "type": "object",
+        "required": ["role", "content"],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["system", "user", "assistant"],
+            "title": "Role"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          }
+        },
+        "title": "Message"
+      },
+      "UsageInfo": {
+        "type": "object",
+        "required": ["prompt_tokens", "completion_tokens", "total_tokens"],
+        "properties": {
+          "prompt_tokens": {
+            "type": "integer",
+            "title": "Prompt Tokens"
+          },
+          "completion_tokens": {
+            "type": "integer",
+            "title": "Completion Tokens"
+          },
+          "total_tokens": {
+            "type": "integer",
+            "title": "Total Tokens"
+          }
+        },
+        "title": "UsageInfo"
+      }
+    }
+  }
+}
