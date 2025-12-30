@@ -12,7 +12,7 @@ import pytest
 import os
 from datetime import datetime, timedelta
 
-from backend.utils.notifications import (
+from utils.notifications import (
     send_notification,
     send_bulk_notification,
     send_action_item_created_notification,
