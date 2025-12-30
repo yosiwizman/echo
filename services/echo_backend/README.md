@@ -117,15 +117,21 @@ This README provides a quick setup guide for the Omi backend. For a comprehensiv
 
 ## CI / Development: Optional Secrets
 
-For CI pipelines and local onboarding, API secrets (OpenAI, encryption) are **optional by default**. The backend can be imported and health tests can run without setting these secrets.
+For CI pipelines and local onboarding, API secrets (OpenAI, encryption, GCP) are **optional by default**. The backend can be imported and health tests can run without setting these secrets.
 
-- LLM clients and encryption functions are **lazy-initialized** — they only require secrets when actually invoked.
+- LLM clients, encryption functions, and GCP Storage are **lazy-initialized** — they only require secrets/credentials when actually invoked.
 - To enforce production-like strict validation at startup, set one or more of:
-  - `ECHO_REQUIRE_SECRETS=1` — require all secrets (OpenAI, encryption)
+  - `ECHO_REQUIRE_SECRETS=1` — require all secrets (OpenAI, encryption, GCP)
   - `ECHO_REQUIRE_OPENAI=1` — require `OPENAI_API_KEY`
   - `ECHO_REQUIRE_ENCRYPTION=1` — require `ENCRYPTION_SECRET`
+  - `ECHO_REQUIRE_GCP=1` — require GCP credentials (ADC or `SERVICE_ACCOUNT_JSON`)
 
 This pattern allows deterministic CI without secrets while preserving fail-fast behavior in production.
+
+To enable GCP Storage locally, configure Application Default Credentials:
+```bash
+gcloud auth application-default login --project <project-id>
+```
 
 ## Additional Resources
 
