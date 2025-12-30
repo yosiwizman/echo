@@ -120,6 +120,16 @@ def test_brain_api_matches_snapshot(client, contract_snapshot_path):
         diagnostic += f"  Committed: {committed_debug}\n"
         diagnostic += f"  Current:   {current_debug}\n"
     
+    # TEMPORARY: Regenerate snapshot from current contract
+    import os
+    if os.getenv("REGENERATE_SNAPSHOT", "0") == "1":
+        with open(contract_snapshot_path, "w") as f:
+            json.dump(normalized_current, f, indent=2, sort_keys=True)
+            f.write("\n")
+        print(f"\n✓ Regenerated snapshot with hash: {current_hash}")
+        print(f"  Committed was: {committed_hash}")
+        return  # Skip assertion
+    
     # Compare
     assert current_hash == committed_hash, (
         f"\n"
