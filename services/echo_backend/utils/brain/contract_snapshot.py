@@ -97,19 +97,9 @@ def build_brain_v1_contract(openapi_schema: Dict[str, Any]) -> Dict[str, Any]:
     for schema_name in list(brain_schemas.keys()):
         collect_nested_schemas(schema_name, seen_schemas)
     
-    # Handle Pydantic naming variations (Message vs Message-Input)
-    # Include both if either exists to handle FastAPI/Pydantic naming drift
-    message_variants = []
-    for schema_name in list(brain_schemas.keys()):
-        if "Message" in schema_name:
-            message_variants.append(schema_name)
-    
-    # If we have any Message variant, include all Message-related schemas
-    if message_variants:
-        all_components = openapi_schema.get("components", {}).get("schemas", {})
-        for candidate in ["Message", "Message-Input", "Message-Output"]:
-            if candidate in all_components and candidate not in brain_schemas:
-                brain_schemas[candidate] = all_components[candidate]
+    # Note: Pydantic naming variations (Message vs Message-Input vs Message-Output)
+    # are now handled by canonicalize_schema_variants() in normalize_contract().
+    # No need for special-case handling here.
     
     # Always include FastAPI's standard validation error schemas if present
     # These are automatically added for 422 responses by FastAPI/Pydantic

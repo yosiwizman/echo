@@ -70,18 +70,18 @@ def main() -> int:
         snapshot_path.parent.mkdir(parents=True, exist_ok=True)
         
         with open(snapshot_path, "w", encoding="utf-8") as f:
-            json.dump(contract, f, indent=2, sort_keys=True)
+            json.dump(normalized, f, indent=2, sort_keys=True)
             f.write("\n")  # Trailing newline for git cleanliness
         
         print(f"✓ Snapshot written to: {snapshot_path.relative_to(BACKEND_ROOT)}")
         print(f"✓ Contract hash (SHA256): {contract_hash}")
         print()
         print("Endpoints frozen:")
-        for path in sorted(contract.get("paths", {}).keys()):
+        for path in sorted(normalized.get("paths", {}).keys()):
             print(f"  - {path}")
         print()
         print("Schemas frozen:")
-        for schema_name in sorted(contract.get("components", {}).get("schemas", {}).keys()):
+        for schema_name in sorted(normalized.get("components", {}).get("schemas", {}).keys()):
             print(f"  - {schema_name}")
         
         return 0
