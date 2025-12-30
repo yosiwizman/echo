@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:omi/pages/settings/integration_settings_page.dart';
-import 'package:omi/services/todoist_service.dart';
+import 'package:echo_mobile/pages/settings/integration_settings_page.dart';
+import 'package:echo_mobile/services/todoist_service.dart';
 
 class TodoistSettingsPage extends StatefulWidget {
   const TodoistSettingsPage({super.key});

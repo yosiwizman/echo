@@ -8,12 +8,12 @@ import 'widgets/action_item_shimmer_widget.dart';
 import 'widgets/action_item_form_sheet.dart';
 import 'widgets/task_integrations_banner.dart';
 
-import 'package:omi/backend/schema/schema.dart';
-import 'package:omi/providers/action_items_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/services/app_review_service.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/ui/molecules/omi_confirm_dialog.dart';
+import 'package:echo_mobile/backend/schema/schema.dart';
+import 'package:echo_mobile/providers/action_items_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/services/app_review_service.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/ui/molecules/omi_confirm_dialog.dart';
 
 class ActionItemsPage extends StatefulWidget {
   const ActionItemsPage({super.key});

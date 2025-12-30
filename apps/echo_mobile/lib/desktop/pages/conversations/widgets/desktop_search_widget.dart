@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:omi/providers/conversation_provider.dart';
-import 'package:omi/utils/other/debouncer.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
-import 'package:omi/ui/atoms/omi_search_input.dart';
-import 'package:omi/ui/atoms/omi_icon_button.dart';
+import 'package:echo_mobile/providers/conversation_provider.dart';
+import 'package:echo_mobile/utils/other/debouncer.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/ui/atoms/omi_search_input.dart';
+import 'package:echo_mobile/ui/atoms/omi_icon_button.dart';
 import 'package:provider/provider.dart';
 
 class DesktopSearchWidget extends StatefulWidget {

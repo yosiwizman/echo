@@ -5,13 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:omi/backend/http/api/audio.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/backend/schema/conversation.dart';
-import 'package:omi/gen/assets.gen.dart';
-import 'package:omi/pages/conversation_detail/conversation_detail_provider.dart';
-import 'package:omi/pages/conversation_detail/widgets/summarized_apps_sheet.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/backend/http/api/audio.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/backend/schema/conversation.dart';
+import 'package:echo_mobile/gen/assets.gen.dart';
+import 'package:echo_mobile/pages/conversation_detail/conversation_detail_provider.dart';
+import 'package:echo_mobile/pages/conversation_detail/widgets/summarized_apps_sheet.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
 import 'package:provider/provider.dart';
 
 enum ConversationBottomBarMode {

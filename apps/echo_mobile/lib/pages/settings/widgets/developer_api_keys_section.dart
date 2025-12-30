@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/pages/settings/widgets/create_dev_api_key_sheet.dart';
-import 'package:omi/pages/settings/widgets/dev_api_key_list_item.dart';
-import 'package:omi/providers/dev_api_key_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/pages/settings/widgets/create_dev_api_key_sheet.dart';
+import 'package:echo_mobile/pages/settings/widgets/dev_api_key_list_item.dart';
+import 'package:echo_mobile/providers/dev_api_key_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 

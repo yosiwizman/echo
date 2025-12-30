@@ -1,10 +1,10 @@
 import 'package:mixpanel_analytics/mixpanel_analytics.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/schema/conversation.dart';
-import 'package:omi/backend/schema/memory.dart';
-import 'package:omi/env/env.dart';
-import 'package:omi/utils/platform/platform_service.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/conversation.dart';
+import 'package:echo_mobile/backend/schema/memory.dart';
+import 'package:echo_mobile/env/env.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
 
 class MixpanelManager {
   static final MixpanelManager _instance = MixpanelManager._internal();

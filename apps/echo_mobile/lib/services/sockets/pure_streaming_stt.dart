@@ -6,13 +6,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:omi/backend/schema/bt_device/bt_device.dart';
-import 'package:omi/services/sockets/pure_socket.dart';
-import 'package:omi/services/custom_stt_log_service.dart';
-import 'package:omi/models/stt_response_schema.dart';
-import 'package:omi/models/stt_result.dart';
-import 'package:omi/utils/audio/audio_transcoder.dart';
-import 'package:omi/utils/debug_log_manager.dart';
+import 'package:echo_mobile/backend/schema/bt_device/bt_device.dart';
+import 'package:echo_mobile/services/sockets/pure_socket.dart';
+import 'package:echo_mobile/services/custom_stt_log_service.dart';
+import 'package:echo_mobile/models/stt_response_schema.dart';
+import 'package:echo_mobile/models/stt_result.dart';
+import 'package:echo_mobile/utils/audio/audio_transcoder.dart';
+import 'package:echo_mobile/utils/debug_log_manager.dart';
 
 /// Configuration for streaming STT WebSocket connections
 class StreamingSttConfig {

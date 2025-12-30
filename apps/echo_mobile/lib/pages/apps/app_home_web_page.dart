@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:omi/utils/browser.dart';
+import 'package:echo_mobile/utils/browser.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/backend/preferences.dart';
 
 class AppHomeWebPage extends StatefulWidget {
   final App app;

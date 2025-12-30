@@ -2,12 +2,12 @@ import 'dart:math'; // Need max and min
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/pages/apps/app_detail/app_detail.dart';
-import 'package:omi/providers/app_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/other/temp.dart';
-import 'package:omi/widgets/extensions/string.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/pages/apps/app_detail/app_detail.dart';
+import 'package:echo_mobile/providers/app_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
+import 'package:echo_mobile/widgets/extensions/string.dart';
 import 'package:provider/provider.dart';
 
 class AppSectionCard extends StatelessWidget {

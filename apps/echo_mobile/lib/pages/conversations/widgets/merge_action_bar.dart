@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:omi/pages/conversations/widgets/merge_confirmation_dialog.dart';
-import 'package:omi/providers/conversation_provider.dart';
+import 'package:echo_mobile/pages/conversations/widgets/merge_confirmation_dialog.dart';
+import 'package:echo_mobile/providers/conversation_provider.dart';
 import 'package:provider/provider.dart';
 
 class MergeActionBar extends StatefulWidget {

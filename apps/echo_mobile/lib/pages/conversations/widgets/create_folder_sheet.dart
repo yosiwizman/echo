@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/backend/schema/folder.dart';
-import 'package:omi/providers/folder_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/folders/folder_icon_mapper.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/backend/schema/folder.dart';
+import 'package:echo_mobile/providers/folder_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/folders/folder_icon_mapper.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
 import 'package:provider/provider.dart';
 
 /// Available folder colors for selection.

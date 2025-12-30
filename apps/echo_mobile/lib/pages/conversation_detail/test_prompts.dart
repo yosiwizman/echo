@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:omi/backend/schema/conversation.dart';
+import 'package:echo_mobile/backend/schema/conversation.dart';
 
 import '../../backend/http/api/conversations.dart';
 

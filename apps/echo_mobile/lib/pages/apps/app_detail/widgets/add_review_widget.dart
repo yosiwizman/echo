@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:omi/backend/http/api/apps.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/providers/connectivity_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/widgets/animated_loading_button.dart';
+import 'package:echo_mobile/backend/http/api/apps.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/providers/connectivity_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/widgets/animated_loading_button.dart';
 import 'package:provider/provider.dart';
 
 class AddReviewWidget extends StatefulWidget {

@@ -1,21 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/schema/bt_device/bt_device.dart';
-import 'package:omi/backend/http/api/device.dart';
-import 'package:omi/main.dart';
-import 'package:omi/pages/home/firmware_update.dart';
-import 'package:omi/providers/capture_provider.dart';
-import 'package:omi/services/devices.dart';
-import 'package:omi/services/notifications.dart';
-import 'package:omi/services/services.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/device.dart';
-import 'package:omi/utils/logger.dart';
-import 'package:omi/utils/other/debouncer.dart';
-import 'package:omi/utils/platform/platform_manager.dart';
-import 'package:omi/widgets/confirmation_dialog.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/bt_device/bt_device.dart';
+import 'package:echo_mobile/backend/http/api/device.dart';
+import 'package:echo_mobile/main.dart';
+import 'package:echo_mobile/pages/home/firmware_update.dart';
+import 'package:echo_mobile/providers/capture_provider.dart';
+import 'package:echo_mobile/services/devices.dart';
+import 'package:echo_mobile/services/notifications.dart';
+import 'package:echo_mobile/services/services.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/device.dart';
+import 'package:echo_mobile/utils/logger.dart';
+import 'package:echo_mobile/utils/other/debouncer.dart';
+import 'package:echo_mobile/utils/platform/platform_manager.dart';
+import 'package:echo_mobile/widgets/confirmation_dialog.dart';
 
 class DeviceProvider extends ChangeNotifier implements IDeviceServiceSubsciption {
   CaptureProvider? captureProvider;

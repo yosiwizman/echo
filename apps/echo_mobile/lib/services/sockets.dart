@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:omi/backend/schema/bt_device/bt_device.dart';
-import 'package:omi/models/custom_stt_config.dart';
-import 'package:omi/utils/mutex.dart';
-import 'package:omi/services/sockets/transcription_service.dart';
+import 'package:echo_mobile/backend/schema/bt_device/bt_device.dart';
+import 'package:echo_mobile/models/custom_stt_config.dart';
+import 'package:echo_mobile/utils/mutex.dart';
+import 'package:echo_mobile/services/sockets/transcription_service.dart';
 
 abstract class ISocketService {
   void start();

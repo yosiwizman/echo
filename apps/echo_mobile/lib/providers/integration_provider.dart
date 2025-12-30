@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/api/integrations.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/pages/settings/integrations_page.dart';
+import 'package:echo_mobile/backend/http/api/integrations.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/pages/settings/integrations_page.dart';
 
 class IntegrationProvider extends ChangeNotifier {
   final Map<String, bool> _integrations = {};

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:omi/pages/apps/add_app.dart';
-import 'package:omi/pages/persona/persona_profile.dart';
-import 'package:omi/pages/persona/persona_provider.dart';
+import 'package:echo_mobile/pages/apps/add_app.dart';
+import 'package:echo_mobile/pages/persona/persona_profile.dart';
+import 'package:echo_mobile/pages/persona/persona_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/other/temp.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
 
 class CreateOptionsSheet extends StatelessWidget {
   const CreateOptionsSheet({super.key});

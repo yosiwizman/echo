@@ -1,18 +1,18 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_provider_utilities/flutter_provider_utilities.dart';
-import 'package:omi/backend/schema/bt_device/bt_device.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/providers/device_provider.dart';
-import 'package:omi/providers/onboarding_provider.dart';
-import 'package:omi/gen/assets.gen.dart';
-import 'package:omi/pages/onboarding/apple_watch_permission_page.dart';
-import 'package:omi/widgets/apple_watch_setup_bottom_sheet.dart';
-import 'package:omi/widgets/confirmation_dialog.dart';
-import 'package:omi/services/devices/apple_watch_connection.dart';
-import 'package:omi/services/services.dart';
-import 'package:omi/gen/flutter_communicator.g.dart';
-import 'package:omi/utils/device.dart';
+import 'package:echo_mobile/backend/schema/bt_device/bt_device.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/providers/device_provider.dart';
+import 'package:echo_mobile/providers/onboarding_provider.dart';
+import 'package:echo_mobile/gen/assets.gen.dart';
+import 'package:echo_mobile/pages/onboarding/apple_watch_permission_page.dart';
+import 'package:echo_mobile/widgets/apple_watch_setup_bottom_sheet.dart';
+import 'package:echo_mobile/widgets/confirmation_dialog.dart';
+import 'package:echo_mobile/services/devices/apple_watch_connection.dart';
+import 'package:echo_mobile/services/services.dart';
+import 'package:echo_mobile/gen/flutter_communicator.g.dart';
+import 'package:echo_mobile/utils/device.dart';
 import 'package:provider/provider.dart';
 
 class FoundDevices extends StatefulWidget {

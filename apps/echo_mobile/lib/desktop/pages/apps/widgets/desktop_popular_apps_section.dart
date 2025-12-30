@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
-import 'package:omi/widgets/extensions/string.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/widgets/extensions/string.dart';
 
 class DesktopPopularAppsSection extends StatelessWidget {
   final List<App> popularApps;

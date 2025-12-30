@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:omi/pages/settings/widgets/mcp_api_key_created_dialog.dart';
-import 'package:omi/providers/mcp_provider.dart';
-import 'package:omi/utils/alerts/app_snackbar.dart';
+import 'package:echo_mobile/pages/settings/widgets/mcp_api_key_created_dialog.dart';
+import 'package:echo_mobile/providers/mcp_provider.dart';
+import 'package:echo_mobile/utils/alerts/app_snackbar.dart';
 import 'package:provider/provider.dart';
 
 class CreateMcpApiKeyDialog extends StatefulWidget {

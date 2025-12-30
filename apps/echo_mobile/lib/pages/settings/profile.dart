@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/pages/payments/payments_page.dart';
-import 'package:omi/pages/settings/change_name_widget.dart';
-import 'package:omi/pages/settings/language_settings_page.dart';
-import 'package:omi/pages/settings/custom_vocabulary_page.dart';
-import 'package:omi/pages/settings/people.dart';
-import 'package:omi/pages/settings/data_privacy_page.dart';
-import 'package:omi/pages/speech_profile/page.dart';
-import 'package:omi/providers/home_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/other/temp.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/pages/payments/payments_page.dart';
+import 'package:echo_mobile/pages/settings/change_name_widget.dart';
+import 'package:echo_mobile/pages/settings/language_settings_page.dart';
+import 'package:echo_mobile/pages/settings/custom_vocabulary_page.dart';
+import 'package:echo_mobile/pages/settings/people.dart';
+import 'package:echo_mobile/pages/settings/data_privacy_page.dart';
+import 'package:echo_mobile/pages/speech_profile/page.dart';
+import 'package:echo_mobile/providers/home_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
 import 'package:provider/provider.dart';
 
-import 'package:omi/pages/settings/conversation_display_settings.dart';
+import 'package:echo_mobile/pages/settings/conversation_display_settings.dart';
 
 import 'delete_account.dart';
 

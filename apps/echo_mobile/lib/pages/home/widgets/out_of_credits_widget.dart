@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:omi/pages/settings/usage_page.dart';
-import 'package:omi/providers/usage_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/other/temp.dart';
+import 'package:echo_mobile/pages/settings/usage_page.dart';
+import 'package:echo_mobile/providers/usage_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
 import 'package:provider/provider.dart';
 
 class OutOfCreditsWidget extends StatelessWidget {

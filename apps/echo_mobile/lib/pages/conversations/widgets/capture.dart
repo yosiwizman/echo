@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:omi/pages/capture/widgets/widgets.dart';
-import 'package:omi/providers/capture_provider.dart';
-import 'package:omi/providers/device_provider.dart';
-import 'package:omi/utils/audio/wav_bytes.dart';
+import 'package:echo_mobile/pages/capture/widgets/widgets.dart';
+import 'package:echo_mobile/providers/capture_provider.dart';
+import 'package:echo_mobile/providers/device_provider.dart';
+import 'package:echo_mobile/utils/audio/wav_bytes.dart';
 import 'package:provider/provider.dart';
 
 class LiteCaptureWidget extends StatefulWidget {

@@ -1,15 +1,15 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:omi/backend/schema/memory.dart';
-import 'package:omi/pages/settings/usage_page.dart';
-import 'package:omi/providers/memories_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
-import 'package:omi/widgets/extensions/string.dart';
-import 'package:omi/ui/atoms/omi_icon_badge.dart';
-import 'package:omi/ui/molecules/omi_popup_menu.dart';
-import 'package:omi/ui/molecules/omi_confirm_dialog.dart';
+import 'package:echo_mobile/backend/schema/memory.dart';
+import 'package:echo_mobile/pages/settings/usage_page.dart';
+import 'package:echo_mobile/providers/memories_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/widgets/extensions/string.dart';
+import 'package:echo_mobile/ui/atoms/omi_icon_badge.dart';
+import 'package:echo_mobile/ui/molecules/omi_popup_menu.dart';
+import 'package:echo_mobile/ui/molecules/omi_confirm_dialog.dart';
 
 class DesktopMemoryItem extends StatelessWidget {
   final Memory memory;

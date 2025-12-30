@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:omi/backend/http/shared.dart';
-import 'package:omi/env/env.dart';
-import 'package:omi/pages/payments/models/payment_method_config.dart';
-import 'package:omi/utils/logger.dart';
+import 'package:echo_mobile/backend/http/shared.dart';
+import 'package:echo_mobile/env/env.dart';
+import 'package:echo_mobile/pages/payments/models/payment_method_config.dart';
+import 'package:echo_mobile/utils/logger.dart';
 
 Future<Map<String, dynamic>?> getStripeAccountLink(String? country) async {
   try {

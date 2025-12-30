@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:omi/backend/http/api/wrapped.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/pages/settings/wrapped_2025_share_templates.dart' as templates;
-import 'package:omi/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/backend/http/api/wrapped.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/pages/settings/wrapped_2025_share_templates.dart' as templates;
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 

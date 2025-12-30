@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:omi/backend/preferences.dart';
+import 'package:echo_mobile/backend/preferences.dart';
 
 /// Lightweight debug log manager to persist important diagnostics when
 /// developer debug logging is enabled.

@@ -2,16 +2,16 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/backend/schema/bt_device/bt_device.dart';
-import 'package:omi/backend/schema/conversation.dart';
-import 'package:omi/backend/schema/memory.dart';
-import 'package:omi/backend/schema/message.dart';
-import 'package:omi/backend/schema/person.dart';
-import 'package:omi/models/custom_stt_config.dart';
-import 'package:omi/models/stt_provider.dart';
-import 'package:omi/services/wals.dart';
-import 'package:omi/utils/platform/platform_service.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/backend/schema/bt_device/bt_device.dart';
+import 'package:echo_mobile/backend/schema/conversation.dart';
+import 'package:echo_mobile/backend/schema/memory.dart';
+import 'package:echo_mobile/backend/schema/message.dart';
+import 'package:echo_mobile/backend/schema/person.dart';
+import 'package:echo_mobile/models/custom_stt_config.dart';
+import 'package:echo_mobile/models/stt_provider.dart';
+import 'package:echo_mobile/services/wals.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesUtil {

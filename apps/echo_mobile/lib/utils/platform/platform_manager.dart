@@ -3,12 +3,12 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/utils/analytics/intercom.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/debugging/crashlytics_manager.dart';
-import 'package:omi/utils/debugging/crash_reporter.dart';
-import 'package:omi/utils/platform/platform_service.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/utils/analytics/intercom.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/debugging/crashlytics_manager.dart';
+import 'package:echo_mobile/utils/debugging/crash_reporter.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 /// Centralized platform manager for all platform-specific services

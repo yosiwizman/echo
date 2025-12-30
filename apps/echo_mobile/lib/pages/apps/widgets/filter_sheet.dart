@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:omi/providers/app_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/providers/app_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
 import 'package:provider/provider.dart';
 
 class FilterBottomSheet extends StatelessWidget {

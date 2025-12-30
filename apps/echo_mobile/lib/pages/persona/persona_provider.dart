@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/api/apps.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/utils/alerts/app_snackbar.dart';
+import 'package:echo_mobile/backend/http/api/apps.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/utils/alerts/app_snackbar.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
 
 typedef ShowSuccessDialogCallback = void Function(String url);
 

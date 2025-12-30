@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/widgets/extensions/string.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/widgets/extensions/string.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class UserReviewCard extends StatelessWidget {

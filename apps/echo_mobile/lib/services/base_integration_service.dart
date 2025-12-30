@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/api/integrations.dart';
-import 'package:omi/backend/preferences.dart';
+import 'package:echo_mobile/backend/http/api/integrations.dart';
+import 'package:echo_mobile/backend/preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 abstract class BaseIntegrationService {

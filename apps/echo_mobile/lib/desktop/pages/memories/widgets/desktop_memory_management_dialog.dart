@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/providers/memories_provider.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
-import 'package:omi/ui/atoms/omi_icon_button.dart';
+import 'package:echo_mobile/providers/memories_provider.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/ui/atoms/omi_icon_button.dart';
 
 class DesktopMemoryManagementDialog extends StatelessWidget {
   final MemoriesProvider provider;

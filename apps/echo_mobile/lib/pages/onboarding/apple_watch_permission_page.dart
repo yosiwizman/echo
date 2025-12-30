@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:omi/services/devices/apple_watch_connection.dart';
-import 'package:omi/utils/alerts/app_snackbar.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/services/devices/apple_watch_connection.dart';
+import 'package:echo_mobile/utils/alerts/app_snackbar.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
 
 class AppleWatchPermissionPage extends StatefulWidget {
   final AppleWatchDeviceConnection connection;

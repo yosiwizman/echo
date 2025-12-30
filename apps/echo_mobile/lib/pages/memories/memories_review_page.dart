@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/backend/schema/memory.dart';
-import 'package:omi/providers/memories_provider.dart';
-import 'package:omi/widgets/extensions/string.dart';
+import 'package:echo_mobile/backend/schema/memory.dart';
+import 'package:echo_mobile/providers/memories_provider.dart';
+import 'package:echo_mobile/widgets/extensions/string.dart';
 import 'package:provider/provider.dart';
 
 import 'widgets/category_chip.dart';

@@ -7,26 +7,26 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/pages/chat/widgets/files_handler_widget.dart';
-import 'package:omi/backend/http/api/conversations.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/backend/schema/conversation.dart';
-import 'package:omi/backend/schema/message.dart';
-import 'package:omi/pages/chat/widgets/typing_indicator.dart';
-import 'package:omi/pages/conversation_detail/conversation_detail_provider.dart';
-import 'package:omi/pages/conversation_detail/page.dart';
-import 'package:omi/providers/connectivity_provider.dart';
-import 'package:omi/providers/conversation_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/other/temp.dart';
-import 'package:omi/widgets/extensions/string.dart';
+import 'package:echo_mobile/pages/chat/widgets/files_handler_widget.dart';
+import 'package:echo_mobile/backend/http/api/conversations.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/backend/schema/conversation.dart';
+import 'package:echo_mobile/backend/schema/message.dart';
+import 'package:echo_mobile/pages/chat/widgets/typing_indicator.dart';
+import 'package:echo_mobile/pages/conversation_detail/conversation_detail_provider.dart';
+import 'package:echo_mobile/pages/conversation_detail/page.dart';
+import 'package:echo_mobile/providers/connectivity_provider.dart';
+import 'package:echo_mobile/providers/conversation_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
+import 'package:echo_mobile/widgets/extensions/string.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'markdown_message_widget.dart';
-import 'package:omi/providers/app_provider.dart';
+import 'package:echo_mobile/providers/app_provider.dart';
 
 /// Parse app_id from thinking text (format: "text|app_id:app_id")
 String? _parseAppIdFromThinking(String thinkingText) {

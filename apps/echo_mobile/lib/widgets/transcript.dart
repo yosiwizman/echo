@@ -2,15 +2,15 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/backend/schema/message_event.dart';
-import 'package:omi/backend/schema/person.dart';
-import 'package:omi/backend/schema/transcript_segment.dart';
-import 'package:omi/gen/assets.gen.dart';
-import 'package:omi/models/stt_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/constants.dart';
-import 'package:omi/utils/other/temp.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/backend/schema/message_event.dart';
+import 'package:echo_mobile/backend/schema/person.dart';
+import 'package:echo_mobile/backend/schema/transcript_segment.dart';
+import 'package:echo_mobile/gen/assets.gen.dart';
+import 'package:echo_mobile/models/stt_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/constants.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
 
 class TranscriptWidget extends StatefulWidget {
   final List<TranscriptSegment> segments;

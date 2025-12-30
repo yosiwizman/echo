@@ -3,9 +3,9 @@
 // Basic Implementation: Local notifications only (Windows)
 
 import 'dart:io' show Platform;
-import 'package:omi/services/notifications/notification_interface.dart';
-import 'package:omi/services/notifications/notification_service_fcm.dart' as fcm;
-import 'package:omi/services/notifications/notification_service_basic.dart' as basic;
+import 'package:echo_mobile/services/notifications/notification_interface.dart';
+import 'package:echo_mobile/services/notifications/notification_service_fcm.dart' as fcm;
+import 'package:echo_mobile/services/notifications/notification_service_basic.dart' as basic;
 
 /// Factory function to create the appropriate notification service based on platform capabilities
 NotificationInterface _createPlatformNotificationService() {

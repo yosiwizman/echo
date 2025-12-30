@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/services/devices/apple_watch_connection.dart';
-import 'package:omi/services/devices/device_connection.dart';
-import 'package:omi/services/devices/frame_connection.dart';
-import 'package:omi/services/devices/friend_pendant_connection.dart';
-import 'package:omi/services/devices/limitless_connection.dart';
-import 'package:omi/services/devices/omi_connection.dart';
-import 'package:omi/services/devices/models.dart';
-import 'package:omi/services/devices/plaud_connection.dart';
-import 'package:omi/services/devices/fieldy_connection.dart';
-import 'package:omi/utils/logger.dart';
-import 'package:omi/services/devices/discovery/device_locator.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/services/devices/apple_watch_connection.dart';
+import 'package:echo_mobile/services/devices/device_connection.dart';
+import 'package:echo_mobile/services/devices/frame_connection.dart';
+import 'package:echo_mobile/services/devices/friend_pendant_connection.dart';
+import 'package:echo_mobile/services/devices/limitless_connection.dart';
+import 'package:echo_mobile/services/devices/omi_connection.dart';
+import 'package:echo_mobile/services/devices/models.dart';
+import 'package:echo_mobile/services/devices/plaud_connection.dart';
+import 'package:echo_mobile/services/devices/fieldy_connection.dart';
+import 'package:echo_mobile/utils/logger.dart';
+import 'package:echo_mobile/services/devices/discovery/device_locator.dart';
 
 enum ImageOrientation {
   orientation0, // 0 degrees

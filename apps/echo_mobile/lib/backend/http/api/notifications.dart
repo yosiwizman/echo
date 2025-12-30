@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/shared.dart';
-import 'package:omi/env/env.dart';
+import 'package:echo_mobile/backend/http/shared.dart';
+import 'package:echo_mobile/env/env.dart';
 
 Future<void> saveFcmTokenServer({required String token, required String timeZone}) async {
   var response = await makeApiCall(

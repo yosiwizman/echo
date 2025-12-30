@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:omi/services/connectivity_service.dart';
-import 'package:omi/widgets/dialog.dart';
+import 'package:echo_mobile/services/connectivity_service.dart';
+import 'package:echo_mobile/widgets/dialog.dart';
 
 class ConnectivityProvider extends ChangeNotifier {
   bool _isConnected = true;

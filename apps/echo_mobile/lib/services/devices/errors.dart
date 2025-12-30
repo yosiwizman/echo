@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:omi/utils/platform/platform_manager.dart';
+import 'package:echo_mobile/utils/platform/platform_manager.dart';
 
 void logErrorMessage(String message, String deviceId) {
   debugPrint('($deviceId) $message');

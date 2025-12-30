@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/pages/apps/providers/add_app_provider.dart';
-import 'package:omi/pages/apps/widgets/action_fields_widget.dart';
-import 'package:omi/utils/other/validators.dart';
+import 'package:echo_mobile/pages/apps/providers/add_app_provider.dart';
+import 'package:echo_mobile/pages/apps/widgets/action_fields_widget.dart';
+import 'package:echo_mobile/utils/other/validators.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 

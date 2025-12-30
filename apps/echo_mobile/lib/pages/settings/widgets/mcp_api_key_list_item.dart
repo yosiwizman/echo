@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/backend/schema/mcp_api_key.dart';
-import 'package:omi/providers/mcp_provider.dart';
+import 'package:echo_mobile/backend/schema/mcp_api_key.dart';
+import 'package:echo_mobile/providers/mcp_provider.dart';
 import 'package:provider/provider.dart';
 
 class McpApiKeyListItem extends StatelessWidget {

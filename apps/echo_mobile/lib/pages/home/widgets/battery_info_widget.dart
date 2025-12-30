@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/gen/assets.gen.dart';
-import 'package:omi/pages/capture/connect.dart';
-import 'package:omi/pages/home/device.dart';
-import 'package:omi/providers/device_provider.dart';
-import 'package:omi/providers/home_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/device.dart';
-import 'package:omi/utils/other/temp.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/gen/assets.gen.dart';
+import 'package:echo_mobile/pages/capture/connect.dart';
+import 'package:echo_mobile/pages/home/device.dart';
+import 'package:echo_mobile/providers/device_provider.dart';
+import 'package:echo_mobile/providers/home_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/device.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
 import 'package:provider/provider.dart';
 
 class BatteryInfoWidget extends StatelessWidget {

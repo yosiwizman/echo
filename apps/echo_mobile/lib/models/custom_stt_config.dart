@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:omi/models/stt_provider.dart';
-import 'package:omi/models/stt_response_schema.dart';
+import 'package:echo_mobile/models/stt_provider.dart';
+import 'package:echo_mobile/models/stt_response_schema.dart';
 
 class CustomSttConfig {
   final SttProvider provider;

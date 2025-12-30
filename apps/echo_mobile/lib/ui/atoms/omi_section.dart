@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:omi/ui/adaptive_widget.dart';
-import 'package:omi/ui/molecules/omi_section_header.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/ui/adaptive_widget.dart';
+import 'package:echo_mobile/ui/molecules/omi_section_header.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
 
 class OmiSection extends AdaptiveWidget {
   final String title;

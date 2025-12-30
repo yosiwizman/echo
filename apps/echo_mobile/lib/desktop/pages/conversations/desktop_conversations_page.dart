@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:omi/backend/schema/conversation.dart';
-import 'package:omi/pages/conversation_detail/conversation_detail_provider.dart';
-import 'package:omi/pages/conversations/widgets/processing_capture.dart';
-import 'package:omi/providers/capture_provider.dart';
-import 'package:omi/providers/conversation_provider.dart';
-import 'package:omi/providers/device_provider.dart';
-import 'package:omi/providers/app_provider.dart';
-import 'package:omi/utils/enums.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/backend/schema/conversation.dart';
+import 'package:echo_mobile/pages/conversation_detail/conversation_detail_provider.dart';
+import 'package:echo_mobile/pages/conversations/widgets/processing_capture.dart';
+import 'package:echo_mobile/providers/capture_provider.dart';
+import 'package:echo_mobile/providers/conversation_provider.dart';
+import 'package:echo_mobile/providers/device_provider.dart';
+import 'package:echo_mobile/providers/app_provider.dart';
+import 'package:echo_mobile/utils/enums.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/api/task_integrations.dart';
-import 'package:omi/pages/settings/task_integrations_page.dart';
-import 'package:omi/services/asana_service.dart';
-import 'package:omi/services/clickup_service.dart';
-import 'package:omi/services/google_tasks_service.dart';
-import 'package:omi/services/todoist_service.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/platform/platform_service.dart';
+import 'package:echo_mobile/backend/http/api/task_integrations.dart';
+import 'package:echo_mobile/pages/settings/task_integrations_page.dart';
+import 'package:echo_mobile/services/asana_service.dart';
+import 'package:echo_mobile/services/clickup_service.dart';
+import 'package:echo_mobile/services/google_tasks_service.dart';
+import 'package:echo_mobile/services/todoist_service.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/platform/platform_service.dart';
 
 class TaskIntegrationProvider extends ChangeNotifier {
   TaskIntegrationApp _selectedApp;

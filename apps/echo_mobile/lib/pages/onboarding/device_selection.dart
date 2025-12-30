@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:omi/pages/onboarding/wrapper.dart';
-import 'package:omi/utils/other/temp.dart';
+import 'package:echo_mobile/pages/onboarding/wrapper.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
 import 'package:video_player/video_player.dart';
 
 class DeviceSelectionPage extends StatefulWidget {

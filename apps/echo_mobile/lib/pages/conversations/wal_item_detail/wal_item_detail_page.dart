@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:omi/backend/schema/bt_device/bt_device.dart';
-import 'package:omi/models/playback_state.dart';
-import 'package:omi/providers/sync_provider.dart';
-import 'package:omi/services/wals.dart';
-import 'package:omi/ui/molecules/omi_confirm_dialog.dart';
-import 'package:omi/utils/device.dart';
-import 'package:omi/utils/other/temp.dart';
-import 'package:omi/utils/other/time_utils.dart';
-import 'package:omi/widgets/waveform_section.dart';
+import 'package:echo_mobile/backend/schema/bt_device/bt_device.dart';
+import 'package:echo_mobile/models/playback_state.dart';
+import 'package:echo_mobile/providers/sync_provider.dart';
+import 'package:echo_mobile/services/wals.dart';
+import 'package:echo_mobile/ui/molecules/omi_confirm_dialog.dart';
+import 'package:echo_mobile/utils/device.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
+import 'package:echo_mobile/utils/other/time_utils.dart';
+import 'package:echo_mobile/widgets/waveform_section.dart';
 import 'package:provider/provider.dart';
 
 class WalItemDetailPage extends StatefulWidget {

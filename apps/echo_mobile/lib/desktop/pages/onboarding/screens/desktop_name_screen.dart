@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/ui/atoms/omi_text_input.dart';
-import 'package:omi/ui/atoms/omi_button.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/ui/atoms/omi_text_input.dart';
+import 'package:echo_mobile/ui/atoms/omi_button.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
 
 class DesktopNameScreen extends StatefulWidget {
   final VoidCallback onNext;

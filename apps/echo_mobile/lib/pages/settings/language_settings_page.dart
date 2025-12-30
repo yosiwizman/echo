@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/providers/capture_provider.dart';
-import 'package:omi/providers/home_provider.dart';
-import 'package:omi/providers/user_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/providers/capture_provider.dart';
+import 'package:echo_mobile/providers/home_provider.dart';
+import 'package:echo_mobile/providers/user_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
 import 'package:provider/provider.dart';
 
 class LanguageSettingsPage extends StatefulWidget {

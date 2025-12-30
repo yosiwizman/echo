@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
 
 class ReferralPage extends StatefulWidget {
   const ReferralPage({super.key});

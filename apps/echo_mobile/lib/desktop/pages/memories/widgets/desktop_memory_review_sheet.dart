@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:omi/backend/schema/memory.dart';
-import 'package:omi/providers/memories_provider.dart';
-import 'package:omi/utils/responsive/responsive_helper.dart';
-import 'package:omi/widgets/extensions/string.dart';
-import 'package:omi/ui/atoms/omi_icon_button.dart';
-import 'package:omi/ui/atoms/omi_button.dart';
-import 'package:omi/ui/molecules/omi_empty_state.dart';
-import 'package:omi/ui/molecules/omi_panel_header.dart';
-import 'package:omi/ui/atoms/omi_loading_badge.dart';
+import 'package:echo_mobile/backend/schema/memory.dart';
+import 'package:echo_mobile/providers/memories_provider.dart';
+import 'package:echo_mobile/utils/responsive/responsive_helper.dart';
+import 'package:echo_mobile/widgets/extensions/string.dart';
+import 'package:echo_mobile/ui/atoms/omi_icon_button.dart';
+import 'package:echo_mobile/ui/atoms/omi_button.dart';
+import 'package:echo_mobile/ui/molecules/omi_empty_state.dart';
+import 'package:echo_mobile/ui/molecules/omi_panel_header.dart';
+import 'package:echo_mobile/ui/atoms/omi_loading_badge.dart';
 
 class DesktopMemoryReviewSheet extends StatefulWidget {
   final List<Memory> memories;

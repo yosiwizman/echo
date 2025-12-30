@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:omi/backend/schema/app.dart';
-import 'package:omi/pages/apps/add_app.dart';
-import 'package:omi/pages/apps/list_item.dart';
-import 'package:omi/providers/app_provider.dart';
-import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/other/temp.dart';
+import 'package:echo_mobile/backend/schema/app.dart';
+import 'package:echo_mobile/pages/apps/add_app.dart';
+import 'package:echo_mobile/pages/apps/list_item.dart';
+import 'package:echo_mobile/providers/app_provider.dart';
+import 'package:echo_mobile/utils/analytics/mixpanel.dart';
+import 'package:echo_mobile/utils/other/temp.dart';
 import 'package:provider/provider.dart';
 
 class ManageCreatePage extends StatelessWidget {

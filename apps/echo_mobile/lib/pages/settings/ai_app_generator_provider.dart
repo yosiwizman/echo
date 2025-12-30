@@ -3,10 +3,10 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:omi/backend/http/api/apps.dart';
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/providers/app_provider.dart';
-import 'package:omi/utils/alerts/app_snackbar.dart';
+import 'package:echo_mobile/backend/http/api/apps.dart';
+import 'package:echo_mobile/backend/preferences.dart';
+import 'package:echo_mobile/providers/app_provider.dart';
+import 'package:echo_mobile/utils/alerts/app_snackbar.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// State enum for the AI app generation process
