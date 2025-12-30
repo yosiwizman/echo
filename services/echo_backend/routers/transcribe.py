@@ -10,10 +10,37 @@ from enum import Enum
 from typing import Dict, List, Optional, Set, Tuple, Callable
 
 import av
-import opuslib  # type: ignore
 import webrtcvad  # type: ignore
 
 import lc3  # lc3py
+
+# ---------------------------------------------------------------------------
+# Strict-mode flags for native dependencies
+# Default (CI/dev): opus is optional; errors only when decode is used.
+# ---------------------------------------------------------------------------
+_REQUIRE_SECRETS = os.environ.get('ECHO_REQUIRE_SECRETS', '').lower() in ('1', 'true')
+_REQUIRE_OPUS = os.environ.get('ECHO_REQUIRE_OPUS', '').lower() in ('1', 'true') or _REQUIRE_SECRETS
+
+
+def _get_opuslib():
+    """Return the opuslib module, importing lazily.
+
+    Raises:
+        RuntimeError: If libopus is not installed.
+    """
+    try:
+        import opuslib
+        return opuslib
+    except Exception as e:
+        if _REQUIRE_OPUS:
+            raise RuntimeError(
+                f"Opus library required but not available: {e}. "
+                "Install libopus or disable ECHO_REQUIRE_OPUS / ECHO_REQUIRE_SECRETS."
+            ) from e
+        raise RuntimeError(
+            f"Opus decoding not available (libopus missing): {e}. "
+            "Install libopus to enable Opus audio decoding."
+        ) from e
 
 from fastapi import APIRouter, Depends
 from fastapi.websockets import WebSocket, WebSocketDisconnect
@@ -1380,7 +1407,7 @@ async def _listen(
     lc3_decoder = None
 
     if codec == 'opus':
-        opus_decoder = opuslib.Decoder(sample_rate, 1)
+        opus_decoder = _get_opuslib().Decoder(sample_rate, 1)
     elif codec == 'aac':
         aac_decoder = AACDecoder(uid=uid, session_id=session_id, sample_rate=sample_rate, channels=channels)
     elif codec == 'lc3':

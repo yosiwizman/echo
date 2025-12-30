@@ -117,15 +117,16 @@ This README provides a quick setup guide for the Omi backend. For a comprehensiv
 
 ## CI / Development: Optional Secrets
 
-For CI pipelines and local onboarding, API secrets (OpenAI, encryption, GCP, Typesense) are **optional by default**. The backend can be imported and health tests can run without setting these secrets.
+For CI pipelines and local onboarding, API secrets and native libraries (OpenAI, encryption, GCP, Typesense, libopus) are **optional by default**. The backend can be imported and health tests can run without setting these secrets or installing native dependencies.
 
-- LLM clients, encryption functions, GCP Storage, and Typesense search are **lazy-initialized** — they only require secrets/credentials when actually invoked.
+- LLM clients, encryption functions, GCP Storage, Typesense search, and Opus decoding are **lazy-initialized** — they only require secrets/libraries when actually invoked.
 - To enforce production-like strict validation at startup, set one or more of:
-  - `ECHO_REQUIRE_SECRETS=1` — require all secrets (OpenAI, encryption, GCP, Typesense)
+  - `ECHO_REQUIRE_SECRETS=1` — require all secrets and native libs (OpenAI, encryption, GCP, Typesense, Opus)
   - `ECHO_REQUIRE_OPENAI=1` — require `OPENAI_API_KEY`
   - `ECHO_REQUIRE_ENCRYPTION=1` — require `ENCRYPTION_SECRET`
   - `ECHO_REQUIRE_GCP=1` — require GCP credentials (ADC or `SERVICE_ACCOUNT_JSON`)
   - `ECHO_REQUIRE_TYPESENSE=1` — require `TYPESENSE_API_KEY`
+  - `ECHO_REQUIRE_OPUS=1` — require `libopus` native library for Opus audio decoding
 
 This pattern allows deterministic CI without secrets while preserving fail-fast behavior in production.
 

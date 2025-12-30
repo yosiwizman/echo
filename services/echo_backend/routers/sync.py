@@ -11,8 +11,35 @@ from typing import List
 
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Query, Header, Request, Response
 from fastapi.responses import StreamingResponse
-from opuslib import Decoder
 from pydub import AudioSegment
+
+# ---------------------------------------------------------------------------
+# Strict-mode flags for native dependencies
+# Default (CI/dev): opus is optional; errors only when decode is used.
+# ---------------------------------------------------------------------------
+_REQUIRE_SECRETS = os.environ.get('ECHO_REQUIRE_SECRETS', '').lower() in ('1', 'true')
+_REQUIRE_OPUS = os.environ.get('ECHO_REQUIRE_OPUS', '').lower() in ('1', 'true') or _REQUIRE_SECRETS
+
+
+def _get_opus_decoder(sample_rate: int = 16000, channels: int = 1):
+    """Return an opuslib Decoder, importing lazily.
+
+    Raises:
+        RuntimeError: If libopus is not installed.
+    """
+    try:
+        from opuslib import Decoder
+        return Decoder(sample_rate, channels)
+    except Exception as e:
+        if _REQUIRE_OPUS:
+            raise RuntimeError(
+                f"Opus library required but not available: {e}. "
+                "Install libopus or disable ECHO_REQUIRE_OPUS / ECHO_REQUIRE_SECRETS."
+            ) from e
+        raise RuntimeError(
+            f"Opus decoding not available (libopus missing): {e}. "
+            "Install libopus to enable Opus audio decoding."
+        ) from e
 
 from database import conversations as conversations_db
 from database import users as users_db
@@ -392,7 +419,7 @@ def decode_opus_file_to_wav(opus_file_path, wav_file_path, sample_rate=16000, ch
         print(f"File not found: {opus_file_path}")
         return False
 
-    decoder = Decoder(sample_rate, channels)
+    decoder = _get_opus_decoder(sample_rate, channels)
     frame_count = 0
 
     try:
