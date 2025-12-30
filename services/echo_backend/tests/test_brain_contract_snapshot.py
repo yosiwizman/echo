@@ -16,8 +16,6 @@ BACKEND_ROOT = Path(__file__).resolve().parents[1]
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
-from main import app
-
 
 # Force stub provider for deterministic testing
 @pytest.fixture(autouse=True)
@@ -28,7 +26,12 @@ def force_stub_provider(monkeypatch):
 
 @pytest.fixture
 def client():
-    """FastAPI test client."""
+    """FastAPI test client.
+    
+    Import main AFTER env vars are set (via force_stub_provider fixture).
+    This allows main.py to import dependencies gracefully in test mode.
+    """
+    from main import app
     return TestClient(app)
 
 
