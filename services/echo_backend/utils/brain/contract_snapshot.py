@@ -190,6 +190,21 @@ def normalize_contract(contract: Dict[str, Any]) -> Dict[str, Any]:
         "components": remove_non_contract_fields(contract.get("components", {})),
     }
     
+    # Canonicalize Pydantic *-Input/*-Output schema variants
+    # FastAPI/Pydantic may emit either "X" or "X-Input" or both depending on version
+    # To ensure determinism, always create base schema "X" from "X-Input" if present
+    schemas = normalized.get("components", {}).get("schemas", {})
+    if schemas:
+        import copy
+        
+        # Find all -Input variants and create/overwrite base schemas
+        input_variants = [name for name in schemas.keys() if name.endswith("-Input")]
+        for input_name in input_variants:
+            base_name = input_name[:-6]  # Remove "-Input" suffix
+            # Always use -Input as the canonical source for the base schema
+            # This ensures determinism even when FastAPI emits both or just one
+            schemas[base_name] = copy.deepcopy(schemas[input_name])
+    
     return normalized
 
 
