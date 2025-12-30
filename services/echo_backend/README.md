@@ -138,6 +138,10 @@ To enable GCP Storage locally, configure Application Default Credentials:
 gcloud auth application-default login --project <project-id>
 ```
 
+## API Documentation
+
+- **[Brain API v1](../../docs/brain_api.md)** — Conversational intelligence endpoints (chat, streaming, sessions)
+
 ## Additional Resources
 
 - [Full Backend Setup Documentation](https://docs.omi.me/developer/backend/Backend_Setup)
