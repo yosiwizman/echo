@@ -2,6 +2,35 @@
   "components": {
     "schemas": {
       "BrainHealthResponse": {
+        "$ref": "#/components/schemas/BrainHealthResponse-Input"
+      },
+      "BrainHealthResponse-Input": {
+        "properties": {
+          "ok": {
+            "default": true,
+            "type": "boolean"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "version": {
+            "default": "1.0.0",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ok",
+          "timestamp",
+          "version",
+          "provider"
+        ],
+        "type": "object"
+      },
+      "BrainHealthResponse-Output": {
         "properties": {
           "ok": {
             "default": true,
@@ -28,6 +57,45 @@
         "type": "object"
       },
       "ChatRequest": {
+        "$ref": "#/components/schemas/ChatRequest-Input"
+      },
+      "ChatRequest-Input": {
+        "properties": {
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            },
+            "type": "array"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "messages"
+        ],
+        "type": "object"
+      },
+      "ChatRequest-Output": {
         "properties": {
           "messages": {
             "items": {
@@ -64,6 +132,46 @@
         "type": "object"
       },
       "ChatResponse": {
+        "$ref": "#/components/schemas/ChatResponse-Input"
+      },
+      "ChatResponse-Input": {
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "session_id": {
+            "type": "string"
+          },
+          "usage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UsageInfo"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "session_id",
+          "message"
+        ],
+        "type": "object"
+      },
+      "ChatResponse-Output": {
         "properties": {
           "message": {
             "$ref": "#/components/schemas/Message"
@@ -101,6 +209,20 @@
         "type": "object"
       },
       "HTTPValidationError": {
+        "$ref": "#/components/schemas/HTTPValidationError-Input"
+      },
+      "HTTPValidationError-Input": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "HTTPValidationError-Output": {
         "properties": {
           "detail": {
             "items": {
@@ -112,24 +234,7 @@
         "type": "object"
       },
       "Message": {
-        "properties": {
-          "content": {
-            "type": "string"
-          },
-          "role": {
-            "enum": [
-              "system",
-              "user",
-              "assistant"
-            ],
-            "type": "string"
-          }
-        },
-        "required": [
-          "role",
-          "content"
-        ],
-        "type": "object"
+        "$ref": "#/components/schemas/Message-Input"
       },
       "Message-Input": {
         "properties": {
@@ -151,7 +256,49 @@
         ],
         "type": "object"
       },
+      "Message-Output": {
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "system",
+              "user",
+              "assistant"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "content"
+        ],
+        "type": "object"
+      },
       "UsageInfo": {
+        "$ref": "#/components/schemas/UsageInfo-Input"
+      },
+      "UsageInfo-Input": {
+        "properties": {
+          "completion_tokens": {
+            "type": "integer"
+          },
+          "prompt_tokens": {
+            "type": "integer"
+          },
+          "total_tokens": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "prompt_tokens",
+          "completion_tokens",
+          "total_tokens"
+        ],
+        "type": "object"
+      },
+      "UsageInfo-Output": {
         "properties": {
           "completion_tokens": {
             "type": "integer"
@@ -171,6 +318,38 @@
         "type": "object"
       },
       "ValidationError": {
+        "$ref": "#/components/schemas/ValidationError-Input"
+      },
+      "ValidationError-Input": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "type": "object"
+      },
+      "ValidationError-Output": {
         "properties": {
           "loc": {
             "items": {

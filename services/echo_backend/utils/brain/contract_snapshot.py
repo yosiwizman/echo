@@ -190,22 +190,92 @@ def normalize_contract(contract: Dict[str, Any]) -> Dict[str, Any]:
         "components": remove_non_contract_fields(contract.get("components", {})),
     }
     
-    # Canonicalize Pydantic *-Input/*-Output schema variants
-    # FastAPI/Pydantic may emit either "X" or "X-Input" or both depending on version
-    # To ensure determinism, always create base schema "X" from "X-Input" if present
+    # Canonicalize Pydantic schema variants (symmetric)
+    # FastAPI/Pydantic v2 may emit X, X-Input, X-Output in various combinations
+    # To ensure determinism, create symmetric aliases with base as stable $ref
     schemas = normalized.get("components", {}).get("schemas", {})
     if schemas:
-        import copy
-        
-        # Find all -Input variants and create/overwrite base schemas
-        input_variants = [name for name in schemas.keys() if name.endswith("-Input")]
-        for input_name in input_variants:
-            base_name = input_name[:-6]  # Remove "-Input" suffix
-            # Always use -Input as the canonical source for the base schema
-            # This ensures determinism even when FastAPI emits both or just one
-            schemas[base_name] = copy.deepcopy(schemas[input_name])
+        canonicalize_schema_variants(schemas)
     
     return normalized
+
+
+def canonicalize_schema_variants(schemas: Dict[str, Any]) -> None:
+    """Canonicalize Pydantic schema naming variants for deterministic hashing.
+    
+    FastAPI/Pydantic may emit schemas as:
+    - Just "Message" (base)
+    - Just "Message-Input"
+    - Just "Message-Output"
+    - Various combinations of the above
+    
+    To ensure determinism across environments:
+    1. Group schemas by stem (base name without -Input/-Output suffix)
+    2. For each stem with variants, create symmetric aliases
+    3. Replace base schema with $ref to -Input (preferred) or -Output variant
+    
+    This makes base schema deterministic regardless of which variants exist.
+    
+    Args:
+        schemas: Dictionary of schema definitions (mutated in place).
+    """
+    import copy
+    
+    # Find all schema stems (groups of related schemas)
+    stems: Dict[str, Dict[str, str]] = {}  # stem -> {"base": name, "input": name, "output": name}
+    
+    for schema_name in list(schemas.keys()):
+        if schema_name.endswith("-Input"):
+            stem = schema_name[:-6]
+            if stem not in stems:
+                stems[stem] = {}
+            stems[stem]["input"] = schema_name
+        elif schema_name.endswith("-Output"):
+            stem = schema_name[:-7]
+            if stem not in stems:
+                stems[stem] = {}
+            stems[stem]["output"] = schema_name
+        else:
+            # Base schema (no suffix)
+            stem = schema_name
+            if stem not in stems:
+                stems[stem] = {}
+            stems[stem]["base"] = schema_name
+    
+    # Canonicalize each stem group
+    for stem, variants in stems.items():
+        has_base = "base" in variants
+        has_input = "input" in variants
+        has_output = "output" in variants
+        
+        # Determine canonical source (prefer -Input, fallback to -Output, then base)
+        if has_input:
+            canonical_source = variants["input"]
+            canonical_content = copy.deepcopy(schemas[canonical_source])
+        elif has_output:
+            canonical_source = variants["output"]
+            canonical_content = copy.deepcopy(schemas[canonical_source])
+        elif has_base:
+            canonical_source = variants["base"]
+            canonical_content = copy.deepcopy(schemas[canonical_source])
+        else:
+            continue  # No variants for this stem
+        
+        # Create symmetric aliases if missing
+        input_name = f"{stem}-Input"
+        output_name = f"{stem}-Output"
+        
+        if not has_input:
+            # Create -Input from canonical content
+            schemas[input_name] = canonical_content
+        
+        if not has_output:
+            # Create -Output from canonical content
+            schemas[output_name] = copy.deepcopy(canonical_content)
+        
+        # Always set/replace base schema as $ref to -Input for determinism
+        # This prevents content-based drift - base always points to -Input
+        schemas[stem] = {"$ref": f"#/components/schemas/{input_name}"}
 
 
 def compute_contract_hash(normalized_contract: Dict[str, Any]) -> str:
