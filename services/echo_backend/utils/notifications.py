@@ -329,6 +329,16 @@ def send_action_item_data_message(user_id: str, action_item_id: str, description
     _send_to_user(user_id, tag, data=data, is_background=True, priority='high')
 
 
+def _handle_send_error(exception: Exception, token: str):
+    """Handle FCM send errors and remove invalid tokens."""
+    error_code = getattr(exception, 'code', None)
+    if error_code in PERMANENT_FAILURE_CODES:
+        notification_db.remove_token(token)
+        print(f'Invalid token removed - Error: {error_code}')
+    else:
+        print(f'FCM send failed: {exception} ({error_code})')
+
+
 def send_merge_completed_message(user_id: str, merged_conversation_id: str, removed_conversation_ids: list):
     """
     Sends a data-only FCM message when conversation merge completes.
