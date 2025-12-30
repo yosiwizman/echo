@@ -44,9 +44,9 @@ This README provides a quick setup guide for the Omi backend. For a comprehensiv
    - Mac: `brew install opus`
    - Windows: You should already have it if you're on Windows 10 version 1903 and above
 
-8. Move to the backend directory: `cd backend`
+8. Move to the backend directory: `cd services/echo_backend`
 
-9. Create your environment file: `cp .env.template .env`
+9. Create your environment file: `cp .env.example .env`
 
 10. Set up Redis
     - [Upstash](https://console.upstash.com/) is recommended - sign up and create a free instance
