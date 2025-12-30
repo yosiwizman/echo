@@ -259,6 +259,25 @@ The generator script (`scripts/generate_brain_contract_v1_snapshot.py`):
 The test uses identical extraction and normalization logic via shared
 utilities in `utils/brain/contract_snapshot.py`.
 
+### Schema Canonicalization
+
+**FastAPI/Pydantic naming drift**: Depending on version and configuration,
+FastAPI may emit schema names as:
+- `Message` (output model)
+- `Message-Input` (input model variant)
+- Both `Message` and `Message-Input`
+
+To ensure **deterministic contract hashing**, the snapshot normalization
+automatically canonicalizes base schemas from `-Input` variants:
+
+- For every `X-Input` schema, a base schema `X` is created/overwritten
+  with a deep copy of `X-Input`
+- This ensures `X` always exists regardless of FastAPI emission behavior
+- Both the committed snapshot and CI-generated contracts use identical logic
+
+This prevents hash mismatches when different environments emit different
+schema name variants.
+
 ## Related Documentation
 
 - `docs/brain_api.md` - Brain API reference
