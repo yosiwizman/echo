@@ -147,21 +147,32 @@ cd services/echo_backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
+# Create env file
+cp .env.example .env
+
 # Install dependencies
+# NOTE: On Windows, uvloop is skipped automatically via environment markers.
 pip install -r requirements.txt
 
 # Run the server
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn main:app --reload --host 0.0.0.0 --port 8000 --env-file .env
 ```
 
 Or with Docker:
 
 ```bash
 cd infra
-docker-compose up echo-backend
+docker compose up echo-backend
 ```
 
-The API will be available at `http://localhost:8000`. Health check: `GET /healthz`
+The API will be available at `http://localhost:8000`.
+- HTTP health: `GET /healthz`
+- WebSocket health: connect to `ws://localhost:8000/ws/health`
+
+## API Documentation
+FastAPI serves Swagger UI and OpenAPI docs by default:
+- Swagger UI: `http://localhost:8000/docs`
+- OpenAPI JSON: `http://localhost:8000/openapi.json`
 
 ### Running the Mobile App
 
@@ -177,17 +188,6 @@ flutter run
 
 Configure the backend URL in `lib/config/app_config.dart`.
 
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/healthz` | Health check |
-| POST | `/chat` | Chat with Echo (stub) |
-| POST | `/notes` | Create a note |
-| GET | `/notes` | List all notes |
-| GET | `/notes/{id}` | Get note by ID |
-| DELETE | `/notes/{id}` | Delete a note |
-
 ## Development
 
 ### Backend Commands
@@ -195,17 +195,14 @@ Configure the backend URL in `lib/config/app_config.dart`.
 ```bash
 cd services/echo_backend
 
-# Lint
-ruff check .
+# Install dev tooling
+pip install -r requirements-dev.txt
 
-# Type check
-mypy app
+# Lint (fail-fast)
+ruff check . --select E9,F63,F7,F82
 
-# Test
+# Unit/smoke tests (integration tests are excluded by default)
 pytest
-
-# Format
-ruff format .
 ```
 
 ### Mobile Commands
