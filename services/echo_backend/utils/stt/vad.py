@@ -1,18 +1,86 @@
 import os
 from enum import Enum
+from typing import Optional, Tuple, Any
 
 import numpy as np
 import requests
-import torch
 from fastapi import HTTPException
 from pydub import AudioSegment
 
 from database import redis_db
 
-torch.set_num_threads(1)
-torch.hub.set_dir('pretrained_models')
-model, utils = torch.hub.load(repo_or_dir='snakers4/silero-vad', model='silero_vad')
-(get_speech_timestamps, save_audio, read_audio, VADIterator, collect_chunks) = utils
+# ---------------------------------------------------------------------------
+# Lazy VAD model initialization (avoid network downloads at import time)
+# Default (CI/dev): VAD model is optional; downloads only when VAD is invoked.
+# Set ECHO_DISABLE_MODEL_DOWNLOADS=1 to prevent downloads entirely.
+# ---------------------------------------------------------------------------
+_DISABLE_DOWNLOADS = os.environ.get('ECHO_DISABLE_MODEL_DOWNLOADS', '').lower() in ('1', 'true')
+
+_vad_model: Optional[Any] = None
+_vad_utils: Optional[Tuple] = None
+_vad_loaded: bool = False
+
+
+def _get_vad_model_and_utils():
+    """Return the silero-vad model and utils, loading lazily on first call.
+
+    Raises:
+        RuntimeError: If downloads are disabled and model is not cached.
+    """
+    global _vad_model, _vad_utils, _vad_loaded
+
+    if not _vad_loaded:
+        import torch
+        torch.set_num_threads(1)
+        torch.hub.set_dir('pretrained_models')
+
+        if _DISABLE_DOWNLOADS:
+            # Check if model is already cached
+            cache_dir = os.path.join('pretrained_models', 'snakers4_silero-vad_master')
+            if not os.path.exists(cache_dir):
+                raise RuntimeError(
+                    "VAD model not cached and ECHO_DISABLE_MODEL_DOWNLOADS=1. "
+                    "Run locally first to cache the model, or unset the flag."
+                )
+
+        _vad_model, _vad_utils = torch.hub.load(
+            repo_or_dir='snakers4/silero-vad',
+            model='silero_vad',
+            trust_repo=True
+        )
+        _vad_loaded = True
+
+    return _vad_model, _vad_utils
+
+
+def _get_vad_model():
+    """Return the VAD model."""
+    model, _ = _get_vad_model_and_utils()
+    return model
+
+
+def _get_vad_utils():
+    """Return the VAD utility functions."""
+    _, utils = _get_vad_model_and_utils()
+    return utils
+
+
+def _get_speech_timestamps_func():
+    """Return the get_speech_timestamps function."""
+    utils = _get_vad_utils()
+    return utils[0]
+
+
+def _get_read_audio_func():
+    """Return the read_audio function."""
+    utils = _get_vad_utils()
+    return utils[2]
+
+
+def _get_vad_iterator_class():
+    """Return the VADIterator class."""
+    utils = _get_vad_utils()
+    return utils[3]
 
 
 class SpeechState(str, Enum):
@@ -50,6 +118,9 @@ def is_speech_present(data, vad_iterator, window_size_samples=256):
 
 
 def is_audio_empty(file_path, sample_rate=8000):
+    read_audio = _get_read_audio_func()
+    get_speech_timestamps = _get_speech_timestamps_func()
+    model = _get_vad_model()
     wav = read_audio(file_path)
     timestamps = get_speech_timestamps(wav, model, sampling_rate=sample_rate)
     if len(timestamps) == 1:

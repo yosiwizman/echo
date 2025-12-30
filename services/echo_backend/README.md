@@ -119,7 +119,7 @@ This README provides a quick setup guide for the Omi backend. For a comprehensiv
 
 For CI pipelines and local onboarding, API secrets and native libraries (OpenAI, encryption, GCP, Typesense, libopus) are **optional by default**. The backend can be imported and health tests can run without setting these secrets or installing native dependencies.
 
-- LLM clients, encryption functions, GCP Storage, Typesense search, and Opus decoding are **lazy-initialized** — they only require secrets/libraries when actually invoked.
+- LLM clients, encryption functions, GCP Storage, Typesense search, Opus decoding, and VAD models are **lazy-initialized** — they only require secrets/libraries/downloads when actually invoked.
 - To enforce production-like strict validation at startup, set one or more of:
   - `ECHO_REQUIRE_SECRETS=1` — require all secrets and native libs (OpenAI, encryption, GCP, Typesense, Opus)
   - `ECHO_REQUIRE_OPENAI=1` — require `OPENAI_API_KEY`
@@ -127,8 +127,10 @@ For CI pipelines and local onboarding, API secrets and native libraries (OpenAI,
   - `ECHO_REQUIRE_GCP=1` — require GCP credentials (ADC or `SERVICE_ACCOUNT_JSON`)
   - `ECHO_REQUIRE_TYPESENSE=1` — require `TYPESENSE_API_KEY`
   - `ECHO_REQUIRE_OPUS=1` — require `libopus` native library for Opus audio decoding
+- To prevent model downloads (CI offline mode):
+  - `ECHO_DISABLE_MODEL_DOWNLOADS=1` — prevent silero-vad download; requires pre-cached model
 
-This pattern allows deterministic CI without secrets while preserving fail-fast behavior in production.
+This pattern allows deterministic CI without secrets or network access while preserving fail-fast behavior in production.
 
 To enable GCP Storage locally, configure Application Default Credentials:
 ```bash
