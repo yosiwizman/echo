@@ -1135,16 +1135,9 @@ async def _listen(
 
     # Transcripts
     #
-translation_enabled = translation_language is not None
-language_cache = TranscriptSegmentLanguageCache()
-
-_translation_service: TranslationService | None = None
-
-def _get_translation_service() -> TranslationService:
-    global _translation_service
-    if _translation_service is None:
-        _translation_service = TranslationService()
-    return _translation_service
+    translation_enabled = translation_language is not None
+    language_cache = TranscriptSegmentLanguageCache()
+    translation_service = TranslationService()
 
     async def translate(segments: List[TranscriptSegment], conversation_id: str):
         if not translation_language:
@@ -1165,7 +1158,7 @@ def _get_translation_service() -> TranslationService:
                     continue
 
                 # Translation
-                translated_text = _get_translation_service().translate_text_by_sentence(translation_language, segment_text)
+                translated_text = translation_service.translate_text_by_sentence(translation_language, segment_text)
 
                 if translated_text == segment_text:
                     # If translation is same as original, it's likely in the target language.
