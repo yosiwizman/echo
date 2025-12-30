@@ -27,25 +27,35 @@ def build_brain_v1_contract(openapi_schema: Dict[str, Any]) -> Dict[str, Any]:
     
     # Extract Brain API schemas (referenced components)
     brain_schemas = {}
+    
+    def extract_schema_refs(obj: Any, refs: Set[str]) -> None:
+        """Recursively extract all $ref values from nested structures."""
+        if isinstance(obj, dict):
+            if "$ref" in obj:
+                refs.add(obj["$ref"].split("/")[-1])
+            for value in obj.values():
+                extract_schema_refs(value, refs)
+        elif isinstance(obj, list):
+            for item in obj:
+                extract_schema_refs(item, refs)
+    
+    # Collect all schema refs from brain endpoints
+    all_refs: Set[str] = set()
     for path_spec in brain_v1_paths.values():
         for method_spec in path_spec.values():
-            # Collect schema refs from responses
+            # Collect from ALL responses (including 422, default, etc)
             for response in method_spec.get("responses", {}).values():
-                for content_spec in response.get("content", {}).values():
-                    schema_ref = content_spec.get("schema", {}).get("$ref", "")
-                    if schema_ref:
-                        schema_name = schema_ref.split("/")[-1]
-                        if schema_name in openapi_schema.get("components", {}).get("schemas", {}):
-                            brain_schemas[schema_name] = openapi_schema["components"]["schemas"][schema_name]
+                extract_schema_refs(response, all_refs)
             
-            # Collect schema refs from request bodies
+            # Collect from request body
             request_body = method_spec.get("requestBody", {})
-            for content_spec in request_body.get("content", {}).values():
-                schema_ref = content_spec.get("schema", {}).get("$ref", "")
-                if schema_ref:
-                    schema_name = schema_ref.split("/")[-1]
-                    if schema_name in openapi_schema.get("components", {}).get("schemas", {}):
-                        brain_schemas[schema_name] = openapi_schema["components"]["schemas"][schema_name]
+            extract_schema_refs(request_body, all_refs)
+    
+    # Add all discovered schemas to brain_schemas
+    all_components = openapi_schema.get("components", {}).get("schemas", {})
+    for ref_name in all_refs:
+        if ref_name in all_components:
+            brain_schemas[ref_name] = all_components[ref_name]
     
     # Recursively collect nested schema refs
     def collect_nested_schemas(schema_name: str, seen: Set[str]) -> None:
@@ -86,6 +96,27 @@ def build_brain_v1_contract(openapi_schema: Dict[str, Any]) -> Dict[str, Any]:
     seen_schemas: Set[str] = set()
     for schema_name in list(brain_schemas.keys()):
         collect_nested_schemas(schema_name, seen_schemas)
+    
+    # Handle Pydantic naming variations (Message vs Message-Input)
+    # Include both if either exists to handle FastAPI/Pydantic naming drift
+    message_variants = []
+    for schema_name in list(brain_schemas.keys()):
+        if "Message" in schema_name:
+            message_variants.append(schema_name)
+    
+    # If we have any Message variant, include all Message-related schemas
+    if message_variants:
+        all_components = openapi_schema.get("components", {}).get("schemas", {})
+        for candidate in ["Message", "Message-Input", "Message-Output"]:
+            if candidate in all_components and candidate not in brain_schemas:
+                brain_schemas[candidate] = all_components[candidate]
+    
+    # Always include FastAPI's standard validation error schemas if present
+    # These are automatically added for 422 responses by FastAPI/Pydantic
+    all_components = openapi_schema.get("components", {}).get("schemas", {})
+    for error_schema in ["HTTPValidationError", "ValidationError"]:
+        if error_schema in all_components and error_schema not in brain_schemas:
+            brain_schemas[error_schema] = all_components[error_schema]
     
     # Build current Brain API v1 contract
     contract = {
