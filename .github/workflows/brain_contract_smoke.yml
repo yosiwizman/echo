@@ -30,6 +30,26 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pytest
+
+      - name: Contract Test - Schema Snapshot
+        run: |
+          echo "Validating Brain API v1 contract against committed snapshot..."
+          export ECHO_BRAIN_PROVIDER=stub
+          export ECHO_DISABLE_MODEL_DOWNLOADS=1
+          export ECHO_REQUIRE_SECRETS=0
+          pytest tests/test_brain_contract_snapshot.py -v
+          echo "✓ Contract snapshot validated (no breaking changes)"
+
+      - name: Upload debug contracts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: contract-debug-files
+          path: |
+            /tmp/contract_committed.json
+            /tmp/contract_current.json
+          if-no-files-found: warn
 
       - name: Start backend server (stub mode)
         run: |
