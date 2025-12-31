@@ -59,12 +59,18 @@ def force_stub_provider(monkeypatch):
 
 @pytest.fixture
 def client():
-    """FastAPI test client.
+    """FastAPI test client with brain-only app.
     
-    Import main AFTER env vars are set (via force_stub_provider fixture).
-    This allows main.py to import dependencies gracefully in test mode.
+    Uses a minimal app with only the brain router to ensure schema parity
+    with the snapshot generator. Both use the same FastAPI config
+    (separate_input_output_schemas=False) and router setup.
     """
-    from main import app
+    from fastapi import FastAPI
+    from routers import brain
+    
+    # Create minimal app with same config as main.py
+    app = FastAPI(separate_input_output_schemas=False)
+    app.include_router(brain.router, prefix="/v1/brain", tags=["brain"])
     return TestClient(app)
 
 
