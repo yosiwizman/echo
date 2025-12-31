@@ -75,7 +75,13 @@ def _init_firebase_admin() -> None:
 
 _init_firebase_admin()
 
-app = FastAPI()
+app = FastAPI(
+    # Disable separate input/output schemas to ensure deterministic OpenAPI generation.
+    # Without this, Pydantic may emit Message, Message-Input, Message-Output variants
+    # in different orders depending on environment, causing contract hash drift.
+    # See: docs/brain_versioning.md for rationale.
+    separate_input_output_schemas=False,
+)
 
 app.include_router(transcribe.router)
 app.include_router(conversations.router)
