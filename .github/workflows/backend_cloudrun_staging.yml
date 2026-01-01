@@ -134,6 +134,13 @@ jobs:
         run: |
           gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
 
+      - name: Compute build timestamp
+        id: buildtime
+        run: |
+          BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "build_time=$BUILD_TIME" >> $GITHUB_OUTPUT
+          echo "Build time: $BUILD_TIME"
+
       - name: Build and push image to Artifact Registry
         id: build
         run: |
@@ -164,6 +171,10 @@ jobs:
           region: ${{ env.GCP_REGION }}
           image: ${{ steps.build.outputs.image }}
           flags: '--allow-unauthenticated'
+          env_vars: |
+            APP_ENV=staging
+            GIT_SHA=${{ github.sha }}
+            BUILD_TIME=${{ steps.buildtime.outputs.build_time }}
 
       - name: Show deployment info
         run: |
@@ -205,8 +216,10 @@ jobs:
               echo "Your service is live at:"
               echo "  $SERVICE_URL"
               echo ""
-              echo "Endpoints:"
+          echo "Endpoints:"
+              echo "  Root: ${SERVICE_URL}/"
               echo "  Health: ${SERVICE_URL}/health"
+              echo "  Version: ${SERVICE_URL}/version"
               echo "  API Docs: ${SERVICE_URL}/docs"
               exit 0
             fi
