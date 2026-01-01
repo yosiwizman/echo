@@ -148,6 +148,13 @@ jobs:
         run: |
           gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
 
+      - name: Compute build timestamp
+        id: buildtime
+        run: |
+          BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "build_time=$BUILD_TIME" >> $GITHUB_OUTPUT
+          echo "Build time: $BUILD_TIME"
+
       - name: Determine image tag
         id: tag
         run: |
@@ -195,7 +202,9 @@ jobs:
           # Change --min-instances=1 for always-warm production
           flags: '--allow-unauthenticated --min-instances=0 --max-instances=3'
           env_vars: |
-            ECHO_ENV=production
+            APP_ENV=production
+            GIT_SHA=${{ github.sha }}
+            BUILD_TIME=${{ steps.buildtime.outputs.build_time }}
 
       - name: Show deployment info
         run: |
@@ -242,6 +251,7 @@ jobs:
               echo "Endpoints:"
               echo "   Root: ${SERVICE_URL}/"
               echo "   Health: ${SERVICE_URL}/health"
+              echo "   Version: ${SERVICE_URL}/version"
               echo "   API Docs: ${SERVICE_URL}/docs"
               exit 0
             fi
