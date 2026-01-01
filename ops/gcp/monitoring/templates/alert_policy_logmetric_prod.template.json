@@ -25,7 +25,7 @@
     "{{CHANNEL_NAME}}"
   ],
   "alertStrategy": {
-    "autoClose": "600s"
+    "autoClose": "1800s"
   },
   "documentation": {
     "content": "## Echo Backend PROD - Alert Self-Test Triggered\n\nThis is a **test alert** triggered by the `/ops/alert-test` endpoint.\n\n### What happened?\nSomeone invoked the alerting self-test endpoint, which logs `ECHO_ALERT_TEST_TRIGGERED`.\nThis fires the log-based metric `echo_alert_test_prod` and triggers this alert.\n\n### Action Required\n**None** - This is expected behavior when testing the alerting pipeline.\n\n### Verification\nIf you did NOT trigger this test, investigate who has access to the `ALERT_TEST_TOKEN`.",
