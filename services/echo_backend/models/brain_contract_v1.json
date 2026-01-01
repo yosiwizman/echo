@@ -75,6 +75,19 @@
               }
             ]
           },
+          "ok": {
+            "type": "boolean"
+          },
+          "runtime": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RuntimeMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "session_id": {
             "type": "string"
           },
@@ -122,6 +135,30 @@
         "required": [
           "content",
           "role"
+        ],
+        "type": "object"
+      },
+      "RuntimeMetadata": {
+        "properties": {
+          "build_time": {
+            "type": "string"
+          },
+          "env": {
+            "type": "string"
+          },
+          "git_sha": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "trace_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider",
+          "trace_id"
         ],
         "type": "object"
       },

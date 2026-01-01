@@ -33,12 +33,23 @@ class UsageInfo(BaseModel):
     total_tokens: int = Field(default=0, description="Total tokens used")
 
 
+class RuntimeMetadata(BaseModel):
+    """Runtime metadata included in responses for observability."""
+    trace_id: str = Field(description="Unique trace ID for this request")
+    provider: str = Field(description="Active brain provider (stub/openai)")
+    env: str = Field(default="unknown", description="Deployment environment (staging/production/unknown)")
+    git_sha: str = Field(default="unknown", description="Git commit SHA of the deployed version")
+    build_time: str = Field(default="unknown", description="Build timestamp of the deployed version")
+
+
 class ChatResponse(BaseModel):
     """Response from a chat completion."""
+    ok: bool = Field(default=True, description="Request success status")
     session_id: str = Field(description="Session identifier")
     message: Message = Field(description="The assistant's response message")
     usage: Optional[UsageInfo] = Field(default=None, description="Token usage information")
     metadata: Optional[Dict[str, Any]] = Field(default=None, description="Optional response metadata")
+    runtime: Optional[RuntimeMetadata] = Field(default=None, description="Runtime metadata for observability")
 
 
 class StreamEventType(str, Enum):

@@ -174,6 +174,14 @@ FastAPI serves Swagger UI and OpenAPI docs by default:
 - Swagger UI: `http://localhost:8000/docs`
 - OpenAPI JSON: `http://localhost:8000/openapi.json`
 
+### Brain Chat API
+The Brain Chat API provides conversational AI endpoints at `/v1/brain/*`:
+- `POST /v1/brain/chat` — Chat completion (non-streaming)
+- `POST /v1/brain/chat/stream` — Streaming chat via SSE
+- `GET /v1/brain/health` — Brain API health check
+
+See [docs/brain_api.md](docs/brain_api.md) for full documentation.
+
 ### Running the Mobile App
 
 ```bash
