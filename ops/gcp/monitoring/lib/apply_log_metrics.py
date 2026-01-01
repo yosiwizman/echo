@@ -12,7 +12,6 @@ import json
 import os
 import subprocess
 import sys
-from pathlib import Path
 
 
 def run_gcloud(args: list, check: bool = True) -> subprocess.CompletedProcess:
@@ -51,7 +50,7 @@ def find_metric_by_name(metrics: list, metric_name: str) -> dict:
 
 def create_log_metric(project_id: str, metric_name: str, filter_str: str, description: str) -> dict:
     """Create a new log-based counter metric."""
-    result = run_gcloud([
+    run_gcloud([
         "logging", "metrics", "create", metric_name,
         "--project", project_id,
         f"--log-filter={filter_str}",
@@ -63,7 +62,7 @@ def create_log_metric(project_id: str, metric_name: str, filter_str: str, descri
 
 def update_log_metric(project_id: str, metric_name: str, filter_str: str, description: str) -> dict:
     """Update an existing log-based metric."""
-    result = run_gcloud([
+    run_gcloud([
         "logging", "metrics", "update", metric_name,
         "--project", project_id,
         f"--log-filter={filter_str}",

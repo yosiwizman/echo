@@ -49,7 +49,6 @@ def test_ws_health_ok() -> None:
 
 def test_ops_alert_test_missing_header_returns_403() -> None:
     """Test that GET /ops/alert-test returns 403 when X-Alert-Test-Token header is missing."""
-    import os
     import routers.other as other_module
     
     # Temporarily set the token so we can test auth
