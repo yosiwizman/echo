@@ -1,0 +1,267 @@
+# Deploy echo-backend to Cloud Run Production
+#
+# This workflow builds, pushes to Artifact Registry, and deploys to Cloud Run.
+# Uses Workload Identity Federation (OIDC) - no stored cloud credentials.
+#
+# Triggers:
+#   - Tag push matching `backend-prod-v*` (e.g., backend-prod-v1.0.0)
+#   - Manual trigger (workflow_dispatch)
+#
+# Production defaults:
+#   - min-instances: 0 (scale to zero when idle)
+#   - max-instances: 3 (cost-controlled scaling)
+#   - concurrency: default (80 requests per instance)
+#
+# To change scaling, update the `flags` in the Deploy step or use Cloud Run console.
+
+name: Deploy Backend to Cloud Run (Production)
+
+on:
+  push:
+    tags:
+      - 'backend-prod-v*'
+  workflow_dispatch:
+    inputs:
+      confirm_production:
+        description: "Type 'deploy' to confirm production deployment"
+        required: true
+        type: string
+
+env:
+  # Production uses _PROD suffix variables to separate from staging
+  GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID_PROD }}
+  GCP_REGION: ${{ vars.GCP_REGION_PROD || 'europe-west1' }}
+  GAR_REPO: ${{ vars.GAR_REPO_PROD || 'echo-backend' }}
+  CLOUD_RUN_SERVICE: ${{ vars.CLOUD_RUN_SERVICE_PROD || 'echo-backend' }}
+
+jobs:
+  deploy:
+    name: Build & Deploy to Cloud Run (Production)
+    runs-on: ubuntu-latest
+
+    # Skip if project not configured OR manual dispatch without confirmation
+    if: >
+      vars.GCP_PROJECT_ID_PROD != '' && 
+      (github.event_name == 'push' || github.event.inputs.confirm_production == 'deploy')
+
+    permissions:
+      contents: read
+      id-token: write  # Required for OIDC token request
+
+    steps:
+      - name: Validate manual deployment confirmation
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "${{ github.event.inputs.confirm_production }}" != "deploy" ]; then
+            echo "❌ Production deployment requires typing 'deploy' to confirm."
+            echo "   You entered: '${{ github.event.inputs.confirm_production }}'"
+            exit 1
+          fi
+          echo "✅ Production deployment confirmed"
+
+      - name: Preflight - Check required GitHub Variables
+        id: preflight
+        run: |
+          echo "======================================"
+          echo "  🔍 PREFLIGHT: Production Variables  "
+          echo "======================================"
+          echo ""
+
+          # Track missing variables
+          missing=0
+
+          check_var() {
+            local name="$1"
+            local value="$2"
+            local required="$3"
+            local where="$4"
+
+            if [ -z "$value" ]; then
+              if [ "$required" = "yes" ]; then
+                echo "❌ $name (REQUIRED) - NOT SET"
+                echo "   Where to find: $where"
+                missing=$((missing + 1))
+              else
+                echo "⚪ $name (optional) - not set, will use default"
+              fi
+            else
+              echo "✅ $name = $value"
+            fi
+          }
+
+          echo "Required variables (production):"
+          echo "--------------------------------"
+          check_var "GCP_PROJECT_ID_PROD" "${{ vars.GCP_PROJECT_ID_PROD }}" "yes" "GCP Console → Project selector (top-left)"
+          check_var "GCP_WIF_PROVIDER_PROD" "${{ vars.GCP_WIF_PROVIDER_PROD }}" "yes" "GCP → IAM → Workload Identity Federation → Pool → Provider"
+          check_var "GCP_SERVICE_ACCOUNT_PROD" "${{ vars.GCP_SERVICE_ACCOUNT_PROD }}" "yes" "GCP → IAM → Service Accounts → email column"
+          echo ""
+          echo "Optional variables (have defaults):"
+          echo "-----------------------------------"
+          check_var "GCP_REGION_PROD" "${{ vars.GCP_REGION_PROD }}" "no" "Default: europe-west1"
+          check_var "GAR_REPO_PROD" "${{ vars.GAR_REPO_PROD }}" "no" "Default: echo-backend"
+          check_var "CLOUD_RUN_SERVICE_PROD" "${{ vars.CLOUD_RUN_SERVICE_PROD }}" "no" "Default: echo-backend"
+          echo ""
+
+          if [ $missing -gt 0 ]; then
+            echo "======================================"
+            echo "  ❌ PREFLIGHT FAILED: $missing missing"
+            echo "======================================"
+            echo ""
+            echo "📝 To fix, go to GitHub:"
+            echo "   Settings → Secrets and variables → Actions → Variables tab"
+            echo ""
+            echo "📖 Full setup guide:"
+            echo "   docs/ops/gcp_production_cloudrun_setup.md"
+            echo ""
+            echo "📋 Quick variable reference:"
+            echo "   docs/ops/github_variables_for_production.md"
+            exit 1
+          fi
+
+          echo "======================================"
+          echo "  ✅ PREFLIGHT PASSED                 "
+          echo "======================================"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo docker system prune -af
+          df -h
+
+      - name: Authenticate to Google Cloud (OIDC)
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID_PROD }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER_PROD }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_PROD }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID_PROD }}
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Determine image tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # Tag push: use the git tag
+            TAG="${{ github.ref_name }}"
+          else
+            # Manual dispatch: use short SHA
+            TAG="prod-${{ github.sha }}"
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Image tag: $TAG"
+
+      - name: Build and push image to Artifact Registry
+        id: build
+        run: |
+          IMAGE_BASE="${{ env.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID_PROD }}/${{ env.GAR_REPO }}/echo-backend"
+          IMAGE_TAG="${IMAGE_BASE}:${{ steps.tag.outputs.tag }}"
+          IMAGE_LATEST="${IMAGE_BASE}:production-latest"
+          
+          echo "Building image: $IMAGE_TAG"
+          
+          docker build \
+            -t "$IMAGE_TAG" \
+            -t "$IMAGE_LATEST" \
+            --build-arg ECHO_ENV=production \
+            -f Dockerfile \
+            .
+          
+          echo "Pushing to Artifact Registry..."
+          docker push "$IMAGE_TAG"
+          docker push "$IMAGE_LATEST"
+          
+          echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "✅ Image pushed: $IMAGE_TAG"
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.CLOUD_RUN_SERVICE }}
+          region: ${{ env.GCP_REGION }}
+          image: ${{ steps.build.outputs.image }}
+          # Production flags: allow unauthenticated, min 0, max 3 instances
+          # Change --min-instances=1 for always-warm production
+          flags: '--allow-unauthenticated --min-instances=0 --max-instances=3'
+          env_vars: |
+            ECHO_ENV=production
+
+      - name: Show deployment info
+        run: |
+          echo "🚀 PRODUCTION DEPLOYMENT SUCCESSFUL!"
+          echo ""
+          echo "Service URL: ${{ steps.deploy.outputs.url }}"
+          echo "Image: ${{ steps.build.outputs.image }}"
+          echo "Tag: ${{ steps.tag.outputs.tag }}"
+          echo ""
+          echo "Test endpoints:"
+          echo "  Root: ${{ steps.deploy.outputs.url }}/"
+          echo "  Health: ${{ steps.deploy.outputs.url }}/health"
+          echo "  API Docs: ${{ steps.deploy.outputs.url }}/docs"
+
+      - name: Post-deploy smoke test (/health)
+        run: |
+          SERVICE_URL="${{ steps.deploy.outputs.url }}"
+          MAX_RETRIES=5
+          RETRY_DELAY=10
+          
+          echo "======================================"
+          echo "  🔥 PRODUCTION SMOKE TEST            "
+          echo "======================================"
+          echo "Service URL: $SERVICE_URL"
+          echo "Endpoint: /health"
+          echo ""
+          
+          echo "Waiting 15s for service to stabilize..."
+          sleep 15
+          
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i/$MAX_RETRIES..."
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${SERVICE_URL}/health" --connect-timeout 10 --max-time 30 || echo "000")
+            
+            if [ "$STATUS" = "200" ]; then
+              echo ""
+              echo "======================================"
+              echo "  ✅ SMOKE TEST PASSED (HTTP 200)     "
+              echo "======================================"
+              echo ""
+              echo "🎉 Production service is live at:"
+              echo "   $SERVICE_URL"
+              echo ""
+              echo "Endpoints:"
+              echo "   Root: ${SERVICE_URL}/"
+              echo "   Health: ${SERVICE_URL}/health"
+              echo "   API Docs: ${SERVICE_URL}/docs"
+              exit 0
+            fi
+            
+            echo "  Got HTTP $STATUS, retrying in ${RETRY_DELAY}s..."
+            sleep $RETRY_DELAY
+          done
+          
+          echo ""
+          echo "======================================"
+          echo "  ❌ SMOKE TEST FAILED                 "
+          echo "======================================"
+          echo ""
+          echo "Health check did not return HTTP 200 after $MAX_RETRIES attempts."
+          echo "Last status: HTTP $STATUS"
+          echo ""
+          echo "⚠️  PRODUCTION DEPLOYMENT MAY BE UNHEALTHY"
+          echo ""
+          echo "To debug:"
+          echo "  1. Go to: console.cloud.google.com → Cloud Run → ${{ env.CLOUD_RUN_SERVICE }}"
+          echo "  2. Click the 'Logs' tab"
+          echo "  3. Look for error messages"
+          exit 1
