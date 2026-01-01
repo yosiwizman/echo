@@ -163,6 +163,7 @@ jobs:
           service: ${{ env.CLOUD_RUN_SERVICE }}
           region: ${{ env.GCP_REGION }}
           image: ${{ steps.build.outputs.image }}
+          flags: '--allow-unauthenticated'
 
       - name: Show deployment info
         run: |
@@ -172,10 +173,10 @@ jobs:
           echo "Image: ${{ steps.build.outputs.image }}"
           echo ""
           echo "Test endpoints:"
-          echo "  Health: ${{ steps.deploy.outputs.url }}/healthz"
+          echo "  Health: ${{ steps.deploy.outputs.url }}/health"
           echo "  API Docs: ${{ steps.deploy.outputs.url }}/docs"
 
-      - name: Post-deploy smoke test (/healthz)
+      - name: Post-deploy smoke test (/health)
         run: |
           SERVICE_URL="${{ steps.deploy.outputs.url }}"
           MAX_RETRIES=5
@@ -185,7 +186,7 @@ jobs:
           echo "  🔥 POST-DEPLOY SMOKE TEST         "
           echo "====================================="
           echo "Service URL: $SERVICE_URL"
-          echo "Endpoint: /healthz"
+          echo "Endpoint: /health"
           echo ""
           
           echo "Waiting 15s for service to stabilize..."
@@ -193,7 +194,7 @@ jobs:
           
           for i in $(seq 1 $MAX_RETRIES); do
             echo "Attempt $i/$MAX_RETRIES..."
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${SERVICE_URL}/healthz" --connect-timeout 10 --max-time 30 || echo "000")
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${SERVICE_URL}/health" --connect-timeout 10 --max-time 30 || echo "000")
             
             if [ "$STATUS" = "200" ]; then
               echo ""
@@ -205,7 +206,7 @@ jobs:
               echo "  $SERVICE_URL"
               echo ""
               echo "Endpoints:"
-              echo "  Health: ${SERVICE_URL}/healthz"
+              echo "  Health: ${SERVICE_URL}/health"
               echo "  API Docs: ${SERVICE_URL}/docs"
               exit 0
             fi
