@@ -113,7 +113,9 @@ async def brain_chat_stream(request: ChatRequest):
                 event_data = event_dict.get("data", {})
                 
                 # Inject runtime metadata into final event
+                # Avoid mutating provider-supplied data in-place
                 if event_type == "final":
+                    event_data = dict(event_data)
                     event_data["runtime"] = runtime_metadata
                     event_data["ok"] = True
                 
