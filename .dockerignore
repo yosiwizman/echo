@@ -1,0 +1,75 @@
+# Root .dockerignore for Cloud Build
+# Keeps build context small when building from repo root
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Mobile apps (not needed for backend)
+apps/
+
+# Vendor/upstream sources (not needed at runtime)
+vendor/
+
+# Documentation (not needed at runtime)
+docs/
+*.md
+
+# CI/CD configs
+.github/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python caches (will be regenerated)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+
+# Test artifacts
+_temp/
+_samples/
+_segments/
+_speech_profiles/
+coverage/
+.coverage
+htmlcov/
+
+# Environment files (secrets should not be in image)
+.env
+.env.*
+!.env.template
+!.env.example
+
+# Infrastructure configs (not needed in container)
+infra/
+
+# Scaffold backend (separate service)
+services/echo_backend_scaffold/
+
+# Build artifacts
+*.log
+*.bak
+dist/
+build/
+
+# Keep these (required for backend build):
+# - services/echo_backend/
+# - Dockerfile
+# - requirements.txt files
