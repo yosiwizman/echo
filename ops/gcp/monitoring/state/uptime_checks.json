@@ -1,0 +1,22 @@
+{
+  "staging": {
+    "displayName": "Echo Backend STAGING - Health Check",
+    "name": "projects/echo-staging-483002/uptimeCheckConfigs/echo-backend-staging-health-check-6ErtIR7Va5Q",
+    "check_id": "echo-backend-staging-health-check-6ErtIR7Va5Q",
+    "host": "echo-backend-staging-zxuvsjb5qa-ew.a.run.app",
+    "path": "/health",
+    "period": "60s",
+    "timeout": "10s",
+    "action": "created"
+  },
+  "prod": {
+    "displayName": "Echo Backend PROD - Health Check",
+    "name": "projects/echo-staging-483002/uptimeCheckConfigs/echo-backend-prod-health-check-4jWJk5Npb7c",
+    "check_id": "echo-backend-prod-health-check-4jWJk5Npb7c",
+    "host": "echo-backend-zxuvsjb5qa-ew.a.run.app",
+    "path": "/health",
+    "period": "60s",
+    "timeout": "10s",
+    "action": "created"
+  }
+}
