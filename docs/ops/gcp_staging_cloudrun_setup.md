@@ -33,6 +33,10 @@ https://your-service-xxxxx.run.app
    - **IAM Service Account Credentials API**
    - **Cloud Resource Manager API**
 
+> 💡 **Note:** After enabling each API, you might see a "Create credentials" button.
+> **Ignore this button!** You don't need OAuth credentials — our GitHub Actions
+> workflow uses Workload Identity Federation (OIDC) instead.
+
 Or run this in Cloud Shell (click the `>_` icon top-right):
 ```bash
 gcloud services enable \
@@ -251,6 +255,19 @@ If you previously used "Connect repository", disable that trigger:
 3. Click the **⋮** menu → **Disable** or **Delete**
 
 This check is NOT required for merging PRs.
+
+See `docs/ops/disable_cloud_build_trigger.md` for detailed click-by-click instructions.
+
+### Cloud Run UI rejects `ghcr.io` images
+If you try to paste a `ghcr.io/...` URL directly into Cloud Run's deploy form, it won't work.
+
+Cloud Run's UI only accepts images from:
+- Google Container Registry (`gcr.io`)
+- Artifact Registry (`docker.pkg.dev`)
+- Artifact Registry remote repositories (advanced setup)
+
+**Solution:** Use GitHub Actions to push to Artifact Registry instead of ghcr.io.
+That's what this guide sets up! The workflow pushes to `docker.pkg.dev`, which Cloud Run accepts.
 
 ---
 

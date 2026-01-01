@@ -129,6 +129,8 @@ The GCP staging check (`rmgpgab-echo-backend-staging-...`) is **NOT required for
 - Your PR can merge if Backend, Mobile, Scaffold, and Brain API checks pass
 - The staging build may fail due to Cloud Build resource limits - this doesn't block your work
 
+**Want to get rid of it?** See `docs/ops/disable_cloud_build_trigger.md`
+
 ### Need Help?
 Check the detailed docs: `docs/ops/staging_cloudrun.md`
 
@@ -178,3 +180,11 @@ Cloud Run UI **does not directly support** GitHub Container Registry (ghcr.io) U
 3. **Artifact Registry proxy** (advanced) — Set up a Remote Repository to proxy ghcr.io
 
 Option 1 is the most reliable and gives you full control from GitHub.
+
+---
+
+## 📚 Related Docs
+
+- **Full setup guide:** `docs/ops/gcp_staging_cloudrun_setup.md`
+- **GitHub variables reference:** `docs/ops/github_variables_for_staging.md`
+- **Disable Cloud Build trigger:** `docs/ops/disable_cloud_build_trigger.md`

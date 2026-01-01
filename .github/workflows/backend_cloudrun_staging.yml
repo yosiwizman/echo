@@ -17,6 +17,7 @@ on:
       - "Dockerfile"
       - ".dockerignore"
       - ".github/workflows/backend_cloudrun_staging.yml"
+      - "docs/ops/**"
   workflow_dispatch:
     inputs:
       force_deploy:
@@ -36,7 +37,7 @@ jobs:
     name: Build & Deploy to Cloud Run
     runs-on: ubuntu-latest
 
-    # Skip if variables not configured (first-time setup)
+    # Skip entirely if project not configured (first-time setup)
     if: ${{ vars.GCP_PROJECT_ID != '' }}
 
     permissions:
@@ -44,29 +45,68 @@ jobs:
       id-token: write  # Required for OIDC token request
 
     steps:
-      - name: Validate required variables
+      - name: Preflight - Check required GitHub Variables
+        id: preflight
         run: |
-          missing=""
-          [ -z "${{ vars.GCP_PROJECT_ID }}" ] && missing="$missing GCP_PROJECT_ID"
-          [ -z "${{ vars.GCP_WIF_PROVIDER }}" ] && missing="$missing GCP_WIF_PROVIDER"
-          [ -z "${{ vars.GCP_SERVICE_ACCOUNT }}" ] && missing="$missing GCP_SERVICE_ACCOUNT"
+          echo "====================================="
+          echo "  🔍 PREFLIGHT: Checking Variables  "
+          echo "====================================="
+          echo ""
 
-          if [ -n "$missing" ]; then
-            echo "❌ Missing required GitHub Variables:$missing"
+          # Track missing variables
+          missing=0
+
+          check_var() {
+            local name="$1"
+            local value="$2"
+            local required="$3"
+            local where="$4"
+
+            if [ -z "$value" ]; then
+              if [ "$required" = "yes" ]; then
+                echo "❌ $name (REQUIRED) - NOT SET"
+                echo "   Where to find: $where"
+                missing=$((missing + 1))
+              else
+                echo "⚪ $name (optional) - not set, will use default"
+              fi
+            else
+              echo "✅ $name = $value"
+            fi
+          }
+
+          echo "Required variables:"
+          echo "-------------------"
+          check_var "GCP_PROJECT_ID" "${{ vars.GCP_PROJECT_ID }}" "yes" "GCP Console → Project selector (top-left)"
+          check_var "GCP_WIF_PROVIDER" "${{ vars.GCP_WIF_PROVIDER }}" "yes" "GCP → IAM → Workload Identity Federation → Pool → Provider"
+          check_var "GCP_SERVICE_ACCOUNT" "${{ vars.GCP_SERVICE_ACCOUNT }}" "yes" "GCP → IAM → Service Accounts → email column"
+          echo ""
+          echo "Optional variables (have defaults):"
+          echo "-----------------------------------"
+          check_var "GCP_REGION" "${{ vars.GCP_REGION }}" "no" "Default: us-east1"
+          check_var "GAR_REPO" "${{ vars.GAR_REPO }}" "no" "Default: echo"
+          check_var "CLOUD_RUN_SERVICE" "${{ vars.CLOUD_RUN_SERVICE }}" "no" "Default: echo-backend-staging"
+          echo ""
+
+          if [ $missing -gt 0 ]; then
+            echo "====================================="
+            echo "  ❌ PREFLIGHT FAILED: $missing missing"
+            echo "====================================="
             echo ""
-            echo "Go to: Settings → Secrets and variables → Actions → Variables"
-            echo "Add these repository variables:"
-            echo "  - GCP_PROJECT_ID: Your Google Cloud project ID"
-            echo "  - GCP_WIF_PROVIDER: Workload Identity Provider resource name"
-            echo "  - GCP_SERVICE_ACCOUNT: Service account email for deployments"
-            echo "  - GCP_REGION: (optional) Default: us-east1"
-            echo "  - GAR_REPO: (optional) Default: echo"
-            echo "  - CLOUD_RUN_SERVICE: (optional) Default: echo-backend-staging"
+            echo "📝 To fix, go to GitHub:"
+            echo "   Settings → Secrets and variables → Actions → Variables tab"
             echo ""
-            echo "See docs/ops/gcp_staging_cloudrun_setup.md for full setup guide."
+            echo "📖 Full setup guide:"
+            echo "   docs/ops/gcp_staging_cloudrun_setup.md"
+            echo ""
+            echo "📋 Quick variable reference:"
+            echo "   docs/ops/github_variables_for_staging.md"
             exit 1
           fi
-          echo "✅ All required variables present"
+
+          echo "====================================="
+          echo "  ✅ PREFLIGHT PASSED              "
+          echo "====================================="
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -135,13 +175,60 @@ jobs:
           echo "  Health: ${{ steps.deploy.outputs.url }}/healthz"
           echo "  API Docs: ${{ steps.deploy.outputs.url }}/docs"
 
-      - name: Verify health endpoint
+      - name: Post-deploy smoke test (/healthz)
         run: |
+          SERVICE_URL="${{ steps.deploy.outputs.url }}"
+          MAX_RETRIES=5
+          RETRY_DELAY=10
+          
+          echo "====================================="
+          echo "  🔥 POST-DEPLOY SMOKE TEST         "
+          echo "====================================="
+          echo "Service URL: $SERVICE_URL"
+          echo "Endpoint: /healthz"
+          echo ""
+          
           echo "Waiting 15s for service to stabilize..."
           sleep 15
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ steps.deploy.outputs.url }}/healthz" || echo "000")
-          if [ "$STATUS" = "200" ]; then
-            echo "✅ Health check passed (HTTP $STATUS)"
-          else
-            echo "⚠️ Health check returned HTTP $STATUS (may need more time or env vars)"
-          fi
+          
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i/$MAX_RETRIES..."
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${SERVICE_URL}/healthz" --connect-timeout 10 --max-time 30 || echo "000")
+            
+            if [ "$STATUS" = "200" ]; then
+              echo ""
+              echo "====================================="
+              echo "  ✅ SMOKE TEST PASSED (HTTP 200)   "
+              echo "====================================="
+              echo ""
+              echo "Your service is live at:"
+              echo "  $SERVICE_URL"
+              echo ""
+              echo "Endpoints:"
+              echo "  Health: ${SERVICE_URL}/healthz"
+              echo "  API Docs: ${SERVICE_URL}/docs"
+              exit 0
+            fi
+            
+            echo "  Got HTTP $STATUS, retrying in ${RETRY_DELAY}s..."
+            sleep $RETRY_DELAY
+          done
+          
+          echo ""
+          echo "====================================="
+          echo "  ❌ SMOKE TEST FAILED               "
+          echo "====================================="
+          echo ""
+          echo "Health check did not return HTTP 200 after $MAX_RETRIES attempts."
+          echo "Last status: HTTP $STATUS"
+          echo ""
+          echo "Possible causes:"
+          echo "  1. Service still starting (try again in a few minutes)"
+          echo "  2. Missing environment variables in Cloud Run"
+          echo "  3. Application crash on startup (check Cloud Run logs)"
+          echo ""
+          echo "To debug:"
+          echo "  1. Go to: console.cloud.google.com → Cloud Run → ${{ env.CLOUD_RUN_SERVICE }}"
+          echo "  2. Click the 'Logs' tab"
+          echo "  3. Look for error messages"
+          exit 1
