@@ -67,7 +67,6 @@ jobs:
           echo "  Base URL: $BASE_URL"
           echo "=============================================="
           
-          ENDPOINTS=("/health" "/version")
           RESULTS=""
           FAILURES=0
           
@@ -93,10 +92,48 @@ jobs:
             return 1
           }
           
-          # Function: validate endpoint response
-          validate_endpoint() {
-            local endpoint="$1"
-            local url="${BASE_URL}${endpoint}"
+          # Function: validate /health endpoint (simple check)
+          validate_health() {
+            local url="${BASE_URL}/health"
+            
+            echo ""
+            echo "--- Testing: $url ---"
+            
+            # Fetch with retries
+            RESPONSE=$(curl_retry "$url")
+            CURL_STATUS=$?
+            
+            if [ $CURL_STATUS -ne 0 ]; then
+              echo "  ❌ FAIL: Could not reach endpoint after retries"
+              return 1
+            fi
+            
+            echo "  Response: $RESPONSE"
+            
+            # Parse JSON
+            if ! echo "$RESPONSE" | jq . > /dev/null 2>&1; then
+              echo "  ❌ FAIL: Response is not valid JSON"
+              return 1
+            fi
+            
+            # Check status field
+            STATUS=$(echo "$RESPONSE" | jq -r '.status // empty')
+            if [ -z "$STATUS" ]; then
+              echo "  ❌ FAIL: Missing 'status' field"
+              return 1
+            elif [ "$STATUS" != "ok" ]; then
+              echo "  ❌ FAIL: status is '$STATUS', expected 'ok'"
+              return 1
+            fi
+            
+            echo "  ✓ PASS"
+            echo "    status: $STATUS"
+            return 0
+          }
+          
+          # Function: validate /version endpoint (full metadata check)
+          validate_version() {
+            local url="${BASE_URL}/version"
             
             echo ""
             echo "--- Testing: $url ---"
@@ -160,14 +197,19 @@ jobs:
           }
           
           # Run tests
-          for ep in "${ENDPOINTS[@]}"; do
-            if validate_endpoint "$ep"; then
-              RESULTS="${RESULTS}| $ep | ✓ PASS |\n"
-            else
-              RESULTS="${RESULTS}| $ep | ❌ FAIL |\n"
-              FAILURES=$((FAILURES + 1))
-            fi
-          done
+          if validate_health; then
+            RESULTS="${RESULTS}| /health | ✓ PASS |\n"
+          else
+            RESULTS="${RESULTS}| /health | ❌ FAIL |\n"
+            FAILURES=$((FAILURES + 1))
+          fi
+          
+          if validate_version; then
+            RESULTS="${RESULTS}| /version | ✓ PASS |\n"
+          else
+            RESULTS="${RESULTS}| /version | ❌ FAIL |\n"
+            FAILURES=$((FAILURES + 1))
+          fi
           
           # Summary table
           echo ""
@@ -198,7 +240,6 @@ jobs:
           echo "  Base URL: $BASE_URL"
           echo "=============================================="
           
-          ENDPOINTS=("/health" "/version")
           RESULTS=""
           FAILURES=0
           
@@ -224,10 +265,48 @@ jobs:
             return 1
           }
           
-          # Function: validate endpoint response
-          validate_endpoint() {
-            local endpoint="$1"
-            local url="${BASE_URL}${endpoint}"
+          # Function: validate /health endpoint (simple check)
+          validate_health() {
+            local url="${BASE_URL}/health"
+            
+            echo ""
+            echo "--- Testing: $url ---"
+            
+            # Fetch with retries
+            RESPONSE=$(curl_retry "$url")
+            CURL_STATUS=$?
+            
+            if [ $CURL_STATUS -ne 0 ]; then
+              echo "  ❌ FAIL: Could not reach endpoint after retries"
+              return 1
+            fi
+            
+            echo "  Response: $RESPONSE"
+            
+            # Parse JSON
+            if ! echo "$RESPONSE" | jq . > /dev/null 2>&1; then
+              echo "  ❌ FAIL: Response is not valid JSON"
+              return 1
+            fi
+            
+            # Check status field
+            STATUS=$(echo "$RESPONSE" | jq -r '.status // empty')
+            if [ -z "$STATUS" ]; then
+              echo "  ❌ FAIL: Missing 'status' field"
+              return 1
+            elif [ "$STATUS" != "ok" ]; then
+              echo "  ❌ FAIL: status is '$STATUS', expected 'ok'"
+              return 1
+            fi
+            
+            echo "  ✓ PASS"
+            echo "    status: $STATUS"
+            return 0
+          }
+          
+          # Function: validate /version endpoint (full metadata check)
+          validate_version() {
+            local url="${BASE_URL}/version"
             
             echo ""
             echo "--- Testing: $url ---"
@@ -291,14 +370,19 @@ jobs:
           }
           
           # Run tests
-          for ep in "${ENDPOINTS[@]}"; do
-            if validate_endpoint "$ep"; then
-              RESULTS="${RESULTS}| $ep | ✓ PASS |\n"
-            else
-              RESULTS="${RESULTS}| $ep | ❌ FAIL |\n"
-              FAILURES=$((FAILURES + 1))
-            fi
-          done
+          if validate_health; then
+            RESULTS="${RESULTS}| /health | ✓ PASS |\n"
+          else
+            RESULTS="${RESULTS}| /health | ❌ FAIL |\n"
+            FAILURES=$((FAILURES + 1))
+          fi
+          
+          if validate_version; then
+            RESULTS="${RESULTS}| /version | ✓ PASS |\n"
+          else
+            RESULTS="${RESULTS}| /version | ❌ FAIL |\n"
+            FAILURES=$((FAILURES + 1))
+          fi
           
           # Summary table
           echo ""

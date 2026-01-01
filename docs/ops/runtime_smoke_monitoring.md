@@ -20,11 +20,17 @@ For each environment (staging + production):
 
 | Endpoint | Validation |
 |----------|------------|
-| `/health` | HTTP 200, valid JSON, correct `env`, valid `git_sha`, valid `build_time` |
+| `/health` | HTTP 200, valid JSON, `status: "ok"` |
 | `/version` | HTTP 200, valid JSON, correct `env`, valid `git_sha`, valid `build_time` |
 
 ### Validation Rules
 
+**`/health` endpoint:**
+| Field | Rule |
+|-------|------|
+| `status` | Must be `"ok"` |
+
+**`/version` endpoint:**
 | Field | Rule |
 |-------|------|
 | `env` | Must match expected environment (`staging` or `production`) |
