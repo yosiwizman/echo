@@ -3,6 +3,18 @@ from fastapi.testclient import TestClient
 from main import app
 
 
+def test_root_returns_service_info() -> None:
+    """Test that GET / returns 200 and service info JSON."""
+    client = TestClient(app)
+    resp = client.get("/")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["service"] == "echo-backend"
+    assert data["status"] == "ok"
+    assert "endpoints" in data
+    assert isinstance(data["endpoints"], list)
+
+
 def test_healthz_ok() -> None:
     client = TestClient(app)
     resp = client.get("/healthz")
