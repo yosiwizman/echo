@@ -64,11 +64,11 @@ The following CI workflows MUST pass before any PR can be merged to `main`:
    ✅ **Require status checks to pass before merging**
    - Require branches to be up to date before merging: ✅
    
-   Search for and add these required status checks:
-   - `backend` (from CI / backend)
-   - `mobile` (from CI / mobile)
-   - `scaffold_tests` (from CI / scaffold_tests)
-   - `contract-validation` (from Brain API Contract Validation)
+   Search for and add these required status checks (exact names):
+   - `Backend (lint + unit/smoke tests)`
+   - `Mobile (analyze + tests)`
+   - `Scaffold Tests (Legacy)`
+   - `Brain API Contract Validation`
    
    ✅ **Require conversation resolution before merging**
    
@@ -154,8 +154,20 @@ In extreme cases (production hotfix, critical security patch), repository admins
 2. Delete workflow file
 3. Update this document
 
+## Automated Setup Script
+
+For programmatic setup (requires `GITHUB_TOKEN` with admin access):
+
+```powershell
+$env:GITHUB_TOKEN = "ghp_xxx"
+.\scripts\apply_branch_protection.ps1
+```
+
+This script applies all protection rules via GitHub API.
+
 ## Related Documentation
 
 - `docs/ops/brain_contract_smoke.md` - Contract validation details
 - `docs/brain_versioning.md` - API versioning policy
 - `.github/workflows/brain_contract_smoke.yml` - Contract validation workflow
+- `scripts/apply_branch_protection.ps1` - Automated protection setup

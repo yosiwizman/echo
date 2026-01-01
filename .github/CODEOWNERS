@@ -1,0 +1,11 @@
+# Default code owners for all files
+* @yosiwizman
+
+# Backend-specific ownership
+/services/echo_backend/ @yosiwizman
+
+# Mobile-specific ownership
+/apps/echo_mobile/ @yosiwizman
+
+# CI/Workflow ownership
+/.github/ @yosiwizman
