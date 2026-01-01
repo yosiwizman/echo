@@ -257,6 +257,15 @@ flutter build ios  # iOS
 - Enhanced privacy controls
 - Analytics and monitoring
 
+## Runtime Monitoring
+
+The backend includes always-on runtime smoke monitoring that validates staging and production deployments every 15 minutes:
+
+- **What it checks**: `/health` and `/version` endpoints for HTTP 200, valid JSON, correct `env`, valid `git_sha`, and `build_time`
+- **Where to see it**: [GitHub Actions → Backend Runtime Smoke Monitor](https://github.com/yosiwizman/echo/actions/workflows/backend_runtime_smoke.yml)
+- **Manual trigger**: `gh workflow run backend_runtime_smoke.yml --repo yosiwizman/echo`
+- **Full docs**: [docs/ops/runtime_smoke_monitoring.md](docs/ops/runtime_smoke_monitoring.md)
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
