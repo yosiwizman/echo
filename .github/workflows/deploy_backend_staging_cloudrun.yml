@@ -1,0 +1,97 @@
+# Deploy echo-backend to Cloud Run (staging)
+#
+# This workflow uses GitHub OIDC + Google Workload Identity Federation
+# to authenticate without storing long-lived cloud credentials.
+#
+# MANUAL TRIGGER ONLY - not run on PRs or pushes.
+
+name: Deploy Backend Staging (Cloud Run)
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image tag to deploy (e.g., latest, sha-abc1234, v1.0.0)"
+        required: false
+        default: "latest"
+        type: string
+
+env:
+  IMAGE_REGISTRY: ghcr.io/yosiwizman/echo-backend
+
+jobs:
+  deploy:
+    name: Deploy to Cloud Run
+    runs-on: ubuntu-latest
+    environment: staging
+
+    permissions:
+      contents: read
+      id-token: write  # Required for OIDC token request
+
+    steps:
+      - name: Validate required secrets
+        run: |
+          missing=""
+          [ -z "${{ secrets.GCP_PROJECT_ID }}" ] && missing="$missing GCP_PROJECT_ID"
+          [ -z "${{ secrets.GCP_WIF_PROVIDER }}" ] && missing="$missing GCP_WIF_PROVIDER"
+          [ -z "${{ secrets.GCP_SERVICE_ACCOUNT }}" ] && missing="$missing GCP_SERVICE_ACCOUNT"
+
+          if [ -n "$missing" ]; then
+            echo "❌ Missing required secrets:$missing"
+            echo ""
+            echo "Please configure these secrets in GitHub Settings > Environments > staging:"
+            echo "  - GCP_PROJECT_ID: Your Google Cloud project ID"
+            echo "  - GCP_WIF_PROVIDER: Workload Identity Provider resource name"
+            echo "    Format: projects/<PROJECT_NUMBER>/locations/global/workloadIdentityPools/<POOL>/providers/<PROVIDER>"
+            echo "  - GCP_SERVICE_ACCOUNT: Service account email for Cloud Run deployment"
+            echo ""
+            echo "See docs/ops/staging_cloudrun.md for setup instructions."
+            exit 1
+          fi
+          echo "✅ All required secrets present"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud (OIDC)
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ secrets.CLOUD_RUN_SERVICE || 'echo-backend-staging' }}
+          region: ${{ secrets.CLOUD_RUN_REGION || 'us-central1' }}
+          image: ${{ env.IMAGE_REGISTRY }}:${{ inputs.image_tag }}
+          metadata: services/echo_backend/deploy/cloudrun/staging.yaml
+
+      - name: Show deployment URL
+        run: |
+          echo "✅ Deployment successful!"
+          echo ""
+          echo "Service URL: ${{ steps.deploy.outputs.url }}"
+          echo "Image: ${{ env.IMAGE_REGISTRY }}:${{ inputs.image_tag }}"
+          echo ""
+          echo "Health check: curl -s ${{ steps.deploy.outputs.url }}/healthz"
+
+      - name: Verify health endpoint
+        run: |
+          echo "Waiting 10s for service to stabilize..."
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ steps.deploy.outputs.url }}/healthz" || echo "000")
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ Health check passed (HTTP $STATUS)"
+          else
+            echo "⚠️ Health check returned HTTP $STATUS (may need more time to warm up)"
+          fi
