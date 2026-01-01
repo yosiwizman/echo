@@ -275,6 +275,14 @@ Cloud Monitoring uptime checks with email alerts monitor both staging and produc
 - **Setup/Run**: `ALERT_EMAIL="you@example.com" bash ops/gcp/monitoring/apply_monitoring.sh`
 - **Full docs**: [docs/ops/gcp_uptime_alerting.md](docs/ops/gcp_uptime_alerting.md)
 
+## Alert Self-Test
+
+Verify the end-to-end alerting pipeline without causing real downtime:
+
+- **What it does**: Triggers a test alert via protected endpoint `/ops/alert-test`
+- **How to run**: GitHub Actions → Alert Self-Test → Run workflow
+- **Full docs**: [docs/ops/alerting_self_test.md](docs/ops/alerting_self_test.md)
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.

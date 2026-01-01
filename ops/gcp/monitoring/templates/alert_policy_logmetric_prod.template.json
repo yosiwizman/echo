@@ -1,0 +1,40 @@
+{
+  "displayName": "Echo Backend PROD - Alert Self-Test Triggered",
+  "combiner": "OR",
+  "conditions": [
+    {
+      "displayName": "Alert self-test log detected (prod)",
+      "conditionThreshold": {
+        "filter": "metric.type=\"logging.googleapis.com/user/echo_alert_test_prod\" AND resource.type=\"cloud_run_revision\"",
+        "comparison": "COMPARISON_GT",
+        "thresholdValue": 0,
+        "duration": "0s",
+        "trigger": {
+          "count": 1
+        },
+        "aggregations": [
+          {
+            "alignmentPeriod": "60s",
+            "perSeriesAligner": "ALIGN_SUM"
+          }
+        ]
+      }
+    }
+  ],
+  "notificationChannels": [
+    "{{CHANNEL_NAME}}"
+  ],
+  "alertStrategy": {
+    "autoClose": "600s"
+  },
+  "documentation": {
+    "content": "## Echo Backend PROD - Alert Self-Test Triggered\n\nThis is a **test alert** triggered by the `/ops/alert-test` endpoint.\n\n### What happened?\nSomeone invoked the alerting self-test endpoint, which logs `ECHO_ALERT_TEST_TRIGGERED`.\nThis fires the log-based metric `echo_alert_test_prod` and triggers this alert.\n\n### Action Required\n**None** - This is expected behavior when testing the alerting pipeline.\n\n### Verification\nIf you did NOT trigger this test, investigate who has access to the `ALERT_TEST_TOKEN`.",
+    "mimeType": "text/markdown"
+  },
+  "enabled": true,
+  "userLabels": {
+    "env": "prod",
+    "service": "echo-backend",
+    "alert_type": "self-test"
+  }
+}

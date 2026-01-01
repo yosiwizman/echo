@@ -1,9 +1,15 @@
+import logging
 import os
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Header, HTTPException
 from fastapi.websockets import WebSocket
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
+
+# Alert self-test token (set via Cloud Run secret mount from Secret Manager)
+_ALERT_TEST_TOKEN = os.environ.get("ALERT_TEST_TOKEN", "")
 
 # Runtime metadata (set via Cloud Run env vars at deploy time)
 _APP_ENV = os.environ.get("APP_ENV", "unknown")
@@ -59,3 +65,32 @@ async def ws_health(websocket: WebSocket):
     await websocket.accept()
     await websocket.send_json({"status": "ok"})
     await websocket.close()
+
+
+@router.get("/ops/alert-test")
+async def ops_alert_test(x_alert_test_token: str = Header(None)):
+    """Alert self-test endpoint.
+    
+    Triggers a unique log line that fires a log-based metric alert.
+    Protected by X-Alert-Test-Token header (must match ALERT_TEST_TOKEN env var).
+    
+    Used to verify end-to-end alerting pipeline without causing real downtime.
+    """
+    # Validate token is configured
+    if not _ALERT_TEST_TOKEN:
+        raise HTTPException(
+            status_code=500,
+            detail="ALERT_TEST_TOKEN not configured on server"
+        )
+    
+    # Validate provided token
+    if not x_alert_test_token or x_alert_test_token != _ALERT_TEST_TOKEN:
+        raise HTTPException(
+            status_code=403,
+            detail="Invalid or missing X-Alert-Test-Token header"
+        )
+    
+    # Log the unique string that triggers the log-based metric
+    logger.error("ECHO_ALERT_TEST_TRIGGERED")
+    
+    return {"ok": True}
