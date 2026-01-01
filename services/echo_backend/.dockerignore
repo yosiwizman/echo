@@ -1,0 +1,50 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.eggs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing/Dev
+tests/
+testing/
+_temp/
+_samples/
+_segments/
+_speech_profiles/
+
+# Docs
+*.md
+docs/
+
+# CI/CD
+.github/
+
+# Environment files (secrets should NOT be baked into image)
+.env
+.env.*
+!.env.template
+!.env.example
+
+# Misc
+*.log
+*.bak
+Dockerfile*
+docker-compose*

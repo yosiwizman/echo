@@ -49,5 +49,11 @@ RUN ldconfig && \
 COPY --from=builder /opt/venv /opt/venv
 COPY . .
 
+# Create non-root user for security
+RUN groupadd --gid 1000 appuser && \
+    useradd --uid 1000 --gid 1000 --no-create-home appuser && \
+    chown -R appuser:appuser /app /opt/venv
+USER appuser
+
 EXPOSE 8000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
