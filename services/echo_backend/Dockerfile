@@ -55,5 +55,7 @@ RUN groupadd --gid 1000 appuser && \
     chown -R appuser:appuser /app /opt/venv
 USER appuser
 
-EXPOSE 8000
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Cloud Run sets PORT env var; default to 8080 for compatibility
+ENV PORT=8080
+EXPOSE $PORT
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT

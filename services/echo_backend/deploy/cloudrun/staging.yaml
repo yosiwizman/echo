@@ -1,0 +1,58 @@
+# Cloud Run service configuration for echo-backend staging
+# Reference: https://cloud.google.com/run/docs/reference/yaml/v1
+#
+# This file is used by google-github-actions/deploy-cloudrun@v2
+# Secrets and sensitive env vars should be configured via Cloud Run console or Secret Manager
+# and referenced here as secretKeyRef, NOT hardcoded.
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: echo-backend-staging
+  labels:
+    app: echo-backend
+    environment: staging
+  annotations:
+    run.googleapis.com/description: "Echo backend API - staging environment"
+spec:
+  template:
+    metadata:
+      annotations:
+        # Autoscaling configuration
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "3"
+        # Allow up to 80 concurrent requests per instance
+        run.googleapis.com/execution-environment: gen2
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: ""  # Set via deploy workflow or GCP console
+      containers:
+        - image: ghcr.io/yosiwizman/echo-backend:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+          env:
+            # Non-secret environment configuration
+            # Secrets should be added via Cloud Run console or Secret Manager references
+            - name: ECHO_ENV
+              value: "staging"
+            - name: ECHO_LOG_LEVEL
+              value: "INFO"
+            # PORT is set automatically by Cloud Run
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
