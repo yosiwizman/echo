@@ -291,6 +291,20 @@ Verify the end-to-end alerting pipeline without causing real downtime:
 - **How to run**: GitHub Actions → Alert Self-Test → Run workflow
 - **Full docs**: [docs/ops/alerting_self_test.md](docs/ops/alerting_self_test.md)
 
+## Web Chat UI
+
+A browser-based chat interface for interacting with Echo:
+
+- **Stack**: React + TypeScript + Vite + TailwindCSS
+- **Features**:
+  - Environment toggle (Staging/Production)
+  - Streaming mode toggle
+  - Real-time connectivity indicator
+  - Debug panel with runtime metadata
+  - Chat history persistence (localStorage)
+- **Deployment**: Cloud Run (europe-west1) via GitHub Actions
+- **Full docs**: [docs/ops/web_chat_ui.md](docs/ops/web_chat_ui.md)
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
