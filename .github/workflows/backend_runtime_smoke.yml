@@ -402,6 +402,64 @@ jobs:
             echo "✓ All production endpoints passed"
           fi
 
+      - name: Smoke test - Web Staging
+        if: ${{ github.event.inputs.skip_staging != 'true' && vars.WEB_STAGING_BASE_URL != '' }}
+        env:
+          BASE_URL: ${{ vars.WEB_STAGING_BASE_URL }}
+        run: |
+          echo "=============================================="
+          echo "  WEB STAGING SMOKE TEST"
+          echo "  Base URL: $BASE_URL"
+          echo "=============================================="
+          
+          MAX_RETRIES=3
+          RETRY_DELAY=5
+          
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i/$MAX_RETRIES..."
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${BASE_URL}/" --connect-timeout 10 --max-time 30 || echo "000")
+            
+            if [ "$STATUS" = "200" ]; then
+              echo "✓ Web Staging PASS (HTTP 200)"
+              exit 0
+            fi
+            
+            echo "  Got HTTP $STATUS, retrying in ${RETRY_DELAY}s..."
+            sleep $RETRY_DELAY
+          done
+          
+          echo "❌ Web Staging FAIL after $MAX_RETRIES attempts"
+          exit 1
+
+      - name: Smoke test - Web Production
+        if: ${{ github.event.inputs.skip_production != 'true' && vars.WEB_PROD_BASE_URL != '' }}
+        env:
+          BASE_URL: ${{ vars.WEB_PROD_BASE_URL }}
+        run: |
+          echo "=============================================="
+          echo "  WEB PRODUCTION SMOKE TEST"
+          echo "  Base URL: $BASE_URL"
+          echo "=============================================="
+          
+          MAX_RETRIES=3
+          RETRY_DELAY=5
+          
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i/$MAX_RETRIES..."
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${BASE_URL}/" --connect-timeout 10 --max-time 30 || echo "000")
+            
+            if [ "$STATUS" = "200" ]; then
+              echo "✓ Web Production PASS (HTTP 200)"
+              exit 0
+            fi
+            
+            echo "  Got HTTP $STATUS, retrying in ${RETRY_DELAY}s..."
+            sleep $RETRY_DELAY
+          done
+          
+          echo "❌ Web Production FAIL after $MAX_RETRIES attempts"
+          exit 1
+
       - name: Final summary
         if: always()
         run: |
