@@ -1,0 +1,147 @@
+# Deploy echo-backend to Cloud Run Staging
+#
+# This workflow builds, pushes to Artifact Registry, and deploys to Cloud Run.
+# Uses Workload Identity Federation (OIDC) - no stored cloud credentials.
+#
+# Triggers:
+#   - Push to main (when backend files change)
+#   - Manual trigger (workflow_dispatch)
+
+name: Deploy Backend to Cloud Run (Staging)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "services/echo_backend/**"
+      - "Dockerfile"
+      - ".dockerignore"
+      - ".github/workflows/backend_cloudrun_staging.yml"
+  workflow_dispatch:
+    inputs:
+      force_deploy:
+        description: "Force deploy even if no changes"
+        type: boolean
+        default: true
+
+env:
+  # These are read from GitHub Repository Variables (Settings → Variables)
+  GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+  GCP_REGION: ${{ vars.GCP_REGION || 'us-east1' }}
+  GAR_REPO: ${{ vars.GAR_REPO || 'echo' }}
+  CLOUD_RUN_SERVICE: ${{ vars.CLOUD_RUN_SERVICE || 'echo-backend-staging' }}
+
+jobs:
+  deploy:
+    name: Build & Deploy to Cloud Run
+    runs-on: ubuntu-latest
+
+    # Skip if variables not configured (first-time setup)
+    if: ${{ vars.GCP_PROJECT_ID != '' }}
+
+    permissions:
+      contents: read
+      id-token: write  # Required for OIDC token request
+
+    steps:
+      - name: Validate required variables
+        run: |
+          missing=""
+          [ -z "${{ vars.GCP_PROJECT_ID }}" ] && missing="$missing GCP_PROJECT_ID"
+          [ -z "${{ vars.GCP_WIF_PROVIDER }}" ] && missing="$missing GCP_WIF_PROVIDER"
+          [ -z "${{ vars.GCP_SERVICE_ACCOUNT }}" ] && missing="$missing GCP_SERVICE_ACCOUNT"
+
+          if [ -n "$missing" ]; then
+            echo "❌ Missing required GitHub Variables:$missing"
+            echo ""
+            echo "Go to: Settings → Secrets and variables → Actions → Variables"
+            echo "Add these repository variables:"
+            echo "  - GCP_PROJECT_ID: Your Google Cloud project ID"
+            echo "  - GCP_WIF_PROVIDER: Workload Identity Provider resource name"
+            echo "  - GCP_SERVICE_ACCOUNT: Service account email for deployments"
+            echo "  - GCP_REGION: (optional) Default: us-east1"
+            echo "  - GAR_REPO: (optional) Default: echo"
+            echo "  - CLOUD_RUN_SERVICE: (optional) Default: echo-backend-staging"
+            echo ""
+            echo "See docs/ops/gcp_staging_cloudrun_setup.md for full setup guide."
+            exit 1
+          fi
+          echo "✅ All required variables present"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo docker system prune -af
+          df -h
+
+      - name: Authenticate to Google Cloud (OIDC)
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push image to Artifact Registry
+        id: build
+        run: |
+          IMAGE_BASE="${{ env.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ env.GAR_REPO }}/echo-backend"
+          IMAGE_SHA="${IMAGE_BASE}:${{ github.sha }}"
+          IMAGE_LATEST="${IMAGE_BASE}:staging-latest"
+          
+          echo "Building image: $IMAGE_SHA"
+          
+          docker build \
+            -t "$IMAGE_SHA" \
+            -t "$IMAGE_LATEST" \
+            -f Dockerfile \
+            .
+          
+          echo "Pushing to Artifact Registry..."
+          docker push "$IMAGE_SHA"
+          docker push "$IMAGE_LATEST"
+          
+          echo "image=$IMAGE_SHA" >> $GITHUB_OUTPUT
+          echo "✅ Image pushed: $IMAGE_SHA"
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.CLOUD_RUN_SERVICE }}
+          region: ${{ env.GCP_REGION }}
+          image: ${{ steps.build.outputs.image }}
+
+      - name: Show deployment info
+        run: |
+          echo "✅ Deployment successful!"
+          echo ""
+          echo "Service URL: ${{ steps.deploy.outputs.url }}"
+          echo "Image: ${{ steps.build.outputs.image }}"
+          echo ""
+          echo "Test endpoints:"
+          echo "  Health: ${{ steps.deploy.outputs.url }}/healthz"
+          echo "  API Docs: ${{ steps.deploy.outputs.url }}/docs"
+
+      - name: Verify health endpoint
+        run: |
+          echo "Waiting 15s for service to stabilize..."
+          sleep 15
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ steps.deploy.outputs.url }}/healthz" || echo "000")
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ Health check passed (HTTP $STATUS)"
+          else
+            echo "⚠️ Health check returned HTTP $STATUS (may need more time or env vars)"
+          fi

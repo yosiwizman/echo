@@ -8,7 +8,26 @@ This is a super simple guide. Just follow the steps!
 
 ---
 
-## 🔄 How to Redeploy After Code Changes
+## ⭐ RECOMMENDED: Use GitHub Actions (Not Cloud Build)
+
+The **best way** to deploy is using GitHub Actions. It's more reliable than the Cloud Build trigger.
+
+**First-time setup:** Follow `docs/ops/gcp_staging_cloudrun_setup.md`
+
+**After setup, to deploy:**
+1. Go to **github.com/yosiwizman/echo** → **Actions**
+2. Click **Deploy Backend to Cloud Run (Staging)**
+3. Click **Run workflow** → **Run workflow**
+4. Wait 5-10 minutes
+5. Click the run to see the service URL
+
+Or just push to `main` - it deploys automatically!
+
+---
+
+## 🔄 Alternative: Redeploy via Cloud Build (Legacy)
+
+If you're still using the Cloud Build trigger:
 
 ### Step 1: Go to Cloud Build
 1. Open your browser
@@ -127,10 +146,12 @@ Check the detailed docs: `docs/ops/staging_cloudrun.md`
 
 ---
 
-## 🆕 First-Time Setup: Deploy from Repository
+## 🆕 First-Time Setup
 
-If your Cloud Run service doesn't exist yet, here's how to create it:
+**⭐ RECOMMENDED:** Use GitHub Actions + Artifact Registry.
+See: `docs/ops/gcp_staging_cloudrun_setup.md`
 
+**Alternative (Legacy):** Use Cloud Build "Connect repository":
 1. Go to **Cloud Run** in GCP Console
 2. Click **"Create Service"**
 3. Select **"Continuously deploy from a repository"**
@@ -141,16 +162,19 @@ If your Cloud Run service doesn't exist yet, here's how to create it:
 8. Build type: **Dockerfile** (it will find `./Dockerfile` at repo root)
 9. Click **"Save"** then **"Create"**
 
+> ⚠️ The Cloud Build trigger can be unreliable. We recommend using GitHub Actions instead.
+
 ---
 
-## ⚠️ Why Can't I Use ghcr.io Image URLs?
+## ⚠️ Why Can't I Paste ghcr.io URLs in Cloud Run?
 
 Cloud Run UI **does not directly support** GitHub Container Registry (ghcr.io) URLs.
 
-**Options:**
-1. ✅ **Build from repo** (recommended) — Use "Continuously deploy from repository" as shown above
-2. 🔧 **Artifact Registry proxy** (advanced) — Set up an Artifact Registry Remote Repository to proxy ghcr.io
+**Do NOT** try to paste `ghcr.io/yosiwizman/echo-backend:latest` into Cloud Run's deploy form.
 
-For option 2, see: https://cloud.google.com/artifact-registry/docs/repositories/create-remote-repo
+**Use one of these instead:**
+1. ⭐ **GitHub Actions + Artifact Registry** (recommended) — See `docs/ops/gcp_staging_cloudrun_setup.md`
+2. **Build from repo** — Use "Continuously deploy from repository"
+3. **Artifact Registry proxy** (advanced) — Set up a Remote Repository to proxy ghcr.io
 
-We recommend option 1 because it's simpler and auto-deploys on every push to main.
+Option 1 is the most reliable and gives you full control from GitHub.
