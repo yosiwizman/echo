@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "displayName": "Echo Backend STAGING - Uptime Failed",
+    "name": "projects/echo-staging-483002/alertPolicies/7166571610341187457",
+    "enabled": true,
+    "notificationChannels": [
+      "projects/echo-staging-483002/notificationChannels/8588339881905100382"
+    ],
+    "action": "created"
+  },
+  "prod": {
+    "displayName": "Echo Backend PROD - Uptime Failed",
+    "name": "projects/echo-staging-483002/alertPolicies/431407025373756148",
+    "enabled": true,
+    "notificationChannels": [
+      "projects/echo-staging-483002/notificationChannels/8588339881905100382"
+    ],
+    "action": "created"
+  }
+}

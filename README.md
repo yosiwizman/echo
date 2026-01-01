@@ -266,6 +266,15 @@ The backend includes always-on runtime smoke monitoring that validates staging a
 - **Manual trigger**: `gh workflow run backend_runtime_smoke.yml --repo yosiwizman/echo`
 - **Full docs**: [docs/ops/runtime_smoke_monitoring.md](docs/ops/runtime_smoke_monitoring.md)
 
+## GCP Uptime Alerting
+
+Cloud Monitoring uptime checks with email alerts monitor both staging and production:
+
+- **What it monitors**: `/health` endpoint every 60 seconds with JSON validation
+- **Alerts**: Email notifications on failures lasting 120+ seconds
+- **Setup/Run**: `ALERT_EMAIL="you@example.com" bash ops/gcp/monitoring/apply_monitoring.sh`
+- **Full docs**: [docs/ops/gcp_uptime_alerting.md](docs/ops/gcp_uptime_alerting.md)
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.

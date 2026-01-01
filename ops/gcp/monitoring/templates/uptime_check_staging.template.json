@@ -1,0 +1,39 @@
+{
+  "displayName": "Echo Backend STAGING - Health Check",
+  "monitoredResource": {
+    "type": "uptime_url",
+    "labels": {
+      "project_id": "{{PROJECT_ID}}",
+      "host": "{{STAGING_HOST}}"
+    }
+  },
+  "httpCheck": {
+    "path": "/health",
+    "port": 443,
+    "useSsl": true,
+    "validateSsl": true,
+    "requestMethod": "GET",
+    "contentType": "TYPE_UNSPECIFIED",
+    "acceptedResponseStatusCodes": [
+      {
+        "statusClass": "STATUS_CLASS_2XX"
+      }
+    ]
+  },
+  "contentMatchers": [
+    {
+      "content": "\"ok\"",
+      "matcher": "MATCHES_JSON_PATH",
+      "jsonPathMatcher": {
+        "jsonPath": "$.status",
+        "jsonMatcher": "EXACT_MATCH"
+      }
+    }
+  ],
+  "period": "60s",
+  "timeout": "10s",
+  "userLabels": {
+    "env": "staging",
+    "service": "echo-backend"
+  }
+}

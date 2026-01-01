@@ -1,0 +1,40 @@
+{
+  "displayName": "Echo Backend STAGING - Uptime Failed",
+  "combiner": "OR",
+  "conditions": [
+    {
+      "displayName": "Uptime check failed for staging",
+      "conditionThreshold": {
+        "filter": "metric.type=\"monitoring.googleapis.com/uptime_check/check_passed\" AND resource.type=\"uptime_url\" AND metric.label.check_id=\"{{CHECK_ID}}\"",
+        "comparison": "COMPARISON_LT",
+        "thresholdValue": 1,
+        "duration": "120s",
+        "trigger": {
+          "count": 1
+        },
+        "aggregations": [
+          {
+            "alignmentPeriod": "60s",
+            "perSeriesAligner": "ALIGN_COUNT_TRUE"
+          }
+        ]
+      }
+    }
+  ],
+  "notificationChannels": [
+    "{{CHANNEL_NAME}}"
+  ],
+  "alertStrategy": {
+    "autoClose": "604800s"
+  },
+  "documentation": {
+    "content": "## Echo Backend STAGING - Uptime Check Failed\n\n### Immediate Actions\n1. **Check /health endpoint**: `curl -s https://echo-backend-staging-zxuvsjb5qa-ew.a.run.app/health | jq .`\n2. **Check /version endpoint**: `curl -s https://echo-backend-staging-zxuvsjb5qa-ew.a.run.app/version | jq .`\n3. **Last deploy SHA**: Check `git_sha` from /version response\n\n### Investigation\n- [Cloud Run Logs](https://console.cloud.google.com/run/detail/europe-west1/echo-backend-staging/logs?project={{PROJECT_ID}})\n- [Uptime Check Details](https://console.cloud.google.com/monitoring/uptime?project={{PROJECT_ID}})\n\n### Escalation\nIf the issue persists after 10 minutes, escalate to the on-call engineer.",
+    "mimeType": "text/markdown"
+  },
+  "enabled": true,
+  "userLabels": {
+    "env": "staging",
+    "service": "echo-backend",
+    "alert_type": "uptime"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "type": "email",
+  "displayName": "{{DISPLAY_NAME}}",
+  "labels": {
+    "email_address": "{{ALERT_EMAIL}}"
+  },
+  "enabled": true
+}
