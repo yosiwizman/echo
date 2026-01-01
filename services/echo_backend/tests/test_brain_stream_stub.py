@@ -37,9 +37,21 @@ def test_brain_stream_format() -> None:
         assert len(events) > 0
         
         # Last event should be 'final'
-        assert events[-1]["type"] == "final"
-        assert "message" in events[-1]["data"]
-        assert events[-1]["data"]["message"]["role"] == "assistant"
+        final_event = events[-1]
+        assert final_event["type"] == "final"
+        assert "message" in final_event["data"]
+        assert final_event["data"]["message"]["role"] == "assistant"
+        
+        # Final event should include runtime metadata
+        assert final_event["data"]["ok"] is True
+        assert "runtime" in final_event["data"]
+        runtime = final_event["data"]["runtime"]
+        assert "trace_id" in runtime
+        assert len(runtime["trace_id"]) == 36  # UUID format
+        assert runtime["provider"] == "stub"
+        assert "env" in runtime
+        assert "git_sha" in runtime
+        assert "build_time" in runtime
 
 
 def test_brain_stream_tokens() -> None:

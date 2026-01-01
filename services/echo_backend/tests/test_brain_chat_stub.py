@@ -25,12 +25,24 @@ def test_brain_chat_simple() -> None:
     assert resp.status_code == 200
     data = resp.json()
     
+    # Core response fields
+    assert data["ok"] is True
     assert "session_id" in data
     assert "message" in data
     assert data["message"]["role"] == "assistant"
     assert "stub" in data["message"]["content"].lower()
     assert "usage" in data
     assert data["usage"]["total_tokens"] == 25
+    
+    # Runtime metadata fields
+    assert "runtime" in data
+    runtime = data["runtime"]
+    assert "trace_id" in runtime
+    assert len(runtime["trace_id"]) == 36  # UUID format
+    assert runtime["provider"] == "stub"
+    assert "env" in runtime
+    assert "git_sha" in runtime
+    assert "build_time" in runtime
 
 
 def test_brain_chat_with_session_id() -> None:
@@ -89,3 +101,5 @@ def test_brain_chat_with_metadata() -> None:
     assert resp.status_code == 200
     data = resp.json()
     assert data["metadata"]["provider"] == "stub"
+    # Runtime metadata should also be present
+    assert data["runtime"]["provider"] == "stub"

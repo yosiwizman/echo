@@ -74,6 +74,7 @@ Generate a complete chat response.
 
 ```json
 {
+  "ok": true,
   "session_id": "optional-session-123",
   "message": {
     "role": "assistant",
@@ -86,6 +87,13 @@ Generate a complete chat response.
   },
   "metadata": {
     "provider": "openai"
+  },
+  "runtime": {
+    "trace_id": "550e8400-e29b-41d4-a716-446655440000",
+    "provider": "openai",
+    "env": "staging",
+    "git_sha": "abc1234",
+    "build_time": "2025-12-30T12:00:00Z"
   }
 }
 ```
@@ -138,15 +146,17 @@ event: token
 data: {"token": " there!", "session_id": "session-123"}
 ```
 
-2. **final**: Complete response with metadata
+2. **final**: Complete response with metadata and runtime info
 
 ```
 event: final
 data: {
+  "ok": true,
   "session_id": "session-123",
   "message": {"role": "assistant", "content": "Hello there!"},
   "usage": {"prompt_tokens": 10, "completion_tokens": 3, "total_tokens": 13},
-  "metadata": {"provider": "openai"}
+  "metadata": {"provider": "openai"},
+  "runtime": {"trace_id": "uuid", "provider": "openai", "env": "staging", "git_sha": "...", "build_time": "..."}
 }
 ```
 
@@ -230,10 +240,22 @@ eventSource.addEventListener('error', (e) => {
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
+| ok | boolean | No | Request success status (default: true) |
 | session_id | string | Yes | Session identifier (generated if not provided) |
 | message | Message | Yes | The assistant's response |
 | usage | UsageInfo | No | Token usage information |
 | metadata | object | No | Response metadata (includes provider) |
+| runtime | RuntimeMetadata | No | Runtime metadata for observability |
+
+### RuntimeMetadata
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| trace_id | string | Yes | Unique trace ID for request correlation |
+| provider | string | Yes | Active brain provider (stub/openai) |
+| env | string | No | Deployment environment (staging/production/unknown) |
+| git_sha | string | No | Git commit SHA of deployed version |
+| build_time | string | No | Build timestamp of deployed version |
 
 ### UsageInfo
 
@@ -270,9 +292,35 @@ export ECHO_BRAIN_PROVIDER=stub
 pytest services/echo_backend/tests/test_brain_*.py
 ```
 
+## Logging and Observability
+
+Every chat request (streaming and non-streaming) logs a structured line at INFO level:
+
+```
+ECHO_CHAT_REQUEST trace_id=<uuid> provider=<stub|openai> msg_count=<n>
+```
+
+For streaming requests, the log line is:
+
+```
+ECHO_CHAT_STREAM_REQUEST trace_id=<uuid> provider=<stub|openai> msg_count=<n>
+```
+
+**Privacy**: Message contents are never logged by default. The `trace_id` allows correlating logs with API responses for debugging.
+
+**Runtime Metadata**: The `runtime` field in responses includes:
+- `trace_id`: Unique ID for this request (UUID)
+- `provider`: Which backend is handling requests (stub/openai)
+- `env`: Deployment environment (staging/production/unknown)
+- `git_sha`: Git commit of deployed version
+- `build_time`: Build timestamp
+
+This enables end-to-end request tracing from UI to backend.
+
 ## Notes
 
 - Session IDs are optional but recommended for maintaining conversation context
 - The stub provider returns deterministic responses for reproducible testing
 - Streaming responses use chunked transfer encoding; ensure your HTTP client supports it
 - The `X-Accel-Buffering: no` header disables nginx buffering for low-latency streaming
+- Use `trace_id` from responses to correlate with backend logs for debugging
