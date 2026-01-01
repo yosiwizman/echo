@@ -205,6 +205,8 @@ jobs:
             APP_ENV=production
             GIT_SHA=${{ github.sha }}
             BUILD_TIME=${{ steps.buildtime.outputs.build_time }}
+          secrets: |
+            ALERT_TEST_TOKEN=echo-alert-test-token:latest
 
       - name: Show deployment info
         run: |

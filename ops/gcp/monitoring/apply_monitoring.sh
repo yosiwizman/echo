@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# apply_monitoring.sh - Apply GCP Cloud Monitoring uptime checks and alerting
+# apply_monitoring.sh - Apply GCP Cloud Monitoring uptime checks, alerting, and log-based metrics
 #
 # This script is idempotent: it can be run multiple times safely.
 # It will create or update resources as needed.
@@ -15,9 +15,12 @@
 #   - monitoring.alertPolicies.list
 #   - monitoring.alertPolicies.create
 #   - monitoring.alertPolicies.update
+#   - logging.logMetrics.list
+#   - logging.logMetrics.create
+#   - logging.logMetrics.update
 #   - serviceusage.services.enable (if Monitoring API not yet enabled)
 #
-# Recommended role: roles/monitoring.editor (or custom role with above perms)
+# Recommended role: roles/monitoring.editor + roles/logging.admin (or custom role with above perms)
 #
 # Usage:
 #   ALERT_EMAIL="your@email.com" bash apply_monitoring.sh
@@ -78,7 +81,7 @@ echo ""
 # Prerequisites
 # ============================================================================
 
-echo "[1/6] Verifying gcloud authentication..."
+echo "[1/8] Verifying gcloud authentication..."
 if ! gcloud auth print-access-token >/dev/null 2>&1; then
     echo "ERROR: Not authenticated with gcloud. Run 'gcloud auth login' first." >&2
     exit 1
@@ -90,19 +93,26 @@ if [[ "$CURRENT_PROJECT" != "$PROJECT_ID" ]]; then
     gcloud config set project "$PROJECT_ID"
 fi
 
-echo "[2/6] Ensuring Cloud Monitoring API is enabled..."
+echo "[2/8] Ensuring Cloud Monitoring API is enabled..."
 if ! gcloud services list --enabled --filter="name:monitoring.googleapis.com" --format="value(name)" | grep -q monitoring; then
     echo "Enabling Cloud Monitoring API..."
     gcloud services enable monitoring.googleapis.com
 fi
 echo "Cloud Monitoring API is enabled."
+
+echo "Ensuring Cloud Logging API is enabled..."
+if ! gcloud services list --enabled --filter="name:logging.googleapis.com" --format="value(name)" | grep -q logging; then
+    echo "Enabling Cloud Logging API..."
+    gcloud services enable logging.googleapis.com
+fi
+echo "Cloud Logging API is enabled."
 echo ""
 
 # ============================================================================
 # Render Templates
 # ============================================================================
 
-echo "[3/6] Rendering templates..."
+echo "[3/8] Rendering templates..."
 mkdir -p "$GENERATED_DIR"
 python3 "$LIB_DIR/render_templates.py"
 echo ""
@@ -111,7 +121,7 @@ echo ""
 # Create/Update Notification Channel
 # ============================================================================
 
-echo "[4/6] Setting up notification channel..."
+echo "[4/8] Setting up notification channel..."
 
 # Check if channel already exists
 EXISTING_CHANNEL=$(gcloud beta monitoring channels list \
@@ -156,7 +166,7 @@ echo ""
 # Create/Update Uptime Checks
 # ============================================================================
 
-echo "[5/6] Applying uptime checks..."
+echo "[5/8] Applying uptime checks..."
 python3 "$LIB_DIR/apply_uptime_checks.py" | tee /tmp/uptime_output.txt
 
 # Extract check IDs from output
@@ -175,11 +185,27 @@ echo "  Prod:    $PROD_CHECK_ID"
 echo ""
 
 # ============================================================================
-# Create/Update Alert Policies
+# Create/Update Alert Policies (Uptime)
 # ============================================================================
 
-echo "[6/6] Applying alert policies..."
+echo "[6/8] Applying uptime alert policies..."
 python3 "$LIB_DIR/apply_alert_policies.py"
+echo ""
+
+# ============================================================================
+# Create/Update Log-Based Metrics (Alert Self-Test)
+# ============================================================================
+
+echo "[7/8] Applying log-based metrics for alert self-test..."
+python3 "$LIB_DIR/apply_log_metrics.py"
+echo ""
+
+# ============================================================================
+# Create/Update Log-Metric Alert Policies (Alert Self-Test)
+# ============================================================================
+
+echo "[8/8] Applying log-metric alert policies..."
+python3 "$LIB_DIR/apply_logmetric_policies.py"
 echo ""
 
 # ============================================================================
@@ -203,9 +229,17 @@ echo "    - Prod: Echo Backend PROD - Health Check"
 echo "      Host: $PROD_HOST"
 echo "      Check ID: $PROD_CHECK_ID"
 echo ""
-echo "  • Alert Policies:"
+echo "  • Alert Policies (Uptime):"
 echo "    - Echo Backend STAGING - Uptime Failed"
 echo "    - Echo Backend PROD - Uptime Failed"
+echo ""
+echo "  • Log-Based Metrics (Alert Self-Test):"
+echo "    - echo_alert_test_staging"
+echo "    - echo_alert_test_prod"
+echo ""
+echo "  • Alert Policies (Alert Self-Test):"
+echo "    - Echo Backend STAGING - Alert Self-Test Triggered"
+echo "    - Echo Backend PROD - Alert Self-Test Triggered"
 echo ""
 echo "State files saved to: $STATE_DIR/"
 echo ""

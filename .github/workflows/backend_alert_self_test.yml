@@ -1,0 +1,114 @@
+# Alert Self-Test Workflow
+#
+# Manually trigger the alert self-test endpoint on staging or production.
+# This fires a log-based metric alert to verify the alerting pipeline end-to-end.
+#
+# Usage:
+#   1. Go to Actions > "Alert Self-Test" > Run workflow
+#   2. Select environment (staging or production)
+#   3. Click "Run workflow"
+#   4. Check your email for the alert notification
+#
+# Prerequisites:
+#   - ALERT_TEST_TOKEN secret must be set in GitHub Actions
+#   - STAGING_BASE_URL and PROD_BASE_URL variables must be set
+
+name: Alert Self-Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: "Environment to test"
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+
+jobs:
+  trigger-alert:
+    name: Trigger Alert Self-Test (${{ inputs.env }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate inputs
+        run: |
+          echo "Environment: ${{ inputs.env }}"
+          
+          if [ "${{ inputs.env }}" != "staging" ] && [ "${{ inputs.env }}" != "production" ]; then
+            echo "ERROR: Invalid environment '${{ inputs.env }}'. Must be 'staging' or 'production'."
+            exit 1
+          fi
+
+      - name: Determine base URL
+        id: url
+        run: |
+          if [ "${{ inputs.env }}" = "staging" ]; then
+            BASE_URL="${{ vars.STAGING_BASE_URL }}"
+          else
+            BASE_URL="${{ vars.PROD_BASE_URL }}"
+          fi
+          
+          if [ -z "$BASE_URL" ]; then
+            echo "ERROR: Base URL not configured for ${{ inputs.env }}."
+            echo "Please set STAGING_BASE_URL or PROD_BASE_URL in repository variables."
+            exit 1
+          fi
+          
+          echo "base_url=$BASE_URL" >> $GITHUB_OUTPUT
+          echo "Using base URL: $BASE_URL"
+
+      - name: Trigger alert self-test endpoint
+        env:
+          ALERT_TEST_TOKEN: ${{ secrets.ALERT_TEST_TOKEN }}
+        run: |
+          BASE_URL="${{ steps.url.outputs.base_url }}"
+          ENDPOINT="${BASE_URL}/ops/alert-test"
+          
+          echo "============================================"
+          echo "  🔔 ALERT SELF-TEST                        "
+          echo "============================================"
+          echo "Environment: ${{ inputs.env }}"
+          echo "Endpoint: $ENDPOINT"
+          echo ""
+          
+          if [ -z "$ALERT_TEST_TOKEN" ]; then
+            echo "ERROR: ALERT_TEST_TOKEN secret is not set."
+            echo "Please add this secret in repository settings."
+            exit 1
+          fi
+          
+          echo "Calling endpoint..."
+          RESPONSE=$(curl -fsS \
+            -H "X-Alert-Test-Token: $ALERT_TEST_TOKEN" \
+            "$ENDPOINT" \
+            --connect-timeout 30 \
+            --max-time 60)
+          
+          echo ""
+          echo "Response:"
+          echo "$RESPONSE" | jq . 2>/dev/null || echo "$RESPONSE"
+          echo ""
+          
+          # Validate response
+          if echo "$RESPONSE" | grep -q '"ok".*true'; then
+            echo "============================================"
+            echo "  ✅ ALERT SELF-TEST TRIGGERED              "
+            echo "============================================"
+            echo ""
+            echo "The alert self-test was triggered successfully."
+            echo "You should receive an email alert within 1-2 minutes."
+            echo ""
+            echo "Expected email subject:"
+            echo "  [FIRING] Echo Backend ${{ inputs.env == 'staging' && 'STAGING' || 'PROD' }} - Alert Self-Test Triggered"
+            echo ""
+            echo "The alert will auto-close after 10 minutes."
+          else
+            echo "============================================"
+            echo "  ❌ UNEXPECTED RESPONSE                     "
+            echo "============================================"
+            echo "Response did not contain expected {\"ok\": true}"
+            exit 1
+          fi
