@@ -18,6 +18,8 @@ export function useHealth(environment: Environment) {
       const response = await fetch(url, {
         method: 'GET',
         headers: { Accept: 'application/json' },
+        credentials: 'omit',
+        mode: 'cors',
         signal: AbortSignal.timeout(10000), // 10s timeout
       });
 

@@ -2,7 +2,7 @@ import type { StreamChunk, ResponseMetadata } from '../types';
 
 /**
  * Parse a single line from a streaming response.
- * Handles both SSE-style "data: {...}" lines and plain JSON lines.
+ * Handles SSE-style "event: <type>" and "data: {...}" lines, plus plain JSON.
  *
  * @param line - A single line from the stream
  * @returns Parsed StreamChunk or null if line should be skipped
@@ -17,6 +17,11 @@ export function parseStreamLine(line: string): StreamChunk | null {
 
   // Skip SSE comments
   if (trimmed.startsWith(':')) {
+    return null;
+  }
+
+  // Skip SSE "event:" lines (we handle type from data payload)
+  if (trimmed.startsWith('event:')) {
     return null;
   }
 
@@ -46,8 +51,14 @@ export function parseStreamLine(line: string): StreamChunk | null {
       metadata: extractMetadata(parsed),
     };
 
+    // Handle error events
     if (parsed.error) {
       chunk.error = parsed.error;
+    }
+
+    // Handle 'ok' field from final events
+    if (parsed.ok === false) {
+      chunk.error = parsed.error || 'Request failed';
     }
 
     return chunk;

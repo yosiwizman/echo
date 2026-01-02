@@ -158,6 +158,24 @@ If you encounter CORS errors:
 4. Try clearing browser cache and cookies
 5. Check browser DevTools Network tab for the actual error
 
+### HTTP 422 Errors (Request Validation Failed)
+If chat requests return HTTP 422:
+1. Open browser DevTools → Network tab
+2. Find the failed `/v1/brain/chat` request
+3. Check the request payload in the "Payload" tab
+4. The backend expects this exact schema:
+   ```json
+   {
+     "messages": [{"role": "user", "content": "your message"}],
+     "session_id": "optional-session-id"
+   }
+   ```
+5. Common mistakes:
+   - Sending `{"message": "..."}` instead of `{"messages": [...]}`
+   - Missing `role` field in messages
+   - Invalid `role` value (must be "system", "user", or "assistant")
+6. Check the response body for FastAPI's detailed validation error
+
 ### Connection Errors
 If the connectivity indicator shows "Disconnected":
 1. Click the indicator to retry the health check

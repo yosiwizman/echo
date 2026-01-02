@@ -16,17 +16,48 @@ export interface ResponseMetadata {
   tokens_used?: number;
 }
 
-export interface ChatRequest {
-  message: string;
-  session_id?: string;
+/**
+ * Message in a conversation (matches backend Message model).
+ */
+export interface Message {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
 }
 
+/**
+ * Request for chat completion (matches backend ChatRequest model).
+ */
+export interface ChatRequest {
+  messages: Message[];
+  session_id?: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Runtime metadata from backend response.
+ */
+export interface RuntimeMetadata {
+  trace_id: string;
+  provider: string;
+  env: string;
+  git_sha: string;
+  build_time: string;
+}
+
+/**
+ * Response from chat completion (matches backend ChatResponse model).
+ */
 export interface ChatResponse {
-  response: string;
+  ok: boolean;
   session_id: string;
-  trace_id?: string;
-  provider?: string;
-  metadata?: ResponseMetadata;
+  message: Message;
+  usage?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+  metadata?: Record<string, unknown>;
+  runtime?: RuntimeMetadata;
 }
 
 export interface HealthResponse {
