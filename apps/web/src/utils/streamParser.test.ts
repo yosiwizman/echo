@@ -37,6 +37,24 @@ describe('parseStreamLine', () => {
     expect(parseStreamLine(':ping')).toBeNull();
   });
 
+  it('skips SSE event: lines', () => {
+    expect(parseStreamLine('event: token')).toBeNull();
+    expect(parseStreamLine('event: final')).toBeNull();
+    expect(parseStreamLine('event: error')).toBeNull();
+  });
+
+  it('handles ok:false in error events', () => {
+    const line = 'data: {"ok": false, "error": "Something went wrong"}';
+    const result = parseStreamLine(line);
+    expect(result?.error).toBe('Something went wrong');
+  });
+
+  it('handles ok:false without explicit error', () => {
+    const line = 'data: {"ok": false}';
+    const result = parseStreamLine(line);
+    expect(result?.error).toBe('Request failed');
+  });
+
   it('extracts metadata from response', () => {
     const line = 'data: {"content": "Test", "trace_id": "abc123", "provider": "mock", "env": "staging"}';
     const result = parseStreamLine(line);

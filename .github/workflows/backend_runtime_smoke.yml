@@ -196,6 +196,84 @@ jobs:
             return 0
           }
           
+          # Function: validate /v1/brain/chat endpoint (POST with proper schema)
+          validate_brain_chat() {
+            local url="${BASE_URL}/v1/brain/chat"
+            
+            echo ""
+            echo "--- Testing: POST $url ---"
+            
+            # POST with correct ChatRequest schema
+            local max_retries=3
+            local retry_delay=3
+            
+            for i in $(seq 1 $max_retries); do
+              HTTP_CODE=$(curl -s -o /tmp/chat_response.json -w "%{http_code}" \
+                --connect-timeout 10 --max-time 30 \
+                -X POST \
+                -H "Content-Type: application/json" \
+                -d '{"messages": [{"role": "user", "content": "smoke test"}]}' \
+                "$url" 2>/dev/null)
+              
+              if [ "$HTTP_CODE" = "200" ]; then
+                break
+              fi
+              echo "  Attempt $i/$max_retries failed (HTTP $HTTP_CODE), retrying in ${retry_delay}s..." >&2
+              sleep $retry_delay
+              retry_delay=$((retry_delay * 2))
+            done
+            
+            RESPONSE=$(cat /tmp/chat_response.json 2>/dev/null || echo "{}")
+            
+            if [ "$HTTP_CODE" != "200" ]; then
+              echo "  ❌ FAIL: HTTP $HTTP_CODE (expected 200)"
+              echo "  Response: $RESPONSE"
+              return 1
+            fi
+            
+            echo "  Response: $RESPONSE"
+            
+            # Parse JSON
+            if ! echo "$RESPONSE" | jq . > /dev/null 2>&1; then
+              echo "  ❌ FAIL: Response is not valid JSON"
+              return 1
+            fi
+            
+            local errors=""
+            
+            # Check ok field
+            OK=$(echo "$RESPONSE" | jq -r '.ok // empty')
+            if [ "$OK" != "true" ]; then
+              errors="${errors}  - ok is not true: '$OK'\n"
+            fi
+            
+            # Check runtime.env field matches expected
+            RUNTIME_ENV=$(echo "$RESPONSE" | jq -r '.runtime.env // empty')
+            if [ -z "$RUNTIME_ENV" ]; then
+              errors="${errors}  - Missing 'runtime.env' field\n"
+            elif [ "$RUNTIME_ENV" != "$EXPECTED_ENV" ]; then
+              errors="${errors}  - runtime.env mismatch: expected '$EXPECTED_ENV', got '$RUNTIME_ENV'\n"
+            fi
+            
+            # Check message.role is assistant
+            MSG_ROLE=$(echo "$RESPONSE" | jq -r '.message.role // empty')
+            if [ "$MSG_ROLE" != "assistant" ]; then
+              errors="${errors}  - message.role is not 'assistant': '$MSG_ROLE'\n"
+            fi
+            
+            if [ -n "$errors" ]; then
+              echo "  ❌ FAIL: Validation errors:"
+              echo -e "$errors"
+              return 1
+            fi
+            
+            echo "  ✓ PASS"
+            echo "    ok:          $OK"
+            echo "    runtime.env: $RUNTIME_ENV"
+            echo "    msg.role:    $MSG_ROLE"
+            return 0
+          }
+          
           # Run tests
           if validate_health; then
             RESULTS="${RESULTS}| /health | ✓ PASS |\n"
@@ -208,6 +286,13 @@ jobs:
             RESULTS="${RESULTS}| /version | ✓ PASS |\n"
           else
             RESULTS="${RESULTS}| /version | ❌ FAIL |\n"
+            FAILURES=$((FAILURES + 1))
+          fi
+          
+          if validate_brain_chat; then
+            RESULTS="${RESULTS}| /v1/brain/chat | ✓ PASS |\n"
+          else
+            RESULTS="${RESULTS}| /v1/brain/chat | ❌ FAIL |\n"
             FAILURES=$((FAILURES + 1))
           fi
           
@@ -369,6 +454,84 @@ jobs:
             return 0
           }
           
+          # Function: validate /v1/brain/chat endpoint (POST with proper schema)
+          validate_brain_chat() {
+            local url="${BASE_URL}/v1/brain/chat"
+            
+            echo ""
+            echo "--- Testing: POST $url ---"
+            
+            # POST with correct ChatRequest schema
+            local max_retries=3
+            local retry_delay=3
+            
+            for i in $(seq 1 $max_retries); do
+              HTTP_CODE=$(curl -s -o /tmp/chat_response.json -w "%{http_code}" \
+                --connect-timeout 10 --max-time 30 \
+                -X POST \
+                -H "Content-Type: application/json" \
+                -d '{"messages": [{"role": "user", "content": "smoke test"}]}' \
+                "$url" 2>/dev/null)
+              
+              if [ "$HTTP_CODE" = "200" ]; then
+                break
+              fi
+              echo "  Attempt $i/$max_retries failed (HTTP $HTTP_CODE), retrying in ${retry_delay}s..." >&2
+              sleep $retry_delay
+              retry_delay=$((retry_delay * 2))
+            done
+            
+            RESPONSE=$(cat /tmp/chat_response.json 2>/dev/null || echo "{}")
+            
+            if [ "$HTTP_CODE" != "200" ]; then
+              echo "  ❌ FAIL: HTTP $HTTP_CODE (expected 200)"
+              echo "  Response: $RESPONSE"
+              return 1
+            fi
+            
+            echo "  Response: $RESPONSE"
+            
+            # Parse JSON
+            if ! echo "$RESPONSE" | jq . > /dev/null 2>&1; then
+              echo "  ❌ FAIL: Response is not valid JSON"
+              return 1
+            fi
+            
+            local errors=""
+            
+            # Check ok field
+            OK=$(echo "$RESPONSE" | jq -r '.ok // empty')
+            if [ "$OK" != "true" ]; then
+              errors="${errors}  - ok is not true: '$OK'\n"
+            fi
+            
+            # Check runtime.env field matches expected
+            RUNTIME_ENV=$(echo "$RESPONSE" | jq -r '.runtime.env // empty')
+            if [ -z "$RUNTIME_ENV" ]; then
+              errors="${errors}  - Missing 'runtime.env' field\n"
+            elif [ "$RUNTIME_ENV" != "$EXPECTED_ENV" ]; then
+              errors="${errors}  - runtime.env mismatch: expected '$EXPECTED_ENV', got '$RUNTIME_ENV'\n"
+            fi
+            
+            # Check message.role is assistant
+            MSG_ROLE=$(echo "$RESPONSE" | jq -r '.message.role // empty')
+            if [ "$MSG_ROLE" != "assistant" ]; then
+              errors="${errors}  - message.role is not 'assistant': '$MSG_ROLE'\n"
+            fi
+            
+            if [ -n "$errors" ]; then
+              echo "  ❌ FAIL: Validation errors:"
+              echo -e "$errors"
+              return 1
+            fi
+            
+            echo "  ✓ PASS"
+            echo "    ok:          $OK"
+            echo "    runtime.env: $RUNTIME_ENV"
+            echo "    msg.role:    $MSG_ROLE"
+            return 0
+          }
+          
           # Run tests
           if validate_health; then
             RESULTS="${RESULTS}| /health | ✓ PASS |\n"
@@ -381,6 +544,13 @@ jobs:
             RESULTS="${RESULTS}| /version | ✓ PASS |\n"
           else
             RESULTS="${RESULTS}| /version | ❌ FAIL |\n"
+            FAILURES=$((FAILURES + 1))
+          fi
+          
+          if validate_brain_chat; then
+            RESULTS="${RESULTS}| /v1/brain/chat | ✓ PASS |\n"
+          else
+            RESULTS="${RESULTS}| /v1/brain/chat | ❌ FAIL |\n"
             FAILURES=$((FAILURES + 1))
           fi
           

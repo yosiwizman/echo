@@ -86,19 +86,33 @@ export function useChat(environment: Environment, streamingEnabled: boolean) {
       abortControllerRef.current = new AbortController();
 
       try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: content.trim(),
-            session_id: sessionId.current,
-          }),
-          signal: abortControllerRef.current.signal,
-        });
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: content.trim() }],
+          session_id: sessionId.current,
+        }),
+        credentials: 'omit',
+        mode: 'cors',
+        signal: abortControllerRef.current.signal,
+      });
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      if (!response.ok) {
+        // Try to extract FastAPI error detail
+        let errorDetail = `HTTP ${response.status}: ${response.statusText}`;
+        try {
+          const errorBody = await response.json();
+          if (errorBody.detail) {
+            errorDetail = typeof errorBody.detail === 'string'
+              ? errorBody.detail
+              : JSON.stringify(errorBody.detail);
+          }
+        } catch {
+          // Ignore JSON parse errors
         }
+        throw new Error(errorDetail);
+      }
 
         if (streamingEnabled && response.body) {
           // Handle streaming response
@@ -143,15 +157,17 @@ export function useChat(environment: Environment, streamingEnabled: boolean) {
           // Handle non-streaming response
           const data: ChatResponse = await response.json();
           const metadata: ResponseMetadata = {
-            trace_id: data.trace_id,
-            provider: data.provider,
-            ...data.metadata,
+            trace_id: data.runtime?.trace_id,
+            provider: data.runtime?.provider,
+            env: data.runtime?.env,
+            git_sha: data.runtime?.git_sha,
+            build_time: data.runtime?.build_time,
           };
 
           setMessages((prev) =>
             prev.map((msg) =>
               msg.id === assistantId
-                ? { ...msg, content: data.response || '(No response)', metadata }
+                ? { ...msg, content: data.message?.content || '(No response)', metadata }
                 : msg
             )
           );
