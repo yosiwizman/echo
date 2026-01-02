@@ -113,15 +113,50 @@ The smoke monitor runs every 15 minutes and validates HTTP 200 from the web URLs
 ### Health Check
 The nginx configuration provides a `/health` endpoint that returns `{"status":"ok"}`.
 
+## CORS Configuration
+
+The Echo backend includes CORS middleware to allow browser-based requests from the Web Chat UI.
+
+### Allowed Origins
+
+The following origins are allowed by default:
+
+- `https://echo-web-staging-zxuvsjb5qa-ew.a.run.app` (staging web UI)
+- `https://echo-web-zxuvsjb5qa-ew.a.run.app` (production web UI)
+- `http://localhost:5173` (local dev with Vite dev server)
+- `http://localhost:3000` (local dev Web Chat UI default port)
+
+### Adding New Origins
+
+To add additional allowed origins, update the `CORS_ALLOW_ORIGINS` environment variable on the backend Cloud Run service:
+
+```bash
+gcloud run services update echo-backend-staging --region europe-west1 \
+  --set-env-vars "^@^CORS_ALLOW_ORIGINS=https://origin1.example.com,https://origin2.example.com"
+```
+
+Note: Use the `^@^` prefix to allow commas within the value.
+
+The environment variable is also set in the GitHub Actions deploy workflows:
+- `.github/workflows/backend_cloudrun_staging.yml`
+- `.github/workflows/backend_cloudrun_production.yml`
+
+### Allowed Methods and Headers
+
+- **Methods**: GET, POST, OPTIONS, HEAD
+- **Headers**: Content-Type, Authorization, X-Alert-Test-Token, X-Requested-With
+- **Credentials**: Allowed
+- **Preflight Cache**: 600 seconds (10 minutes)
+
 ## Troubleshooting
 
 ### CORS Issues
-The Web UI makes direct requests to Cloud Run backends. Cloud Run services are configured to allow unauthenticated requests, and CORS should work out of the box since both frontend and backend are on `*.run.app` domains.
-
 If you encounter CORS errors:
-1. Verify the backend service allows unauthenticated access
-2. Check the backend CORS middleware configuration
-3. Try clearing browser cache and cookies
+1. Verify your origin is in the `CORS_ALLOW_ORIGINS` list
+2. Check the backend service logs for CORS-related errors
+3. Ensure the backend service allows unauthenticated access
+4. Try clearing browser cache and cookies
+5. Check browser DevTools Network tab for the actual error
 
 ### Connection Errors
 If the connectivity indicator shows "Disconnected":

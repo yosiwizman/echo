@@ -175,6 +175,7 @@ jobs:
             APP_ENV=staging
             GIT_SHA=${{ github.sha }}
             BUILD_TIME=${{ steps.buildtime.outputs.build_time }}
+            CORS_ALLOW_ORIGINS=https://echo-web-staging-zxuvsjb5qa-ew.a.run.app,https://echo-web-zxuvsjb5qa-ew.a.run.app,http://localhost:5173,http://localhost:3000
           secrets: |
             ALERT_TEST_TOKEN=echo-alert-test-token:latest
 

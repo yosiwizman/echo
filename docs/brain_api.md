@@ -317,6 +317,43 @@ ECHO_CHAT_STREAM_REQUEST trace_id=<uuid> provider=<stub|openai> msg_count=<n>
 
 This enables end-to-end request tracing from UI to backend.
 
+## CORS (Cross-Origin Requests)
+
+The Brain API supports cross-origin requests from the Echo Web Chat UI and local development.
+
+### Allowed Origins
+
+By default, the following origins are allowed:
+
+- `https://echo-web-staging-zxuvsjb5qa-ew.a.run.app`
+- `https://echo-web-zxuvsjb5qa-ew.a.run.app`
+- `http://localhost:5173`
+- `http://localhost:3000`
+
+### Configuration
+
+To modify allowed origins, set the `CORS_ALLOW_ORIGINS` environment variable (comma-separated list):
+
+```bash
+export CORS_ALLOW_ORIGINS="https://myapp.example.com,http://localhost:3000"
+```
+
+### Browser Requests
+
+When making requests from a browser, ensure you include the `Content-Type` header:
+
+```javascript
+fetch('/v1/brain/chat', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    messages: [{ role: 'user', content: 'Hello' }]
+  })
+});
+```
+
 ## Notes
 
 - Session IDs are optional but recommended for maintaining conversation context
@@ -324,3 +361,4 @@ This enables end-to-end request tracing from UI to backend.
 - Streaming responses use chunked transfer encoding; ensure your HTTP client supports it
 - The `X-Accel-Buffering: no` header disables nginx buffering for low-latency streaming
 - Use `trace_id` from responses to correlate with backend logs for debugging
+- CORS preflight responses are cached for 10 minutes to reduce OPTIONS requests

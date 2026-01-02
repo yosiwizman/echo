@@ -3,6 +3,7 @@ import os
 
 import firebase_admin
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from modal import Image, App, asgi_app, Secret
 from routers import (
@@ -81,6 +82,27 @@ app = FastAPI(
     # in different orders depending on environment, causing contract hash drift.
     # See: docs/brain_versioning.md for rationale.
     separate_input_output_schemas=False,
+)
+
+# CORS configuration
+# Default origins allowlist for Echo Web UI (staging, prod, local dev)
+_DEFAULT_CORS_ORIGINS = (
+    "https://echo-web-staging-zxuvsjb5qa-ew.a.run.app,"
+    "https://echo-web-zxuvsjb5qa-ew.a.run.app,"
+    "http://localhost:5173,"
+    "http://localhost:3000"
+)
+_CORS_ORIGINS_ENV = os.environ.get("CORS_ALLOW_ORIGINS", _DEFAULT_CORS_ORIGINS)
+_CORS_ALLOW_ORIGINS = [origin.strip() for origin in _CORS_ORIGINS_ENV.split(",") if origin.strip()]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_CORS_ALLOW_ORIGINS,
+    # Credentials enabled so Authorization headers/cookies are allowed; requires exact origin, not '*'
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS", "HEAD"],
+    allow_headers=["Content-Type", "Authorization", "X-Alert-Test-Token", "X-Requested-With"],
+    max_age=600,  # Cache preflight for 10 minutes
 )
 
 app.include_router(transcribe.router)
