@@ -1,0 +1,188 @@
+name: Backend OpenAI Provider Smoke Test
+
+# OPTIONAL manual workflow to verify OpenAI provider is working.
+# This requires OPENAI_API_KEY to be configured in the target environment.
+# It will fail fast with a clear message if the key is not set.
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        type: choice
+        required: true
+        default: 'staging'
+        options:
+          - staging
+          - production
+
+jobs:
+  openai-smoke:
+    name: OpenAI Provider Smoke Test (${{ inputs.environment }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set target URL
+        id: target
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "url=${{ vars.PROD_BASE_URL }}" >> $GITHUB_OUTPUT
+          else
+            echo "url=${{ vars.STAGING_BASE_URL }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate configuration
+        run: |
+          if [ -z "${{ steps.target.outputs.url }}" ]; then
+            echo "❌ ERROR: Target URL not configured"
+            echo ""
+            echo "Please set these GitHub Actions Variables:"
+            echo "  - STAGING_BASE_URL (for staging)"
+            echo "  - PROD_BASE_URL (for production)"
+            exit 1
+          fi
+          echo "✓ Target URL: ${{ steps.target.outputs.url }}"
+
+      - name: Check provider health
+        run: |
+          echo "=== Checking Brain Health ==="
+          
+          HEALTH_URL="${{ steps.target.outputs.url }}/v1/brain/health"
+          echo "URL: $HEALTH_URL"
+          
+          RESPONSE=$(curl -s --connect-timeout 10 --max-time 30 "$HEALTH_URL")
+          echo "Response: $RESPONSE"
+          
+          PROVIDER=$(echo "$RESPONSE" | jq -r '.provider // empty')
+          
+          if [ "$PROVIDER" != "openai" ]; then
+            echo ""
+            echo "❌ ERROR: Provider is '$PROVIDER', expected 'openai'"
+            echo ""
+            echo "The OpenAI provider is not enabled on this environment."
+            echo "To enable it, see: docs/ops/openai_provider.md"
+            echo ""
+            echo "Quick fix:"
+            echo "  1. Store your OpenAI API key in Secret Manager"
+            echo "  2. Update Cloud Run service with OPENAI_API_KEY secret"
+            echo "  3. Set ECHO_BRAIN_PROVIDER=openai"
+            exit 1
+          fi
+          
+          echo "✓ Provider is 'openai'"
+
+      - name: Test chat endpoint
+        run: |
+          echo "=== Testing Chat Completion ==="
+          
+          CHAT_URL="${{ steps.target.outputs.url }}/v1/brain/chat"
+          echo "URL: $CHAT_URL"
+          
+          # Send a simple test message
+          RESPONSE=$(curl -s --connect-timeout 30 --max-time 60 \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"messages": [{"role": "user", "content": "Say hello in exactly 3 words."}]}' \
+            "$CHAT_URL")
+          
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 30 --max-time 60 \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"messages": [{"role": "user", "content": "Say hello in exactly 3 words."}]}' \
+            "$CHAT_URL")
+          
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $RESPONSE"
+          
+          # Check for success
+          OK=$(echo "$RESPONSE" | jq -r '.ok // false')
+          PROVIDER=$(echo "$RESPONSE" | jq -r '.runtime.provider // empty')
+          MESSAGE=$(echo "$RESPONSE" | jq -r '.message.content // empty')
+          
+          if [ "$OK" != "true" ]; then
+            ERROR_CODE=$(echo "$RESPONSE" | jq -r '.error.code // empty')
+            ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error.message // empty')
+            
+            echo ""
+            echo "❌ ERROR: Chat request failed"
+            echo "  Code: $ERROR_CODE"
+            echo "  Message: $ERROR_MSG"
+            
+            if [ "$ERROR_CODE" = "auth_error" ]; then
+              echo ""
+              echo "The OPENAI_API_KEY appears to be invalid or not configured."
+              echo "Please check:"
+              echo "  1. Secret exists in Secret Manager"
+              echo "  2. Key is valid (not expired/revoked)"
+              echo "  3. Cloud Run service has access to the secret"
+            fi
+            
+            exit 1
+          fi
+          
+          if [ "$PROVIDER" != "openai" ]; then
+            echo ""
+            echo "❌ ERROR: Response provider is '$PROVIDER', expected 'openai'"
+            exit 1
+          fi
+          
+          echo ""
+          echo "✓ Chat completion successful"
+          echo "  Provider: $PROVIDER"
+          echo "  Response: $MESSAGE"
+
+      - name: Test streaming endpoint
+        run: |
+          echo "=== Testing Streaming Completion ==="
+          
+          STREAM_URL="${{ steps.target.outputs.url }}/v1/brain/chat/stream"
+          echo "URL: $STREAM_URL"
+          
+          # Stream and capture events
+          EVENTS=$(curl -s --connect-timeout 30 --max-time 60 \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"messages": [{"role": "user", "content": "Count from 1 to 3."}]}' \
+            "$STREAM_URL")
+          
+          echo "Raw events (first 500 chars):"
+          echo "$EVENTS" | head -c 500
+          echo ""
+          
+          # Check for final event
+          if echo "$EVENTS" | grep -q "event: final"; then
+            echo ""
+            echo "✓ Streaming completed successfully"
+            
+            # Extract final event data
+            FINAL_DATA=$(echo "$EVENTS" | grep -A1 "event: final" | grep "data:" | sed 's/data: //')
+            PROVIDER=$(echo "$FINAL_DATA" | jq -r '.runtime.provider // empty')
+            
+            echo "  Provider: $PROVIDER"
+          else
+            echo ""
+            echo "❌ ERROR: No 'final' event received"
+            
+            # Check for error event
+            if echo "$EVENTS" | grep -q "event: error"; then
+              ERROR_DATA=$(echo "$EVENTS" | grep -A1 "event: error" | grep "data:" | sed 's/data: //')
+              echo "  Error: $ERROR_DATA"
+            fi
+            
+            exit 1
+          fi
+
+      - name: Summary
+        run: |
+          echo ""
+          echo "=============================================="
+          echo "  OpenAI Provider Smoke Test: PASSED"
+          echo "=============================================="
+          echo ""
+          echo "Environment: ${{ inputs.environment }}"
+          echo "URL: ${{ steps.target.outputs.url }}"
+          echo ""
+          echo "Verified:"
+          echo "  ✓ Health check returns provider=openai"
+          echo "  ✓ Chat completion works (non-streaming)"
+          echo "  ✓ Streaming completion works"

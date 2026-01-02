@@ -10,14 +10,34 @@ All Brain API endpoints are prefixed with `/v1/brain`.
 
 The Brain API supports multiple backend providers:
 
-- **OpenAI**: Uses OpenAI's GPT models via langchain (default when `OPENAI_API_KEY` is set)
+- **OpenAI**: Uses OpenAI's GPT models via official SDK (default when `OPENAI_API_KEY` is set)
 - **Stub**: Deterministic canned responses for CI/testing (automatically used when no API key is available)
 
 ### Environment Variables
 
-- `ECHO_BRAIN_PROVIDER`: Explicitly set provider (`openai` or `stub`)
-- `OPENAI_API_KEY`: OpenAI API key (required for `openai` provider)
-- `ECHO_REQUIRE_OPENAI=1`: Fail fast if OpenAI required but key missing (strict mode)
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `ECHO_BRAIN_PROVIDER` | No | auto | Explicitly set provider (`openai` or `stub`) |
+| `OPENAI_API_KEY` | Yes (for openai) | - | OpenAI API key (server-side only, never expose to clients) |
+| `OPENAI_MODEL` | No | `gpt-4.1-mini` | OpenAI model to use |
+| `OPENAI_TIMEOUT` | No | `60` | Request timeout in seconds |
+| `OPENAI_MAX_TOKENS` | No | `4096` | Maximum tokens in completion |
+| `ECHO_REQUIRE_OPENAI` | No | `false` | Fail fast if OpenAI required but key missing |
+
+### Provider Auto-Selection
+
+1. If `ECHO_BRAIN_PROVIDER=stub` → use stub provider
+2. If `ECHO_BRAIN_PROVIDER=openai` → use OpenAI (error if no key)
+3. If `OPENAI_API_KEY` is set → use OpenAI
+4. Otherwise → use stub (safe for CI)
+
+### OpenAI Provider Features
+
+- **Direct SDK**: Uses official `openai` Python SDK (no langchain dependency for core chat)
+- **Trace Propagation**: Your `trace_id` is sent to OpenAI via `X-Client-Request-Id` header
+- **Error Mapping**: OpenAI errors mapped to structured `{ok: false, error: {code, message}}`
+- **Rate Limit Handling**: Returns HTTP 429 with `error.code: "rate_limit"`
+- **Privacy**: Message contents are NEVER logged; only metadata (trace_id, token counts)
 
 ## Endpoints
 

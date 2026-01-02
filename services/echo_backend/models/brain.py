@@ -66,6 +66,20 @@ class StreamEvent(BaseModel):
     data: Dict[str, Any] = Field(description="Event data payload")
 
 
+class ErrorInfo(BaseModel):
+    """Structured error information."""
+    code: str = Field(description="Error code (e.g. 'auth_error', 'rate_limit', 'timeout')")
+    message: str = Field(description="Human-readable error message")
+    upstream_request_id: Optional[str] = Field(default=None, description="Upstream provider request ID for debugging")
+
+
+class ErrorResponse(BaseModel):
+    """Error response from chat completion."""
+    ok: bool = Field(default=False, description="Always false for errors")
+    error: ErrorInfo = Field(description="Error details")
+    runtime: Optional[RuntimeMetadata] = Field(default=None, description="Runtime metadata for observability")
+
+
 class BrainHealthResponse(BaseModel):
     """Health check response for Brain API."""
     ok: bool = Field(default=True, description="Health status")
