@@ -4,12 +4,12 @@ The Echo Web Chat UI is a React-based web application that provides a browser-ba
 
 ## Deployment URLs
 
-After deployment, the Web Chat UI is available at:
+- **Staging Web UI**: https://echo-web-staging-zxuvsjb5qa-ew.a.run.app
+- **Production Web UI**: https://echo-web-zxuvsjb5qa-ew.a.run.app
+- **Staging Backend**: https://echo-backend-staging-zxuvsjb5qa-ew.a.run.app
+- **Production Backend**: https://echo-backend-zxuvsjb5qa-ew.a.run.app
 
-- **Staging**: `https://echo-web-staging-<hash>-ew.a.run.app` (deployed on push to main)
-- **Production**: `https://echo-web-<hash>-ew.a.run.app` (deployed on `web-prod-v*` tag)
-
-> Note: The actual URLs are determined by Cloud Run after deployment. Check the GitHub Actions workflow output or Cloud Run console for the exact URLs.
+Staging deploys on push to `main` when `apps/web/**` changes. Production deploys on `web-prod-v*` tags.
 
 ## Features
 
@@ -105,8 +105,8 @@ The UI toggle switches between these at runtime.
 ### Runtime Smoke Checks
 The Web UI is included in the runtime smoke monitoring workflow. After deployment, set these GitHub Actions variables:
 
-- `WEB_STAGING_BASE_URL`: Staging web URL (e.g., `https://echo-web-staging-xxx-ew.a.run.app`)
-- `WEB_PROD_BASE_URL`: Production web URL (e.g., `https://echo-web-xxx-ew.a.run.app`)
+- `WEB_STAGING_BASE_URL`: `https://echo-web-staging-zxuvsjb5qa-ew.a.run.app`
+- `WEB_PROD_BASE_URL`: `https://echo-web-zxuvsjb5qa-ew.a.run.app`
 
 The smoke monitor runs every 15 minutes and validates HTTP 200 from the web URLs.
 

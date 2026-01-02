@@ -295,6 +295,8 @@ Verify the end-to-end alerting pipeline without causing real downtime:
 
 A browser-based chat interface for interacting with Echo:
 
+- **Staging**: https://echo-web-staging-zxuvsjb5qa-ew.a.run.app
+- **Production**: https://echo-web-zxuvsjb5qa-ew.a.run.app
 - **Stack**: React + TypeScript + Vite + TailwindCSS
 - **Features**:
   - Environment toggle (Staging/Production)
