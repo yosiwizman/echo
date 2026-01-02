@@ -6,10 +6,17 @@ import uuid
 from typing import AsyncGenerator
 
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
-from models.brain import BrainHealthResponse, ChatRequest, ChatResponse, RuntimeMetadata
-from utils.brain.provider import get_brain_provider, get_provider_name
+from models.brain import (
+    BrainHealthResponse,
+    ChatRequest,
+    ChatResponse,
+    ErrorInfo,
+    ErrorResponse,
+    RuntimeMetadata,
+)
+from utils.brain.provider import BrainProviderError, get_brain_provider, get_provider_name
 
 logger = logging.getLogger(__name__)
 
@@ -44,32 +51,70 @@ async def brain_chat(request: ChatRequest):
         ChatResponse with assistant's message, usage info, runtime metadata, and trace_id.
         
     Raises:
-        HTTPException: If chat generation fails.
+        HTTPException: With structured error details on failure.
     """
     trace_id = str(uuid.uuid4())
     provider_name = get_provider_name()
     msg_count = len(request.messages)
+    
+    # Build runtime metadata
+    runtime = RuntimeMetadata(
+        trace_id=trace_id,
+        provider=provider_name,
+        env=_APP_ENV,
+        git_sha=_GIT_SHA,
+        build_time=_BUILD_TIME,
+    )
     
     # Log request (never log message contents for privacy)
     logger.info(f"ECHO_CHAT_REQUEST trace_id={trace_id} provider={provider_name} msg_count={msg_count}")
     
     try:
         provider = get_brain_provider()
-        response = await provider.chat(request)
+        response = await provider.chat(request, trace_id=trace_id)
         
         # Add runtime metadata to response
-        response.runtime = RuntimeMetadata(
-            trace_id=trace_id,
-            provider=provider_name,
-            env=_APP_ENV,
-            git_sha=_GIT_SHA,
-            build_time=_BUILD_TIME,
-        )
+        response.runtime = runtime
         
         return response
+    except BrainProviderError as e:
+        logger.error(f"ECHO_CHAT_ERROR trace_id={trace_id} code={e.code} error={e.message}")
+        status_code = _error_code_to_status(e.code)
+        # Return structured error response as HTTPException detail
+        error_detail = {
+            "ok": False,
+            "error": {
+                "code": e.code,
+                "message": e.message,
+                "upstream_request_id": e.upstream_request_id,
+            },
+            "runtime": runtime.model_dump(),
+        }
+        raise HTTPException(status_code=status_code, detail=error_detail)
     except Exception as e:
         logger.error(f"ECHO_CHAT_ERROR trace_id={trace_id} error={str(e)}")
-        raise HTTPException(status_code=500, detail=f"Chat generation failed: {str(e)}")
+        error_detail = {
+            "ok": False,
+            "error": {
+                "code": "internal_error",
+                "message": f"Chat generation failed: {str(e)}",
+            },
+            "runtime": runtime.model_dump(),
+        }
+        raise HTTPException(status_code=500, detail=error_detail)
+
+
+def _error_code_to_status(code: str) -> int:
+    """Map error codes to HTTP status codes."""
+    mapping = {
+        "auth_error": 401,
+        "rate_limit": 429,
+        "timeout": 504,
+        "connection_error": 502,
+        "bad_request": 400,
+        "upstream_error": 502,
+    }
+    return mapping.get(code, 500)
 
 
 @router.post("/chat/stream")
@@ -86,7 +131,7 @@ async def brain_chat_stream(request: ChatRequest):
     Events:
         - token: partial response tokens
         - final: complete response with metadata and runtime info
-        - error: error information
+        - error: error information with ok=false and error code
     """
     trace_id = str(uuid.uuid4())
     provider_name = get_provider_name()
@@ -108,7 +153,7 @@ async def brain_chat_stream(request: ChatRequest):
         """Generate SSE-formatted events."""
         try:
             provider = get_brain_provider()
-            async for event_dict in provider.stream(request):
+            async for event_dict in provider.stream(request, trace_id=trace_id):
                 event_type = event_dict.get("event", "token")
                 event_data = event_dict.get("data", {})
                 
@@ -124,12 +169,27 @@ async def brain_chat_stream(request: ChatRequest):
                 sse_event += f"data: {json.dumps(event_data)}\n\n"
                 
                 yield sse_event
+        except BrainProviderError as e:
+            logger.error(f"ECHO_CHAT_STREAM_ERROR trace_id={trace_id} code={e.code} error={e.message}")
+            error_data = {
+                "ok": False,
+                "error": {
+                    "code": e.code,
+                    "message": e.message,
+                    "upstream_request_id": e.upstream_request_id,
+                },
+                "runtime": runtime_metadata,
+            }
+            yield f"event: error\ndata: {json.dumps(error_data)}\n\n"
         except Exception as e:
             logger.error(f"ECHO_CHAT_STREAM_ERROR trace_id={trace_id} error={str(e)}")
             # Send error event with runtime metadata
             error_data = {
-                "error": str(e),
                 "ok": False,
+                "error": {
+                    "code": "internal_error",
+                    "message": str(e),
+                },
                 "runtime": runtime_metadata,
             }
             yield f"event: error\ndata: {json.dumps(error_data)}\n\n"
