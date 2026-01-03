@@ -50,6 +50,11 @@ export function useChat(
   const [error, setError] = useState<string | null>(null);
   const sessionId = useRef(loadSessionId());
   const abortControllerRef = useRef<AbortController | null>(null);
+  
+  // Use ref to always get the latest authToken value in callbacks
+  // This avoids stale closure issues when token changes after login
+  const authTokenRef = useRef(authToken);
+  authTokenRef.current = authToken;
 
   // Persist messages to localStorage
   useEffect(() => {
@@ -91,10 +96,12 @@ export function useChat(
       abortControllerRef.current = new AbortController();
 
       try {
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-      }
+        // Read token from ref to ensure we always have the latest value
+        const currentToken = authTokenRef.current;
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (currentToken) {
+          headers['Authorization'] = `Bearer ${currentToken}`;
+        }
 
       const response = await fetch(url, {
         method: 'POST',
@@ -206,7 +213,7 @@ export function useChat(
         abortControllerRef.current = null;
       }
     },
-    [environment, streamingEnabled, isLoading, authToken, onAuthRequired]
+    [environment, streamingEnabled, isLoading, onAuthRequired]
   );
 
   const clearMessages = useCallback(() => {
