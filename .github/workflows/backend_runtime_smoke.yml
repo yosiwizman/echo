@@ -61,6 +61,7 @@ jobs:
         env:
           BASE_URL: ${{ vars.STAGING_BASE_URL }}
           EXPECTED_ENV: staging
+          AUTH_PIN: ${{ secrets.ECHO_AUTH_PIN }}
         run: |
           echo "=============================================="
           echo "  STAGING RUNTIME SMOKE TEST"
@@ -196,6 +197,31 @@ jobs:
             return 0
           }
           
+          # Function: get auth token if PIN is configured
+          get_auth_token() {
+            if [ -z "$AUTH_PIN" ]; then
+              echo ""
+              return 0
+            fi
+            
+            local login_url="${BASE_URL}/v1/auth/login"
+            local login_response
+            login_response=$(curl -s --connect-timeout 10 --max-time 15 \
+              -X POST \
+              -H "Content-Type: application/json" \
+              -d "{\"pin\": \"$AUTH_PIN\"}" \
+              "$login_url" 2>/dev/null)
+            
+            if [ $? -ne 0 ]; then
+              echo "" # Return empty on error
+              return 1
+            fi
+            
+            local token
+            token=$(echo "$login_response" | jq -r '.token // empty')
+            echo "$token"
+          }
+          
           # Function: validate /v1/brain/chat endpoint (POST with proper schema)
           validate_brain_chat() {
             local url="${BASE_URL}/v1/brain/chat"
@@ -203,17 +229,41 @@ jobs:
             echo ""
             echo "--- Testing: POST $url ---"
             
+            # Get auth token if configured
+            local auth_header=""
+            if [ -n "$AUTH_PIN" ]; then
+              echo "  Auth PIN configured, obtaining token..."
+              local token
+              token=$(get_auth_token)
+              if [ -n "$token" ]; then
+                auth_header="Authorization: Bearer $token"
+                echo "  ✓ Auth token obtained"
+              else
+                echo "  ⚠ Could not obtain auth token, trying unauthenticated"
+              fi
+            fi
+            
             # POST with correct ChatRequest schema
             local max_retries=3
             local retry_delay=3
             
             for i in $(seq 1 $max_retries); do
-              HTTP_CODE=$(curl -s -o /tmp/chat_response.json -w "%{http_code}" \
-                --connect-timeout 10 --max-time 30 \
-                -X POST \
-                -H "Content-Type: application/json" \
-                -d '{"messages": [{"role": "user", "content": "smoke test"}]}' \
-                "$url" 2>/dev/null)
+              if [ -n "$auth_header" ]; then
+                HTTP_CODE=$(curl -s -o /tmp/chat_response.json -w "%{http_code}" \
+                  --connect-timeout 10 --max-time 30 \
+                  -X POST \
+                  -H "Content-Type: application/json" \
+                  -H "$auth_header" \
+                  -d '{"messages": [{"role": "user", "content": "smoke test"}]}' \
+                  "$url" 2>/dev/null)
+              else
+                HTTP_CODE=$(curl -s -o /tmp/chat_response.json -w "%{http_code}" \
+                  --connect-timeout 10 --max-time 30 \
+                  -X POST \
+                  -H "Content-Type: application/json" \
+                  -d '{"messages": [{"role": "user", "content": "smoke test"}]}' \
+                  "$url" 2>/dev/null)
+              fi
               
               if [ "$HTTP_CODE" = "200" ]; then
                 break
@@ -319,6 +369,7 @@ jobs:
         env:
           BASE_URL: ${{ vars.PROD_BASE_URL }}
           EXPECTED_ENV: production
+          AUTH_PIN: ${{ secrets.ECHO_AUTH_PIN }}
         run: |
           echo "=============================================="
           echo "  PRODUCTION RUNTIME SMOKE TEST"
@@ -454,6 +505,31 @@ jobs:
             return 0
           }
           
+          # Function: get auth token if PIN is configured
+          get_auth_token() {
+            if [ -z "$AUTH_PIN" ]; then
+              echo ""
+              return 0
+            fi
+            
+            local login_url="${BASE_URL}/v1/auth/login"
+            local login_response
+            login_response=$(curl -s --connect-timeout 10 --max-time 15 \
+              -X POST \
+              -H "Content-Type: application/json" \
+              -d "{\"pin\": \"$AUTH_PIN\"}" \
+              "$login_url" 2>/dev/null)
+            
+            if [ $? -ne 0 ]; then
+              echo "" # Return empty on error
+              return 1
+            fi
+            
+            local token
+            token=$(echo "$login_response" | jq -r '.token // empty')
+            echo "$token"
+          }
+          
           # Function: validate /v1/brain/chat endpoint (POST with proper schema)
           validate_brain_chat() {
             local url="${BASE_URL}/v1/brain/chat"
@@ -461,17 +537,41 @@ jobs:
             echo ""
             echo "--- Testing: POST $url ---"
             
+            # Get auth token if configured
+            local auth_header=""
+            if [ -n "$AUTH_PIN" ]; then
+              echo "  Auth PIN configured, obtaining token..."
+              local token
+              token=$(get_auth_token)
+              if [ -n "$token" ]; then
+                auth_header="Authorization: Bearer $token"
+                echo "  ✓ Auth token obtained"
+              else
+                echo "  ⚠ Could not obtain auth token, trying unauthenticated"
+              fi
+            fi
+            
             # POST with correct ChatRequest schema
             local max_retries=3
             local retry_delay=3
             
             for i in $(seq 1 $max_retries); do
-              HTTP_CODE=$(curl -s -o /tmp/chat_response.json -w "%{http_code}" \
-                --connect-timeout 10 --max-time 30 \
-                -X POST \
-                -H "Content-Type: application/json" \
-                -d '{"messages": [{"role": "user", "content": "smoke test"}]}' \
-                "$url" 2>/dev/null)
+              if [ -n "$auth_header" ]; then
+                HTTP_CODE=$(curl -s -o /tmp/chat_response.json -w "%{http_code}" \
+                  --connect-timeout 10 --max-time 30 \
+                  -X POST \
+                  -H "Content-Type: application/json" \
+                  -H "$auth_header" \
+                  -d '{"messages": [{"role": "user", "content": "smoke test"}]}' \
+                  "$url" 2>/dev/null)
+              else
+                HTTP_CODE=$(curl -s -o /tmp/chat_response.json -w "%{http_code}" \
+                  --connect-timeout 10 --max-time 30 \
+                  -X POST \
+                  -H "Content-Type: application/json" \
+                  -d '{"messages": [{"role": "user", "content": "smoke test"}]}' \
+                  "$url" 2>/dev/null)
+              fi
               
               if [ "$HTTP_CODE" = "200" ]; then
                 break

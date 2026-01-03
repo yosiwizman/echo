@@ -22,4 +22,5 @@ export const API_ENDPOINTS = {
   chat: '/v1/brain/chat',
   chatStream: '/v1/brain/chat/stream',
   version: '/version',
+  authLogin: '/v1/auth/login',
 } as const;

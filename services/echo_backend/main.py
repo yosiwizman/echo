@@ -40,6 +40,7 @@ from routers import (
     wrapped,
     folders,
     brain,
+    brain_auth,
 )
 
 from utils.other.timeout import TimeoutMiddleware
@@ -144,6 +145,7 @@ app.include_router(wrapped.router)
 app.include_router(folders.router)
 app.include_router(knowledge_graph.router)
 app.include_router(brain.router, prefix="/v1/brain", tags=["brain"])
+app.include_router(brain_auth.router, prefix="/v1/auth", tags=["auth"])
 
 
 methods_timeout = {

@@ -39,7 +39,12 @@ function loadSessionId(): string {
   }
 }
 
-export function useChat(environment: Environment, streamingEnabled: boolean) {
+export function useChat(
+  environment: Environment,
+  streamingEnabled: boolean,
+  authToken: string | null = null,
+  onAuthRequired?: () => void
+) {
   const [messages, setMessages] = useState<ChatMessage[]>(loadMessages);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -86,9 +91,14 @@ export function useChat(environment: Environment, streamingEnabled: boolean) {
       abortControllerRef.current = new AbortController();
 
       try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           messages: [{ role: 'user', content: content.trim() }],
           session_id: sessionId.current,
@@ -99,6 +109,12 @@ export function useChat(environment: Environment, streamingEnabled: boolean) {
       });
 
       if (!response.ok) {
+        // Handle 401 - auth required
+        if (response.status === 401 && onAuthRequired) {
+          onAuthRequired();
+          throw new Error('Authentication required');
+        }
+
         // Try to extract FastAPI error detail
         let errorDetail = `HTTP ${response.status}: ${response.statusText}`;
         try {
@@ -190,7 +206,7 @@ export function useChat(environment: Environment, streamingEnabled: boolean) {
         abortControllerRef.current = null;
       }
     },
-    [environment, streamingEnabled, isLoading]
+    [environment, streamingEnabled, isLoading, authToken, onAuthRequired]
   );
 
   const clearMessages = useCallback(() => {

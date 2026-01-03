@@ -5,7 +5,7 @@ import os
 import uuid
 from typing import AsyncGenerator
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from models.brain import (
@@ -17,6 +17,7 @@ from models.brain import (
     RuntimeMetadata,
 )
 from utils.brain.provider import BrainProviderError, get_brain_provider, get_provider_name
+from utils.auth.brain_auth import require_brain_auth, BrainAuthResult
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ async def brain_health():
 
 
 @router.post("/chat", response_model=ChatResponse)
-async def brain_chat(request: ChatRequest):
+async def brain_chat(request: ChatRequest, auth: BrainAuthResult = Depends(require_brain_auth)):
     """Generate a chat completion (non-streaming).
     
     Args:
@@ -118,7 +119,7 @@ def _error_code_to_status(code: str) -> int:
 
 
 @router.post("/chat/stream")
-async def brain_chat_stream(request: ChatRequest):
+async def brain_chat_stream(request: ChatRequest, auth: BrainAuthResult = Depends(require_brain_auth)):
     """Generate a streaming chat completion (SSE).
     
     Args:
