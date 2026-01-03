@@ -10,7 +10,7 @@ from models.brain import ChatRequest, ChatResponse, Message, MessageRole, UsageI
 logger = logging.getLogger(__name__)
 
 # Configuration defaults
-DEFAULT_MODEL = "gpt-4.1-mini"  # Cost-efficient, strong baseline
+DEFAULT_MODEL = "gpt-4o-mini"  # Cost-efficient, strong baseline
 DEFAULT_TIMEOUT = 60  # seconds
 DEFAULT_MAX_TOKENS = 4096
 
