@@ -46,7 +46,7 @@ export function parseStreamLine(line: string): StreamChunk | null {
 
     // Normalize different response formats
     const chunk: StreamChunk = {
-      content: parsed.content ?? parsed.text ?? parsed.response ?? parsed.delta?.content,
+      content: parsed.content ?? parsed.token ?? parsed.text ?? parsed.response ?? parsed.delta?.content,
       done: parsed.done ?? parsed.finished ?? false,
       metadata: extractMetadata(parsed),
     };
