@@ -80,6 +80,12 @@ describe('parseStreamLine', () => {
     expect(parseStreamLine('{"delta": {"content": "Foo"}}')?.content).toBe('Foo');
   });
 
+  it('handles token field from SSE streaming responses', () => {
+    // Backend sends {"token": "..."} for streaming
+    expect(parseStreamLine('{"token": "Hello"}')?.content).toBe('Hello');
+    expect(parseStreamLine('data: {"token": " world"}')?.content).toBe(' world');
+  });
+
   it('treats invalid JSON as plain content', () => {
     const result = parseStreamLine('Hello World');
     expect(result).toEqual({ content: 'Hello World' });
