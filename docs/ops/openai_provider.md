@@ -31,12 +31,12 @@ echo -n "sk-your-actual-api-key" | gcloud secrets versions add openai-api-key --
 Grant the Cloud Run service account access:
 
 ```bash
-# Get your project's compute service account
-PROJECT_ID=$(gcloud config get-value project)
-SERVICE_ACCOUNT="${PROJECT_ID}@appspot.gserviceaccount.com"
+# Get your Cloud Run service's identity (default: compute service account)
+PROJECT_NUM=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')
+SERVICE_ACCOUNT="${PROJECT_NUM}-compute@developer.gserviceaccount.com"
 
 # Or for dedicated service account:
-# SERVICE_ACCOUNT="echo-backend-sa@${PROJECT_ID}.iam.gserviceaccount.com"
+# SERVICE_ACCOUNT="echo-backend-sa@$(gcloud config get-value project).iam.gserviceaccount.com"
 
 # Grant access
 gcloud secrets add-iam-policy-binding openai-api-key \
@@ -53,13 +53,13 @@ gcloud secrets add-iam-policy-binding openai-api-key \
 gcloud run services update echo-backend-staging \
   --region europe-west1 \
   --set-secrets "OPENAI_API_KEY=openai-api-key:latest" \
-  --set-env-vars "ECHO_BRAIN_PROVIDER=openai,OPENAI_MODEL=gpt-4.1-mini"
+  --set-env-vars "ECHO_BRAIN_PROVIDER=openai,OPENAI_MODEL=gpt-4o-mini"
 
 # For production
 gcloud run services update echo-backend \
   --region europe-west1 \
   --set-secrets "OPENAI_API_KEY=openai-api-key:latest" \
-  --set-env-vars "ECHO_BRAIN_PROVIDER=openai,OPENAI_MODEL=gpt-4.1-mini"
+  --set-env-vars "ECHO_BRAIN_PROVIDER=openai,OPENAI_MODEL=gpt-4o-mini"
 ```
 
 ### Option B: Via GitHub Actions Workflow
@@ -77,7 +77,7 @@ Update the deploy workflow to include the secret:
     env_vars: |
       APP_ENV=staging
       ECHO_BRAIN_PROVIDER=openai
-      OPENAI_MODEL=gpt-4.1-mini
+      OPENAI_MODEL=gpt-4o-mini
     secrets: |
       OPENAI_API_KEY=openai-api-key:latest
 ```
@@ -104,15 +104,15 @@ curl -X POST https://echo-backend-staging-zxuvsjb5qa-ew.a.run.app/v1/brain/chat 
 |----------|----------|---------|-------------|
 | `ECHO_BRAIN_PROVIDER` | No | auto | Force `openai` or `stub` |
 | `OPENAI_API_KEY` | Yes | - | API key (use Secret Manager) |
-| `OPENAI_MODEL` | No | `gpt-4.1-mini` | Model to use |
+| `OPENAI_MODEL` | No | `gpt-4o-mini` | Model to use |
 | `OPENAI_TIMEOUT` | No | `60` | Request timeout (seconds) |
 | `OPENAI_MAX_TOKENS` | No | `4096` | Max completion tokens |
 
 ## Cost & Safety Guardrails
 
 ### Model Selection
-- **Default**: `gpt-4.1-mini` — cost-efficient, strong baseline
-- For higher quality: `gpt-4.1` or `gpt-4.1-turbo`
+- **Default**: `gpt-4o-mini` — cost-efficient, strong baseline
+- For higher quality: `gpt-4o` or `gpt-4-turbo`
 - Check [OpenAI pricing](https://openai.com/pricing) for current rates
 
 ### Rate Limits
