@@ -132,9 +132,16 @@ def test_brain_stt_missing_file() -> None:
 
 def test_brain_stt_auth_required(monkeypatch) -> None:
     """Test STT requires authentication when AUTH_REQUIRED=true."""
+    # Clear settings cache before setting new values
+    from utils.auth.settings import get_auth_settings
+    get_auth_settings.cache_clear()
+    
     monkeypatch.setenv("AUTH_REQUIRED", "true")
     monkeypatch.setenv("AUTH_JWT_SECRET", "test-secret-key-minimum-32-chars!")
     monkeypatch.setenv("AUTH_PIN_HASH", "$2b$12$test")
+    
+    # Clear again after setting new values to force reload
+    get_auth_settings.cache_clear()
     
     from main import app
     
@@ -144,6 +151,9 @@ def test_brain_stt_auth_required(monkeypatch) -> None:
     files = {"file": ("test.webm", io.BytesIO(audio_content), "audio/webm")}
     
     resp = client.post("/v1/brain/stt", files=files)
+    
+    # Restore settings cache
+    get_auth_settings.cache_clear()
     
     assert resp.status_code == 401
     data = resp.json()

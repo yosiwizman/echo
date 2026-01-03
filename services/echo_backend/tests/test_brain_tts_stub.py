@@ -164,9 +164,16 @@ def test_brain_tts_text_too_long() -> None:
 
 def test_brain_tts_auth_required(monkeypatch) -> None:
     """Test TTS requires authentication when AUTH_REQUIRED=true."""
+    # Clear settings cache before setting new values
+    from utils.auth.settings import get_auth_settings
+    get_auth_settings.cache_clear()
+    
     monkeypatch.setenv("AUTH_REQUIRED", "true")
     monkeypatch.setenv("AUTH_JWT_SECRET", "test-secret-key-minimum-32-chars!")
     monkeypatch.setenv("AUTH_PIN_HASH", "$2b$12$test")
+    
+    # Clear again after setting new values to force reload
+    get_auth_settings.cache_clear()
     
     from main import app
     
@@ -174,6 +181,9 @@ def test_brain_tts_auth_required(monkeypatch) -> None:
     payload = {"text": "Test authentication."}
     
     resp = client.post("/v1/brain/tts", json=payload)
+    
+    # Restore settings cache
+    get_auth_settings.cache_clear()
     
     assert resp.status_code == 401
     data = resp.json()

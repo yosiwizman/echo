@@ -128,12 +128,9 @@ class StubVoiceProvider(VoiceProvider):
             f"text_length={len(text)} voice={voice} format={format}"
         )
         
-        # Return minimal valid audio placeholder (silence)
-        # This is a tiny valid MP3 frame representing silence
-        stub_audio = base64.b64decode(
-            "//uQxAAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVV"
-            "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
-        )
+        # Return minimal stub audio bytes (not actually valid MP3, but works for testing)
+        # Use simple bytes that will encode to valid base64
+        stub_audio = b"STUB_AUDIO_DATA_FOR_TESTING_PURPOSES_1234567890"
         
         output_format = format or DEFAULT_TTS_FORMAT
         mime_type = FORMAT_MIME_TYPES.get(output_format, "audio/mpeg")
