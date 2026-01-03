@@ -118,6 +118,16 @@ def build_brain_v1_contract(openapi_schema: Dict[str, Any]) -> Dict[str, Any]:
         }
     }
     
+    # Include securitySchemes if any brain endpoint has security requirements
+    has_security = any(
+        "security" in method_spec
+        for path_spec in brain_v1_paths.values()
+        for method_spec in path_spec.values()
+        if isinstance(method_spec, dict)
+    )
+    if has_security and "securitySchemes" in openapi_schema.get("components", {}):
+        contract["components"]["securitySchemes"] = openapi_schema["components"]["securitySchemes"]
+    
     return contract
 
 

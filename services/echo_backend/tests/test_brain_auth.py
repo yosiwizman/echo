@@ -1,5 +1,4 @@
 """Tests for Brain API authentication (PIN + JWT)."""
-import os
 import time
 
 import bcrypt
@@ -48,11 +47,15 @@ def auth_disabled_env(monkeypatch):
 
 @pytest.fixture
 def rate_limiter_reset():
-    """Reset rate limiter before each test."""
-    from utils.auth.rate_limiter import login_rate_limiter
+    """Reset rate limiter before each test and restore original config."""
+    from utils.auth.rate_limiter import login_rate_limiter, RateLimitConfig
+    # Save original config
+    original_config = login_rate_limiter.config
     # Clear all rate limit data
     login_rate_limiter._attempts.clear()
     yield
+    # Restore original config and clear attempts
+    login_rate_limiter.config = original_config
     login_rate_limiter._attempts.clear()
 
 

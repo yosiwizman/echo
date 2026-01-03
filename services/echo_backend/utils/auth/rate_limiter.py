@@ -68,8 +68,8 @@ class LoginRateLimiter:
             if len(self._attempts[client_id]) >= self.config.max_attempts:
                 # Calculate retry time based on oldest attempt in window
                 oldest = min(self._attempts[client_id])
-                retry_after = int(oldest + self.config.window_seconds - now) + 1
-                raise RateLimitExceeded(retry_after_seconds=max(1, retry_after))
+                retry_after = max(1, int(oldest + self.config.window_seconds - now + 1))
+                raise RateLimitExceeded(retry_after_seconds=retry_after)
             
             # Record this attempt
             self._attempts[client_id].append(now)

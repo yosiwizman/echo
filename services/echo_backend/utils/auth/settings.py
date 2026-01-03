@@ -27,7 +27,7 @@ class AuthSettings:
         """Validate settings consistency.
         
         Raises:
-            ValueError: If auth is required but secrets are missing.
+            ValueError: If auth is required but secrets are missing or invalid.
         """
         if self.auth_required:
             if not self.jwt_secret:
@@ -44,6 +44,16 @@ class AuthSettings:
                 raise ValueError(
                     "AUTH_JWT_SECRET must be at least 32 characters for security."
                 )
+            # Validate bcrypt hash format
+            if not self.pin_hash.startswith(('$2a$', '$2b$', '$2y$')):
+                raise ValueError(
+                    "AUTH_PIN_HASH must be a valid bcrypt hash (starts with $2a$, $2b$, or $2y$)."
+                )
+        # Validate TTL is positive
+        if self.token_ttl_seconds <= 0:
+            raise ValueError(
+                "AUTH_TOKEN_TTL_SECONDS must be a positive integer."
+            )
 
 
 @lru_cache(maxsize=1)
@@ -52,16 +62,27 @@ def get_auth_settings() -> AuthSettings:
     
     Returns:
         AuthSettings instance with current configuration.
+        
+    Raises:
+        ValueError: If auth is required but configuration is invalid.
     """
     auth_required_str = os.environ.get("AUTH_REQUIRED", "false").lower()
     auth_required = auth_required_str in ("true", "1", "yes")
     
-    return AuthSettings(
+    # Parse TTL with validation
+    try:
+        token_ttl = int(os.environ.get("AUTH_TOKEN_TTL_SECONDS", "43200"))
+    except ValueError:
+        raise ValueError("AUTH_TOKEN_TTL_SECONDS must be a valid integer")
+    
+    settings = AuthSettings(
         auth_required=auth_required,
         jwt_secret=os.environ.get("AUTH_JWT_SECRET"),
         pin_hash=os.environ.get("AUTH_PIN_HASH"),
-        token_ttl_seconds=int(os.environ.get("AUTH_TOKEN_TTL_SECONDS", "43200")),
+        token_ttl_seconds=token_ttl,
     )
+    settings.validate()
+    return settings
 
 
 # Module-level convenience accessor

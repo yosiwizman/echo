@@ -55,8 +55,8 @@ def _verify_pin(pin: str, pin_hash: str) -> bool:
     """
     try:
         return bcrypt.checkpw(pin.encode("utf-8"), pin_hash.encode("utf-8"))
-    except Exception:
-        # Invalid hash format or other error
+    except (ValueError, TypeError):
+        # Invalid hash format or encoding error
         return False
 
 

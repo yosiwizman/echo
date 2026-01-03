@@ -153,9 +153,13 @@ export function useAuth(environment: Environment) {
   // Check if token is expired and clear if so
   useEffect(() => {
     if (expiresAt && expiresAt <= new Date()) {
-      logout();
+      // Inline logout logic to avoid dependency array issues
+      setToken(null);
+      setExpiresAt(null);
+      setError(null);
+      clearToken();
     }
-  }, [expiresAt, logout]);
+  }, [expiresAt]);
 
   return {
     isAuthenticated: !!token && (!expiresAt || expiresAt > new Date()),

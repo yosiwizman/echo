@@ -45,8 +45,8 @@ echo -n "$JWT_SECRET" | gcloud secrets create echo-auth-jwt-secret \
 
 # Generate PIN and hash it
 PIN="YOUR_8_DIGIT_PIN"
-# Use Python to generate bcrypt hash
-PIN_HASH=$(python3 -c "import bcrypt; print(bcrypt.hashpw(b'$PIN', bcrypt.gensalt()).decode())")
+# Use Python to generate bcrypt hash (note: use double quotes for variable expansion)
+PIN_HASH=$(python3 -c "import bcrypt; print(bcrypt.hashpw(b'"$PIN"', bcrypt.gensalt()).decode())")
 echo -n "$PIN_HASH" | gcloud secrets create echo-auth-pin-hash \
   --data-file=- \
   --replication-policy="automatic" \
@@ -178,9 +178,9 @@ Note: This invalidates all existing tokens. Users must re-login.
 ### Rotate PIN
 
 ```bash
-# Generate new PIN hash
+# Generate new PIN hash (note: use double quotes for variable expansion)
 NEW_PIN="NEW_8_DIGIT_PIN"
-NEW_HASH=$(python3 -c "import bcrypt; print(bcrypt.hashpw(b'$NEW_PIN', bcrypt.gensalt()).decode())")
+NEW_HASH=$(python3 -c "import bcrypt; print(bcrypt.hashpw(b'"$NEW_PIN"', bcrypt.gensalt()).decode())")
 echo -n "$NEW_HASH" | gcloud secrets versions add echo-auth-pin-hash \
   --data-file=- \
   --project YOUR_PROJECT
@@ -223,7 +223,7 @@ Note: Even with `AUTH_REQUIRED=false`, valid tokens are still accepted if provid
 ### "Invalid PIN" but PIN is correct
 - Verify PIN_HASH was generated with bcrypt
 - Check for trailing newlines in the secret
-- Re-generate hash: `python3 -c "import bcrypt; print(bcrypt.hashpw(b'YOUR_PIN', bcrypt.gensalt()).decode())"`
+- Re-generate hash: `python3 -c "import bcrypt; print(bcrypt.hashpw(b'YOUR_PIN_HERE', bcrypt.gensalt()).decode())"`
 
 ### Token expired immediately
 - Check `AUTH_TOKEN_TTL_SECONDS` setting

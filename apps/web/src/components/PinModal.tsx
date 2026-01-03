@@ -14,10 +14,17 @@ export function PinModal({ isOpen, isLoading, error, onSubmit, onClose }: Props)
 
   // Focus input when modal opens
   useEffect(() => {
-    if (isOpen) {
-      // Small delay to ensure modal is rendered
-      setTimeout(() => inputRef.current?.focus(), 100);
+    if (!isOpen) {
+      return;
     }
+
+    const frameId = requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
+
+    return () => {
+      cancelAnimationFrame(frameId);
+    };
   }, [isOpen]);
 
   // Clear PIN on error
