@@ -6,6 +6,8 @@ interface Props {
   onEnvironmentChange: (env: Environment) => void;
   streamingEnabled: boolean;
   onStreamingChange: (enabled: boolean) => void;
+  voiceAutoPlay: boolean;
+  onVoiceAutoPlayChange: (enabled: boolean) => void;
   healthStatus: HealthStatus;
   onHealthCheck: () => void;
   onClearChat: () => void;
@@ -102,6 +104,8 @@ export function Header({
   onEnvironmentChange,
   streamingEnabled,
   onStreamingChange,
+  voiceAutoPlay,
+  onVoiceAutoPlayChange,
   healthStatus,
   onHealthCheck,
   onClearChat,
@@ -157,6 +161,17 @@ export function Header({
               type="checkbox"
               checked={streamingEnabled}
               onChange={(e) => onStreamingChange(e.target.checked)}
+              className="w-4 h-4 text-echo-500 rounded focus:ring-echo-500"
+            />
+          </label>
+
+          {/* Voice Auto-Play Toggle */}
+          <label className="flex items-center gap-2 cursor-pointer" title="Auto-play voice replies">
+            <span className="text-sm text-gray-600">🔊</span>
+            <input
+              type="checkbox"
+              checked={voiceAutoPlay}
+              onChange={(e) => onVoiceAutoPlayChange(e.target.checked)}
               className="w-4 h-4 text-echo-500 rounded focus:ring-echo-500"
             />
           </label>

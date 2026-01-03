@@ -182,6 +182,17 @@ The Brain Chat API provides conversational AI endpoints at `/v1/brain/*`:
 
 See [docs/brain_api.md](docs/brain_api.md) for full documentation.
 
+### Voice v1 (STT + TTS)
+Voice endpoints enable speech-to-text input and text-to-speech output:
+- `POST /v1/brain/stt` — Transcribe audio to text (multipart/form-data)
+- `POST /v1/brain/tts` — Convert text to speech (returns base64 audio)
+
+The web UI includes:
+- **Mic button** — Click to record, click to stop and transcribe
+- **Auto-play toggle** — 🔊 in header to auto-play AI responses
+
+See [docs/ops/voice_v1.md](docs/ops/voice_v1.md) for full documentation.
+
 ### Running the Mobile App
 
 ```bash
