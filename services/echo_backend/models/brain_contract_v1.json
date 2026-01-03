@@ -144,6 +144,18 @@
         ],
         "type": "object"
       },
+      "Body_brain_stt_v1_brain_stt_post": {
+        "properties": {
+          "file": {
+            "format": "binary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "type": "object"
+      },
       "STTResponse": {
         "properties": {
           "duration_seconds": {
@@ -410,16 +422,7 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "properties": {
-                  "file": {
-                    "format": "binary",
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "file"
-                ],
-                "type": "object"
+                "$ref": "#/components/schemas/Body_brain_stt_v1_brain_stt_post"
               }
             }
           },
