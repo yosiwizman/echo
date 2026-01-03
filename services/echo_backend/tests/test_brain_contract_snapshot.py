@@ -199,6 +199,8 @@ def test_all_brain_endpoints_in_snapshot(client, contract_snapshot_path):
         "/v1/brain/health",
         "/v1/brain/chat",
         "/v1/brain/chat/stream",
+        "/v1/brain/stt",
+        "/v1/brain/tts",
     }
     
     assert snapshot_paths == expected_endpoints, (

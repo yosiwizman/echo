@@ -21,6 +21,8 @@ export const API_ENDPOINTS = {
   health: '/health',
   chat: '/v1/brain/chat',
   chatStream: '/v1/brain/chat/stream',
+  stt: '/v1/brain/stt',
+  tts: '/v1/brain/tts',
   version: '/version',
   authLogin: '/v1/auth/login',
 } as const;

@@ -72,3 +72,32 @@ export interface StreamChunk {
   metadata?: ResponseMetadata;
   error?: string;
 }
+
+/**
+ * Response from STT (speech-to-text) endpoint.
+ */
+export interface STTResponse {
+  ok: boolean;
+  text: string;
+  duration_seconds?: number;
+  runtime?: RuntimeMetadata;
+}
+
+/**
+ * Request for TTS (text-to-speech) endpoint.
+ */
+export interface TTSRequest {
+  text: string;
+  voice?: string;
+  format?: string;
+}
+
+/**
+ * Response from TTS (text-to-speech) endpoint.
+ */
+export interface TTSResponse {
+  ok: boolean;
+  audio_base64: string;
+  mime_type: string;
+  runtime?: RuntimeMetadata;
+}

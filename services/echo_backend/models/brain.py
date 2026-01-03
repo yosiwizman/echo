@@ -86,3 +86,28 @@ class BrainHealthResponse(BaseModel):
     time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="Server time")
     version: str = Field(default="1.0.0", description="API version")
     provider: str = Field(description="Active brain provider")
+
+
+# Voice API models (STT + TTS)
+
+class STTResponse(BaseModel):
+    """Response from speech-to-text transcription."""
+    ok: bool = Field(default=True, description="Request success status")
+    text: str = Field(description="Transcribed text from audio")
+    duration_seconds: Optional[float] = Field(default=None, description="Audio duration in seconds")
+    runtime: Optional[RuntimeMetadata] = Field(default=None, description="Runtime metadata for observability")
+
+
+class TTSRequest(BaseModel):
+    """Request for text-to-speech synthesis."""
+    text: str = Field(description="Text to convert to speech", min_length=1, max_length=4096)
+    voice: Optional[str] = Field(default=None, description="Voice to use (default: alloy)")
+    format: Optional[str] = Field(default=None, description="Audio format (default: mp3)")
+
+
+class TTSResponse(BaseModel):
+    """Response from text-to-speech synthesis."""
+    ok: bool = Field(default=True, description="Request success status")
+    audio_base64: str = Field(description="Base64-encoded audio data")
+    mime_type: str = Field(description="MIME type of the audio (e.g., audio/mpeg)")
+    runtime: Optional[RuntimeMetadata] = Field(default=None, description="Runtime metadata for observability")

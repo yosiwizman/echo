@@ -1,11 +1,12 @@
 """Brain API router for conversational intelligence endpoints."""
+import base64
 import json
 import logging
 import os
 import uuid
 from typing import AsyncGenerator
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from models.brain import (
@@ -15,8 +16,16 @@ from models.brain import (
     ErrorInfo,
     ErrorResponse,
     RuntimeMetadata,
+    STTResponse,
+    TTSRequest,
+    TTSResponse,
 )
 from utils.brain.provider import BrainProviderError, get_brain_provider, get_provider_name
+from utils.brain.voice_provider import (
+    VoiceProviderError,
+    get_voice_provider,
+    get_voice_provider_name,
+)
 from utils.auth.brain_auth import require_brain_auth, BrainAuthResult
 
 logger = logging.getLogger(__name__)
@@ -204,3 +213,237 @@ async def brain_chat_stream(request: ChatRequest, auth: BrainAuthResult = Depend
             "X-Accel-Buffering": "no"  # Disable nginx buffering
         }
     )
+
+
+# Maximum audio file size (25MB - OpenAI's limit)
+MAX_AUDIO_SIZE = 25 * 1024 * 1024
+
+# Supported audio formats for STT
+SUPPORTED_AUDIO_TYPES = {
+    "audio/webm", "audio/wav", "audio/wave", "audio/x-wav",
+    "audio/mpeg", "audio/mp3", "audio/mp4", "audio/m4a",
+    "audio/ogg", "audio/flac", "audio/x-flac",
+}
+
+
+@router.post("/stt", response_model=STTResponse)
+async def brain_stt(
+    file: UploadFile = File(...),
+    auth: BrainAuthResult = Depends(require_brain_auth)
+):
+    """Transcribe audio to text (Speech-to-Text).
+    
+    Args:
+        file: Audio file (multipart/form-data). Supports webm, wav, mp3, m4a, ogg, flac.
+        
+    Returns:
+        STTResponse with transcribed text and runtime metadata.
+        
+    Raises:
+        HTTPException 400: Invalid audio format or empty file.
+        HTTPException 413: File too large (>25MB).
+        HTTPException 401: Authentication required.
+    """
+    trace_id = str(uuid.uuid4())
+    voice_provider_name = get_voice_provider_name()
+    
+    # Build runtime metadata
+    runtime = RuntimeMetadata(
+        trace_id=trace_id,
+        provider=voice_provider_name,
+        env=_APP_ENV,
+        git_sha=_GIT_SHA,
+        build_time=_BUILD_TIME,
+    )
+    
+    # Validate content type
+    content_type = file.content_type or "application/octet-stream"
+    if content_type not in SUPPORTED_AUDIO_TYPES and not content_type.startswith("audio/"):
+        logger.warning(f"ECHO_STT_INVALID_TYPE trace_id={trace_id} content_type={content_type}")
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "ok": False,
+                "error": {
+                    "code": "invalid_audio_format",
+                    "message": f"Unsupported audio format: {content_type}. Use webm, wav, mp3, m4a, ogg, or flac.",
+                },
+                "runtime": runtime.model_dump(),
+            }
+        )
+    
+    # Read and validate file size
+    audio_data = await file.read()
+    if len(audio_data) == 0:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "ok": False,
+                "error": {
+                    "code": "empty_file",
+                    "message": "Audio file is empty.",
+                },
+                "runtime": runtime.model_dump(),
+            }
+        )
+    
+    if len(audio_data) > MAX_AUDIO_SIZE:
+        raise HTTPException(
+            status_code=413,
+            detail={
+                "ok": False,
+                "error": {
+                    "code": "file_too_large",
+                    "message": f"Audio file exceeds maximum size of {MAX_AUDIO_SIZE // (1024*1024)}MB.",
+                },
+                "runtime": runtime.model_dump(),
+            }
+        )
+    
+    filename = file.filename or "audio.webm"
+    
+    # Log request metadata (never log audio content)
+    logger.info(
+        f"ECHO_STT_REQUEST trace_id={trace_id} provider={voice_provider_name} "
+        f"audio_size={len(audio_data)} content_type={content_type}"
+    )
+    
+    try:
+        provider = get_voice_provider()
+        text, duration = await provider.transcribe(
+            audio_data=audio_data,
+            filename=filename,
+            content_type=content_type,
+            trace_id=trace_id,
+        )
+        
+        return STTResponse(
+            ok=True,
+            text=text,
+            duration_seconds=duration,
+            runtime=runtime,
+        )
+    except VoiceProviderError as e:
+        logger.error(f"ECHO_STT_ERROR trace_id={trace_id} code={e.code} error={e.message}")
+        status_code = _voice_error_code_to_status(e.code)
+        raise HTTPException(
+            status_code=status_code,
+            detail={
+                "ok": False,
+                "error": {
+                    "code": e.code,
+                    "message": e.message,
+                    "upstream_request_id": e.upstream_request_id,
+                },
+                "runtime": runtime.model_dump(),
+            }
+        )
+    except Exception as e:
+        logger.error(f"ECHO_STT_ERROR trace_id={trace_id} error={str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "ok": False,
+                "error": {
+                    "code": "internal_error",
+                    "message": f"Transcription failed: {str(e)}",
+                },
+                "runtime": runtime.model_dump(),
+            }
+        )
+
+
+@router.post("/tts", response_model=TTSResponse)
+async def brain_tts(
+    request: TTSRequest,
+    auth: BrainAuthResult = Depends(require_brain_auth)
+):
+    """Convert text to speech (Text-to-Speech).
+    
+    Args:
+        request: TTSRequest with text and optional voice/format settings.
+        
+    Returns:
+        TTSResponse with base64-encoded audio and MIME type.
+        
+    Raises:
+        HTTPException 400: Invalid request (empty text, etc.).
+        HTTPException 401: Authentication required.
+    """
+    trace_id = str(uuid.uuid4())
+    voice_provider_name = get_voice_provider_name()
+    
+    # Build runtime metadata
+    runtime = RuntimeMetadata(
+        trace_id=trace_id,
+        provider=voice_provider_name,
+        env=_APP_ENV,
+        git_sha=_GIT_SHA,
+        build_time=_BUILD_TIME,
+    )
+    
+    # Log request metadata (never log text content for privacy)
+    logger.info(
+        f"ECHO_TTS_REQUEST trace_id={trace_id} provider={voice_provider_name} "
+        f"text_length={len(request.text)} voice={request.voice} format={request.format}"
+    )
+    
+    try:
+        provider = get_voice_provider()
+        audio_bytes, mime_type = await provider.synthesize(
+            text=request.text,
+            voice=request.voice,
+            format=request.format,
+            trace_id=trace_id,
+        )
+        
+        # Encode audio as base64
+        audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+        
+        return TTSResponse(
+            ok=True,
+            audio_base64=audio_base64,
+            mime_type=mime_type,
+            runtime=runtime,
+        )
+    except VoiceProviderError as e:
+        logger.error(f"ECHO_TTS_ERROR trace_id={trace_id} code={e.code} error={e.message}")
+        status_code = _voice_error_code_to_status(e.code)
+        raise HTTPException(
+            status_code=status_code,
+            detail={
+                "ok": False,
+                "error": {
+                    "code": e.code,
+                    "message": e.message,
+                    "upstream_request_id": e.upstream_request_id,
+                },
+                "runtime": runtime.model_dump(),
+            }
+        )
+    except Exception as e:
+        logger.error(f"ECHO_TTS_ERROR trace_id={trace_id} error={str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "ok": False,
+                "error": {
+                    "code": "internal_error",
+                    "message": f"Speech synthesis failed: {str(e)}",
+                },
+                "runtime": runtime.model_dump(),
+            }
+        )
+
+
+def _voice_error_code_to_status(code: str) -> int:
+    """Map voice error codes to HTTP status codes."""
+    mapping = {
+        "auth_error": 401,
+        "rate_limit": 429,
+        "timeout": 504,
+        "connection_error": 502,
+        "bad_request": 400,
+        "upstream_error": 502,
+    }
+    return mapping.get(code, 500)
