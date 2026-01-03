@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Header } from './components/Header';
 import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
+import { PinModal } from './components/PinModal';
 import { useChat } from './hooks/useChat';
 import { useHealth } from './hooks/useHealth';
+import { useAuth } from './hooks/useAuth';
 import { DEFAULT_ENVIRONMENT, type Environment } from './config';
 
 const ENV_STORAGE_KEY = 'echo-environment';
@@ -31,13 +33,30 @@ function loadStreaming(): boolean {
 export default function App() {
   const [environment, setEnvironment] = useState<Environment>(loadEnvironment);
   const [streamingEnabled, setStreamingEnabled] = useState(loadStreaming);
+  const [showPinModal, setShowPinModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { status: healthStatus, checkHealth } = useHealth(environment);
+  const auth = useAuth(environment);
+
+  const handleAuthRequired = useCallback(() => {
+    auth.logout();
+    setShowPinModal(true);
+  }, [auth]);
+
   const { messages, isLoading, error, sendMessage, clearMessages, cancelRequest } = useChat(
     environment,
-    streamingEnabled
+    streamingEnabled,
+    auth.token,
+    handleAuthRequired
   );
+
+  const handleLogin = useCallback(async (pin: string) => {
+    const success = await auth.login(pin);
+    if (success) {
+      setShowPinModal(false);
+    }
+  }, [auth]);
 
   // Persist preferences
   useEffect(() => {
@@ -63,6 +82,17 @@ export default function App() {
         healthStatus={healthStatus}
         onHealthCheck={checkHealth}
         onClearChat={clearMessages}
+        isAuthenticated={auth.isAuthenticated}
+        onLogin={() => setShowPinModal(true)}
+        onLogout={auth.logout}
+      />
+
+      <PinModal
+        isOpen={showPinModal}
+        isLoading={auth.isLoading}
+        error={auth.error}
+        onSubmit={handleLogin}
+        onClose={auth.isAuthenticated ? () => setShowPinModal(false) : undefined}
       />
 
       <main className="flex-1 overflow-y-auto p-4">

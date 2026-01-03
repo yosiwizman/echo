@@ -1,5 +1,11 @@
 {
   "components": {
+    "securitySchemes": {
+      "HTTPBearer": {
+        "scheme": "bearer",
+        "type": "http"
+      }
+    },
     "schemas": {
       "BrainHealthResponse": {
         "properties": {
@@ -243,7 +249,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/v1/brain/chat/stream": {
@@ -275,7 +286,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/v1/brain/health": {
