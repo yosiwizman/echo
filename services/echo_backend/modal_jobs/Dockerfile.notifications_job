@@ -15,6 +15,6 @@ RUN apt-get update && apt-get -y install ffmpeg curl unzip && rm -rf /var/lib/ap
 
 COPY --from=builder /opt/venv /opt/venv
 COPY backend/ .
-COPY backend/modal/ .
+COPY backend/modal_jobs/ .
 
 CMD ["python", "job.py"]

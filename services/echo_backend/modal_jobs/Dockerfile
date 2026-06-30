@@ -26,7 +26,7 @@ COPY --from=builder /opt/venv /opt/venv
 COPY backend/database /app/database
 COPY backend/utils /app/utils
 COPY backend/models /app/models
-COPY backend/modal/ .
+COPY backend/modal_jobs/ .
 
 EXPOSE 8080
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
